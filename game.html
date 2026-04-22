@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>⚽ Chapas del Mundial 2026 – Joc Multijugador</title>
+  <meta name="description" content="Joc de chapas de futbol del Mundial 2026. Selecciona el teu equip i juga en torn a torn!" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="game.css" />
+</head>
+<body>
+
+  <!-- Back link -->
+  <a href="index.html" class="back-link" id="backLink" aria-label="Tornar al reglament">← Reglament</a>
+
+  <!-- ====================== LOBBY SCREEN ====================== -->
+  <div id="lobbyScreen" class="overlay-screen active" role="main">
+    <div class="lobby-bg-orbs" aria-hidden="true">
+      <div class="l-orb l-orb1"></div>
+      <div class="l-orb l-orb2"></div>
+    </div>
+    <div class="lobby-container">
+      <div class="lobby-header">
+        <div class="lobby-badge">⚽ MUNDIAL 2026 · CHAPAS</div>
+        <h1 class="lobby-title">Chapas del<br/><span class="lobby-title-gold">Mundial</span></h1>
+        <p class="lobby-subtitle">Selecciona els equips, tira les fitxes i marca el gol!</p>
+      </div>
+
+      <div class="team-selectors-layout">
+        <!-- Player 1 -->
+        <div class="player-panel" id="panel1">
+          <div class="player-label" style="color:#60a5fa">
+            <span class="pdot" style="background:#60a5fa"></span> Jugador 1
+          </div>
+          <div class="selected-team-display" id="sel1">
+            <span class="sel-placeholder">Tria el teu equip</span>
+          </div>
+          <div class="teams-grid" id="grid1" role="listbox" aria-label="Equips per al Jugador 1"></div>
+        </div>
+
+        <!-- VS + settings -->
+        <div class="vs-column">
+          <div class="vs-badge">VS</div>
+          <div class="match-settings-box">
+            <p class="setting-title">Gols per guanyar</p>
+            <div class="goal-stepper">
+              <button class="step-btn" id="goalDown" aria-label="Reduir gols">−</button>
+              <span id="goalCount" class="goal-num">5</span>
+              <button class="step-btn" id="goalUp" aria-label="Augmentar gols">+</button>
+            </div>
+          </div>
+          <div class="match-settings-box">
+            <p class="setting-title">Fitxes per equip</p>
+            <div class="goal-stepper">
+              <button class="step-btn" id="tokDown" aria-label="Menys fitxes">−</button>
+              <span id="tokCount" class="goal-num">4</span>
+              <button class="step-btn" id="tokUp" aria-label="Més fitxes">+</button>
+            </div>
+          </div>
+          <button id="startBtn" class="start-btn" disabled aria-disabled="true">
+            <span class="start-ball">⚽</span> Crear Partit
+          </button>
+          <p class="hint-text">Arrossega les fitxes com una fona per llançar-les!</p>
+        </div>
+
+        <!-- Player 2 -->
+        <div class="player-panel" id="panel2">
+          <div class="player-label" style="color:#fb923c">
+            <span class="pdot" style="background:#fb923c"></span> Jugador 2
+          </div>
+          <div class="selected-team-display" id="sel2">
+            <span class="sel-placeholder">Tria el teu equip</span>
+          </div>
+          <div class="teams-grid" id="grid2" role="listbox" aria-label="Equips per al Jugador 2"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== HANDOFF SCREEN ====================== -->
+  <div id="handoffScreen" class="overlay-screen" style="display:none" aria-live="assertive">
+    <div class="handoff-box">
+      <div class="handoff-icon" id="handoffIcon">⚽</div>
+      <p class="handoff-player" id="handoffPlayer">Jugador 1</p>
+      <p class="handoff-team" id="handoffTeam">Brasil 🇧🇷</p>
+      <p class="handoff-instruction">Passa el dispositiu al teu rival!</p>
+      <button id="handoffContinue" class="continue-btn">▶ Continuar</button>
+    </div>
+  </div>
+
+  <!-- ====================== GAME SCREEN ====================== -->
+  <div id="gameScreen" class="overlay-screen" style="display:none">
+    <!-- HUD Top -->
+    <div class="game-hud" role="banner">
+      <div class="hud-side hud-left">
+        <div class="hud-flag" id="hudFlag1">🇧🇷</div>
+        <div>
+          <div class="hud-teamname" id="hudName1">Brasil</div>
+          <div class="hud-score" id="score1">0</div>
+        </div>
+      </div>
+      <div class="hud-center">
+        <div class="turn-indicator" id="turnIndicator">
+          <span class="turn-dot" id="turnDot"></span>
+          <span id="turnText">Torn J1</span>
+        </div>
+        <div class="phase-text" id="phaseText">Selecciona una fitxa</div>
+        <div class="win-goal-text" id="winGoalText">Primer a 5 gols guanya</div>
+      </div>
+      <div class="hud-side hud-right">
+        <div>
+          <div class="hud-teamname" id="hudName2" style="text-align:right">França</div>
+          <div class="hud-score" id="score2" style="text-align:right">0</div>
+        </div>
+        <div class="hud-flag" id="hudFlag2">🇫🇷</div>
+      </div>
+    </div>
+
+    <!-- Canvas wrapper -->
+    <div class="canvas-wrapper" id="canvasWrapper">
+      <canvas id="gameCanvas" aria-label="Camp de joc de chapas"></canvas>
+    </div>
+
+    <!-- Bottom controls -->
+    <div class="game-controls" role="toolbar">
+      <button id="menuBtn" class="gc-btn">🏠 Menú</button>
+      <div class="gc-instructions" id="gcInstr">Clic i arrossega la teua fitxa per llançar-la</div>
+      <button id="skipBtn" class="gc-btn gc-btn-warn">⏭ Passar torn</button>
+    </div>
+  </div>
+
+  <!-- ====================== GOAL OVERLAY ====================== -->
+  <div id="goalOverlay" style="display:none" class="goal-overlay" role="alert" aria-live="assertive">
+    <div class="goal-inner">
+      <div class="goal-ball-anim">⚽</div>
+      <div class="goal-word">G O L !</div>
+      <div class="goal-team-name" id="goalTeamName"></div>
+      <div class="goal-score-display" id="goalScoreDisplay"></div>
+    </div>
+  </div>
+
+  <!-- ====================== GAMEOVER SCREEN ====================== -->
+  <div id="gameoverScreen" class="overlay-screen" style="display:none" role="main">
+    <div class="gameover-box">
+      <div class="go-trophy">🏆</div>
+      <h2 class="go-title">Fi del Partit!</h2>
+      <div class="go-winner" id="goWinner">Brasil guanya!</div>
+      <div class="go-score" id="goScore">5 – 3</div>
+      <div class="go-both-flags" id="goBothFlags"></div>
+      <div class="go-buttons">
+        <button id="replayBtn" class="btn-replay">🔄 Revanxa</button>
+        <button id="backLobbyBtn" class="btn-lobby">🏠 Menú</button>
+        <a href="index.html" class="btn-reg">📋 Reglament</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
