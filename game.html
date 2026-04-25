@@ -1,14 +1,36 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>⚽ Chapas del Mundial 2026 – Joc Multijugador</title>
-  <meta name="description" content="Joc de chapas de futbol del Mundial 2026. Selecciona el teu equip i juga en torn a torn!" />
+  <meta name="description"
+    content="Joc de chapas de futbol del Mundial 2026. Selecciona el teu equip i juga en torn a torn!" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="game.css" />
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', async () => {
+      if (window.ONLINE_MODE) {
+        const { user } = await AUTH.getCurrentUser();
+        if (!user) {
+          window.location.href = 'login.html';
+        }
+      }
+    });
+  </script>
 </head>
+
 <body>
 
   <!-- Back link bar -->
@@ -27,7 +49,7 @@
     <div class="lobby-container">
       <div class="lobby-header">
         <div class="lobby-badge">⚽ MUNDIAL 2026 · CHAPAS</div>
-        <h1 class="lobby-title">Chapas del<br/><span class="lobby-title-gold">Mundial</span></h1>
+        <h1 class="lobby-title">Chapas del<br /><span class="lobby-title-gold">Mundial</span></h1>
         <p class="lobby-subtitle">Selecciona els equips, tira les fitxes i marca el gol!</p>
         <p id="teamsRemainingInfo" style="font-size:0.75rem;color:#fb923c;margin-top:6px;min-height:18px"></p>
       </div>
@@ -157,7 +179,8 @@
       <div class="go-buttons">
         <button id="replayBtn" class="btn-replay">🔄 Revanxa</button>
         <button id="backLobbyBtn" class="btn-lobby">🏠 Menú</button>
-        <a href="tournament.html" class="btn-replay" style="background:linear-gradient(135deg,#60a5fa,#7c3aed);color:#fff">🏆 Classificació</a>
+        <a href="tournament.html" class="btn-replay"
+          style="background:linear-gradient(135deg,#60a5fa,#7c3aed);color:#fff">🏆 Classificació</a>
         <a href="index.html" class="btn-reg">📋 Reglament</a>
       </div>
     </div>
@@ -167,4 +190,5 @@
   <script src="db.js"></script>
   <script src="game.js"></script>
 </body>
+
 </html>

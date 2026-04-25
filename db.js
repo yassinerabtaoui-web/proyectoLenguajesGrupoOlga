@@ -1,48 +1,30 @@
 // ============================================================
 // db.js — Capa d'abstracció de base de dades
-// Usa Firebase Realtime Database si FIREBASE_URL és configurat,
+// Usa Firebase Realtime Database SDK si està disponible
 // o localStorage com a fallback offline.
 // ============================================================
 
 const DB = (() => {
-  const BASE = () => window.FIREBASE_URL || '';
-  const isOnline = () => (window.FIREBASE_URL || '').length > 5;
+  function ensureFirebase() {
+    if (window.ONLINE_MODE && window.firebase && window.firebaseConfig && !firebase.apps.length) {
+      firebase.initializeApp(window.firebaseConfig);
+    }
+  }
+
+  const isOnline = () => {
+    if (window.ONLINE_MODE && window.firebase && window.firebase.database) {
+      ensureFirebase();
+      return true;
+    }
+    return false;
+  };
 
   const LOCAL_MATCHES = 'porraMatches';
   const LOCAL_PLAYED  = 'porraPlayedTeams';
 
-  // Sanitize team names for Firebase keys (no dots, spaces, etc.)
+  // Sanitize team names for Firebase keys
   function toKey(name) {
     return name.replace(/[.#$/\[\]\s]/g, '_');
-  }
-
-  // ── Firebase REST helpers ─────────────────────────────────
-  async function fbGet(path) {
-    const r = await fetch(`${BASE()}/${path}.json`);
-    if (!r.ok) throw new Error(`Firebase GET ${path} → ${r.status}`);
-    return r.json();
-  }
-  async function fbSet(path, data) {
-    await fetch(`${BASE()}/${path}.json`, {
-      method: 'PUT', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-  }
-  async function fbPush(path, data) {
-    const r = await fetch(`${BASE()}/${path}.json`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-    return r.json(); // { name: '-Firebase_key' }
-  }
-  async function fbPatch(path, data) {
-    await fetch(`${BASE()}/${path}.json`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-  }
-  async function fbDelete(path) {
-    await fetch(`${BASE()}/${path}.json`, { method: 'DELETE' });
   }
 
   // ── LocalStorage helpers ──────────────────────────────────
@@ -59,59 +41,90 @@ const DB = (() => {
     // ── MATCHES ──────────────────────────────────────────────
     async getMatches() {
       if (isOnline()) {
-        const data = await fbGet('matches');
-        if (!data) return [];
-        return Object.entries(data)
-          .map(([key, val]) => ({ ...val, _key: key }))
-          .sort((a, b) => (a.date || '') < (b.date || '') ? -1 : 1);
+        try {
+          const snapshot = await firebase.database().ref('matches').once('value');
+          const data = snapshot.val();
+          if (!data) return [];
+          return Object.entries(data)
+            .map(([key, val]) => ({ ...val, _key: key }))
+            .sort((a, b) => (a.date || '') < (b.date || '') ? -1 : 1);
+        } catch (e) {
+          console.warn('Firebase getMatches error:', e);
+        }
       }
       return lsGet(LOCAL_MATCHES) || [];
     },
 
     async addMatch(match) {
       if (isOnline()) {
-        const res = await fbPush('matches', match);
-        // Cache locally too
-        const ms = lsGet(LOCAL_MATCHES) || [];
-        ms.push({ ...match, _key: res.name });
-        lsSet(LOCAL_MATCHES, ms);
-      } else {
-        const ms = lsGet(LOCAL_MATCHES) || [];
-        ms.push(match);
-        lsSet(LOCAL_MATCHES, ms);
+        try {
+          const ref = firebase.database().ref('matches').push();
+          await ref.set(match);
+          // Cache locally too
+          const ms = lsGet(LOCAL_MATCHES) || [];
+          ms.push({ ...match, _key: ref.key });
+          lsSet(LOCAL_MATCHES, ms);
+          return;
+        } catch (e) {
+          console.warn('Firebase addMatch error:', e);
+          throw new Error('Firebase ha denegat guardar el partit. Has canviat les regles a true? Error original: ' + e.message);
+        }
       }
+      // Fallback
+      const ms = lsGet(LOCAL_MATCHES) || [];
+      ms.push(match);
+      lsSet(LOCAL_MATCHES, ms);
     },
 
     async updateMatch(key, data) {
       if (isOnline()) {
-        await fbSet('matches/' + key, data);
+        try {
+          await firebase.database().ref('matches/' + key).update(data);
+        } catch (e) {
+          console.warn('Firebase updateMatch error:', e);
+        }
       }
       const ms = lsGet(LOCAL_MATCHES) || [];
-      const idx = ms.findIndex(m => m._key === key || m.id === key);
+      const idx = ms.findIndex(m => m._key === key || m.id == key);
       if (idx !== -1) { ms[idx] = { ...ms[idx], ...data }; lsSet(LOCAL_MATCHES, ms); }
     },
 
     async deleteMatch(key) {
-      if (isOnline()) await fbDelete('matches/' + key);
-      const ms = (lsGet(LOCAL_MATCHES) || []).filter(m => m._key !== key && m.id !== key);
+      if (isOnline()) {
+        try {
+          await firebase.database().ref('matches/' + key).remove();
+        } catch (e) {
+          console.warn('Firebase deleteMatch error:', e);
+        }
+      }
+      const ms = (lsGet(LOCAL_MATCHES) || []).filter(m => m._key !== key && m.id != key);
       lsSet(LOCAL_MATCHES, ms);
+      
       // Recalculate played teams from remaining matches
       const names = new Set();
       ms.forEach(m => { names.add(m.team1.name); names.add(m.team2.name); });
       lsSet(LOCAL_PLAYED, Array.from(names));
+      
       if (isOnline()) {
-        const obj = {};
-        names.forEach(n => { obj[toKey(n)] = n; });
-        await fbSet('playedTeams', names.size ? obj : null);
+        try {
+          const obj = {};
+          names.forEach(n => { obj[toKey(n)] = n; });
+          await firebase.database().ref('playedTeams').set(names.size ? obj : null);
+        } catch (e) {}
       }
     },
 
     // ── PLAYED TEAMS ─────────────────────────────────────────
     async getPlayedTeams() {
       if (isOnline()) {
-        const data = await fbGet('playedTeams');
-        if (!data) return [];
-        return Object.values(data).filter(Boolean);
+        try {
+          const snapshot = await firebase.database().ref('playedTeams').once('value');
+          const data = snapshot.val();
+          if (!data) return [];
+          return Object.values(data).filter(Boolean);
+        } catch (e) {
+          console.warn('Firebase getPlayedTeams error:', e);
+        }
       }
       return lsGet(LOCAL_PLAYED) || [];
     },
@@ -121,38 +134,60 @@ const DB = (() => {
       const current = lsGet(LOCAL_PLAYED) || [];
       teamNames.forEach(n => { if (!current.includes(n)) current.push(n); });
       lsSet(LOCAL_PLAYED, current);
+      
       // Push to Firebase
       if (isOnline()) {
-        const patch = {};
-        teamNames.forEach(n => { patch[toKey(n)] = n; });
-        await fbPatch('playedTeams', patch);
+        try {
+          const patch = {};
+          teamNames.forEach(n => { patch[toKey(n)] = n; });
+          await firebase.database().ref('playedTeams').update(patch);
+        } catch (e) {
+          console.warn('Firebase markTeamsPlayed error:', e);
+        }
       }
     },
 
     async resetTeam(teamName) {
       const current = (lsGet(LOCAL_PLAYED) || []).filter(n => n !== teamName);
       lsSet(LOCAL_PLAYED, current);
-      if (isOnline()) await fbDelete('playedTeams/' + toKey(teamName));
+      if (isOnline()) {
+        try {
+          await firebase.database().ref('playedTeams/' + toKey(teamName)).remove();
+        } catch (e) {}
+      }
     },
 
     async resetAllTeams() {
       lsSet(LOCAL_PLAYED, []);
-      if (isOnline()) await fbSet('playedTeams', null);
+      if (isOnline()) {
+        try {
+          await firebase.database().ref('playedTeams').remove();
+        } catch (e) {}
+      }
     },
 
     async clearAllMatches() {
       lsSet(LOCAL_MATCHES, []);
-      if (isOnline()) await fbSet('matches', null);
+      if (isOnline()) {
+        try {
+          await firebase.database().ref('matches').remove();
+        } catch (e) {}
+      }
     },
 
     async resetAll() {
       lsSet(LOCAL_MATCHES, []); lsSet(LOCAL_PLAYED, []);
-      if (isOnline()) await Promise.all([fbSet('matches', null), fbSet('playedTeams', null)]);
+      if (isOnline()) {
+        try {
+          await firebase.database().ref('matches').remove();
+          await firebase.database().ref('playedTeams').remove();
+        } catch (e) {}
+      }
     },
 
     // Sync Firebase → localStorage (called on game load)
     async syncToLocal() {
-      if (!isOnline()) return;
+      if (!isOnline()) return null;
       try {
         const [matches, played] = await Promise.all([this.getMatches(), this.getPlayedTeams()]);
         lsSet(LOCAL_MATCHES, matches);
@@ -166,4 +201,4 @@ const DB = (() => {
   };
 })();
 
-console.log('[DB] Mode:', window.ONLINE_MODE ? '🌐 Firebase Online' : '💾 localStorage Offline');
+console.log('[DB] Mode:', (window.ONLINE_MODE && window.firebase) ? '🌐 Firebase Online (SDK)' : '💾 localStorage Offline');

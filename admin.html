@@ -6,7 +6,14 @@
   <title>🔐 Panel d'Administrador – Chapas 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
   <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
   <script src="db.js"></script>
   <style>
     :root {
@@ -29,62 +36,19 @@
     body { font-family: 'Outfit', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
     button { font-family: 'Outfit', sans-serif; cursor: pointer; }
 
-    /* ── LOGIN ── */
-    #loginScreen {
+    /* ── DASHBOARD ── */
+    #dashboard { display: none; flex-direction: column; min-height: 100vh; }
+    
+    #loadingScreen {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 20px;
-      background: radial-gradient(ellipse at 30% 30%, rgba(96,165,250,0.07), transparent 50%),
-                  radial-gradient(ellipse at 70% 70%, rgba(245,197,24,0.06), transparent 50%);
+      flex-direction: column;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
     }
-    .login-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      padding: 48px 40px;
-      max-width: 400px;
-      width: 100%;
-      text-align: center;
-      box-shadow: 0 24px 80px rgba(0,0,0,0.5);
-    }
-    .login-icon { font-size: 3rem; margin-bottom: 16px; }
-    .login-title { font-size: 1.6rem; font-weight: 900; margin-bottom: 6px; }
-    .login-subtitle { font-size: 0.9rem; color: var(--muted); margin-bottom: 28px; }
-    .login-field { margin-bottom: 12px; }
-    .login-field input {
-      width: 100%;
-      padding: 12px 16px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-      color: var(--text);
-      font-family: inherit;
-      font-size: 1rem;
-      outline: none;
-      transition: border-color var(--transition);
-    }
-    .login-field input:focus { border-color: var(--gold); }
-    .login-btn {
-      width: 100%;
-      padding: 13px;
-      background: linear-gradient(135deg, #f5c518, #ff9d00);
-      border: none;
-      border-radius: var(--radius-sm);
-      font-size: 1rem;
-      font-weight: 800;
-      color: #000;
-      transition: all var(--transition);
-      margin-bottom: 16px;
-    }
-    .login-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.35); }
-    .login-error { color: var(--red); font-size: 0.85rem; margin-bottom: 12px; display: none; }
-    .login-back { color: var(--muted); text-decoration: none; font-size: 0.82rem; }
-    .login-back:hover { color: var(--text); }
-
-    /* ── DASHBOARD ── */
-    #dashboard { display: none; flex-direction: column; min-height: 100vh; }
 
     /* Top bar */
     .admin-topbar {
@@ -340,21 +304,12 @@
 </head>
 <body>
 
-<!-- ── LOGIN SCREEN ── -->
-<div id="loginScreen">
-  <div class="login-card">
-    <div class="login-icon">⚽🔐</div>
-    <h1 class="login-title">Panel Admin</h1>
-    <p class="login-subtitle">Chapas del Mundial 2026<br><small style="color:#8094b8;font-size:0.78rem">Accés restringit als organitzadors</small></p>
-    <div class="login-field">
-      <input type="password" id="pwInput" placeholder="Contrasenya..." autocomplete="current-password" />
-    </div>
-    <p class="login-error" id="loginError">❌ Contrasenya incorrecta</p>
-    <button class="login-btn" id="loginBtn">Accedir</button>
-    <br>
-    <a href="index.html" class="login-back">← Tornar al lloc web</a>
-  </div>
+<!-- ── LOADING SCREEN ── -->
+<div id="loadingScreen">
+  <div style="font-size:3rem;margin-bottom:10px;animation:spin 1s linear infinite">⚽</div>
+  <div>Verificant credencials...</div>
 </div>
+<style>@keyframes spin { 100% { transform:rotate(360deg); } }</style>
 
 <!-- ── DASHBOARD ── -->
 <div id="dashboard">
@@ -364,6 +319,7 @@
       <button class="tab-btn active" data-tab="partits">📋 Partits</button>
       <button class="tab-btn" data-tab="classificacio">🏆 Classificació</button>
       <button class="tab-btn" data-tab="equips">👥 Equips</button>
+      <button class="tab-btn" data-tab="usuaris">👥 Usuaris</button>
       <button class="tab-btn" data-tab="config">⚙️ Configuració</button>
     </div>
     <div class="admin-actions">
@@ -411,6 +367,14 @@
         <button class="btn-reset-team" id="resetAllTeamsBtn" style="background:rgba(96,165,250,0.1);color:var(--blue);border-color:rgba(96,165,250,0.25)">🔄 Reiniciar tots els equips</button>
       </div>
       <div class="teams-admin-grid" id="teamsAdminGrid"></div>
+    </div>
+
+    <!-- ── TAB: USUARIS ── -->
+    <div class="tab-panel" id="tab-usuaris">
+      <div class="panel-title">👥 Gestió d'Usuaris</div>
+      <div class="table-wrap" id="adminUsersWrap">
+        <div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">Carregant usuaris...</div></div>
+      </div>
     </div>
 
     <!-- ── TAB: CONFIG ── -->
@@ -487,35 +451,22 @@
 
 <script>
   // ── AUTH ──────────────────────────────────────────────────────
-  const PASS = 'admin2026';
-
   let editingKey = null;
 
-  // Auth check on load
-  if (sessionStorage.getItem('adminAuth') === '1') showDashboard();
-
-  document.getElementById('loginBtn').onclick = doLogin;
-  document.getElementById('pwInput').addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
-
-  function doLogin() {
-    if (document.getElementById('pwInput').value === PASS) {
-      sessionStorage.setItem('adminAuth', '1');
-      showDashboard();
-    } else {
-      document.getElementById('loginError').style.display = 'block';
-      document.getElementById('pwInput').value = '';
-      document.getElementById('pwInput').focus();
+  async function checkAuth() {
+    const hasAccess = await AUTH.requireRole('admin', 'login.html');
+    if (hasAccess) {
+      document.getElementById('loadingScreen').style.display = 'none';
+      document.getElementById('dashboard').style.display = 'flex';
+      renderAll();
     }
   }
 
-  function showDashboard() {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('dashboard').style.display = 'flex';
-    renderAll();
-  }
+  // Check auth on load
+  checkAuth();
 
   document.getElementById('logoutBtn').onclick = () => {
-    sessionStorage.removeItem('adminAuth'); location.reload();
+    AUTH.logout();
   };
 
   // ── TABS ──────────────────────────────────────────────────────
@@ -570,6 +521,7 @@
     await renderMatchList();
     await renderStandings();
     await renderTeams();
+    await renderUsers();
     populateAddForm();
   }
 
@@ -684,6 +636,65 @@
       </div>`;
     }).join('');
   }
+
+  // ── USERS GRID ────────────────────────────────────────────────
+  async function renderUsers() {
+    const el = document.getElementById('adminUsersWrap');
+    if (!window.ONLINE_MODE || !window.firebase) {
+      el.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El mode Online (Firebase) és necessari per veure els usuaris.</div></div>';
+      return;
+    }
+    
+    try {
+      const snapshot = await firebase.database().ref('users').once('value');
+      const usersData = snapshot.val();
+      
+      if (!usersData) {
+        el.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No hi ha usuaris registrats</div></div>';
+        return;
+      }
+      
+      const usersList = Object.keys(usersData).map(uid => ({
+        uid,
+        ...usersData[uid]
+      }));
+      
+      el.innerHTML = `<table><thead><tr>
+        <th>Correu Electrònic</th><th>Rol Actual</th><th>Acció</th>
+      </tr></thead><tbody>
+      ${usersList.map(u => {
+        const isAdmin = u.role === 'admin';
+        const roleText = isAdmin ? '👑 Admin' : '👤 Client';
+        const nextRole = isAdmin ? 'client' : 'admin';
+        const btnText = isAdmin ? 'Fer Client' : 'Fer Admin';
+        const btnClass = isAdmin ? 'btn-reset-team' : 'btn-edit';
+        const emailStr = u.email || 'Sense correu (antic)';
+        
+        return `<tr>
+          <td>${emailStr}</td>
+          <td><span style="color:${isAdmin ? 'var(--gold)' : 'var(--text)'};font-weight:${isAdmin?'800':'400'}">${roleText}</span></td>
+          <td>
+            <button class="${btnClass}" style="margin:0;padding:6px 12px;font-size:0.85rem;" onclick="toggleUserRole('${u.uid}', '${nextRole}')">${btnText}</button>
+          </td>
+        </tr>`;
+      }).join('')}
+      </tbody></table>`;
+      
+    } catch (error) {
+      el.innerHTML = `<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">Error carregant usuaris: ${error.message}</div></div>`;
+    }
+  }
+  
+  window.toggleUserRole = async function(uid, newRole) {
+    if (!confirm(`Segur que vols canviar el rol a ${newRole}?`)) return;
+    try {
+      await firebase.database().ref(`users/${uid}/role`).set(newRole);
+      showToast(`Rol actualitzat a ${newRole}!`, 'success');
+      await renderUsers();
+    } catch (error) {
+      showToast('❌ Error actualitzant el rol: ' + error.message, 'error');
+    }
+  };
 
   // ── ADD MATCH FORM ────────────────────────────────────────────
   function populateAddForm() {

@@ -1,21 +1,29 @@
 // ====================================================================
-// CONFIGURACIÓ ONLINE — Firebase Realtime Database
+// CONFIGURACIÓ ONLINE — Firebase Realtime Database & Auth
 // ====================================================================
 //
-// Per activar el mode ONLINE (partits simultanis entre dispositius):
+// Per activar el mode ONLINE (Autenticació i Base de Dades):
 //
 //  1. Ves a https://console.firebase.google.com
-//  2. Crea un projecte nou → Realtime Database → Crear base de dades
-//  3. Tria "Iniciar en mode de prova" (regles obertes)
-//  4. Copia la URL (semblant a: https://NOM-PROJECTE-default-rtdb.firebaseio.com)
-//  5. Enganxa-la tot seguit a FIREBASE_URL
+//  2. Crea un projecte nou o obre l'existent
+//  3. Afegeix una aplicació Web i copia l'objecte firebaseConfig
+//  4. Enganxa els valors a sota
+//  5. Activa Authentication (Email/Password)
+//  6. Activa Realtime Database
 //
-//  Regles recomanades (Realtime Database → Regles):
-//  { "rules": { ".read": true, ".write": true } }
-//
-//  Si FIREBASE_URL és buit → mode LOCAL (localStorage, un sol dispositiu)
 // ====================================================================
 
-window.FIREBASE_URL = ''; // ← Posa aquí la URL del teu projecte Firebase
+window.firebaseConfig = {
+  apiKey: "AIzaSyCmKdRLFUhTkTJTuTbPzC7yrIaLOJ2VfQI",
+  authDomain: "proyectolenguajesgrupoolga.firebaseapp.com",
+  databaseURL: "https://proyectolenguajesgrupoolga-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "proyectolenguajesgrupoolga",
+  storageBucket: "proyectolenguajesgrupoolga.firebasestorage.app",
+  messagingSenderId: "119186226643",
+  appId: "1:119186226643:web:7218c392019c4708f84326",
+  measurementId: "G-ZF2XML0M44"
+};
 
-window.ONLINE_MODE = window.FIREBASE_URL.length > 5;
+// Mode Online si hi ha un apiKey configurat
+window.ONLINE_MODE = window.firebaseConfig.apiKey && window.firebaseConfig.apiKey.length > 5;
+window.FIREBASE_URL = window.firebaseConfig.databaseURL || '';
