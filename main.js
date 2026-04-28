@@ -13,6 +13,7 @@
   function handleScroll() {
     const scrollY = window.scrollY;
 
+
     // Navbar
     if (scrollY > 60) {
       navbar.classList.add('scrolled');

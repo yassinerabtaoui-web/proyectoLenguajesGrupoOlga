@@ -7,57 +7,57 @@
 
 // ─── STORAGE KEYS ─────────────────────────────────────────────
 const SK_MATCHES = 'porraMatches';
-const SK_PLAYED  = 'porraPlayedTeams';
+const SK_PLAYED = 'porraPlayedTeams';
 
 // ─── TEAMS DATA ──────────────────────────────────────────────
 const TEAMS = [
-  { name: 'Brasil',        abbr: 'BRA', flag: '🇧🇷', color: '#009C3B', accent: '#FFD700', textColor: '#FFD700' },
-  { name: 'Argentina',     abbr: 'ARG', flag: '🇦🇷', color: '#74ACDF', accent: '#FFFFFF', textColor: '#003087' },
-  { name: 'Espanya',       abbr: 'ESP', flag: '🇪🇸', color: '#AA151B', accent: '#F1BF00', textColor: '#F1BF00' },
-  { name: 'França',        abbr: 'FRA', flag: '🇫🇷', color: '#003189', accent: '#FFFFFF', textColor: '#FFFFFF' },
-  { name: 'Alemanya',      abbr: 'GER', flag: '🇩🇪', color: '#1C1C1C', accent: '#DD0000', textColor: '#FFD700' },
-  { name: 'Anglaterra',    abbr: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#CF0A2C', accent: '#FFFFFF', textColor: '#FFFFFF' },
-  { name: 'Portugal',      abbr: 'POR', flag: '🇵🇹', color: '#006600', accent: '#FF0000', textColor: '#FFD700' },
-  { name: 'P. Baixos',     abbr: 'NED', flag: '🇳🇱', color: '#FF6300', accent: '#FFFFFF', textColor: '#FFFFFF' },
-  { name: 'Itàlia',        abbr: 'ITA', flag: '🇮🇹', color: '#003580', accent: '#FFFFFF', textColor: '#FFFFFF' },
-  { name: 'Japó',          abbr: 'JPN', flag: '🇯🇵', color: '#BC002D', accent: '#FFFFFF', textColor: '#FFFFFF' },
-  { name: 'USA',           abbr: 'USA', flag: '🇺🇸', color: '#003366', accent: '#BF0A30', textColor: '#FFFFFF' },
-  { name: 'Mèxic',         abbr: 'MEX', flag: '🇲🇽', color: '#006847', accent: '#CE1126', textColor: '#FFFFFF' },
-  { name: 'Marroc',        abbr: 'MAR', flag: '🇲🇦', color: '#C1272D', accent: '#006233', textColor: '#FFFFFF' },
-  { name: 'Senegal',       abbr: 'SEN', flag: '🇸🇳', color: '#00853F', accent: '#FDEF42', textColor: '#FDEF42' },
-  { name: 'Colòmbia',      abbr: 'COL', flag: '🇨🇴', color: '#FCD116', accent: '#003087', textColor: '#003087' },
-  { name: 'Uruguai',       abbr: 'URU', flag: '🇺🇾', color: '#5EB6E4', accent: '#FFFFFF', textColor: '#003580' },
-  { name: 'Croàcia',       abbr: 'CRO', flag: '🇭🇷', color: '#CC0000', accent: '#FFFFFF', textColor: '#FFFFFF' },
-  { name: 'Bèlgica',       abbr: 'BEL', flag: '🇧🇪', color: '#1C1C1C', accent: '#ED2939', textColor: '#FAE042' },
-  { name: 'Equador',       abbr: 'ECU', flag: '🇪🇨', color: '#FFD100', accent: '#003893', textColor: '#003893' },
-  { name: 'Ghana',         abbr: 'GHA', flag: '🇬🇭', color: '#006B3F', accent: '#FCD116', textColor: '#FCD116' },
+  { name: 'Brasil', abbr: 'BRA', flag: '🇧🇷', color: '#009C3B', accent: '#FFD700', textColor: '#FFD700' },
+  { name: 'Argentina', abbr: 'ARG', flag: '🇦🇷', color: '#74ACDF', accent: '#FFFFFF', textColor: '#003087' },
+  { name: 'Espanya', abbr: 'ESP', flag: '🇪🇸', color: '#AA151B', accent: '#F1BF00', textColor: '#F1BF00' },
+  { name: 'França', abbr: 'FRA', flag: '🇫🇷', color: '#003189', accent: '#FFFFFF', textColor: '#FFFFFF' },
+  { name: 'Alemanya', abbr: 'GER', flag: '🇩🇪', color: '#1C1C1C', accent: '#DD0000', textColor: '#FFD700' },
+  { name: 'Anglaterra', abbr: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', color: '#CF0A2C', accent: '#FFFFFF', textColor: '#FFFFFF' },
+  { name: 'Portugal', abbr: 'POR', flag: '🇵🇹', color: '#006600', accent: '#FF0000', textColor: '#FFD700' },
+  { name: 'P. Baixos', abbr: 'NED', flag: '🇳🇱', color: '#FF6300', accent: '#FFFFFF', textColor: '#FFFFFF' },
+  { name: 'Itàlia', abbr: 'ITA', flag: '🇮🇹', color: '#003580', accent: '#FFFFFF', textColor: '#FFFFFF' },
+  { name: 'Japó', abbr: 'JPN', flag: '🇯🇵', color: '#BC002D', accent: '#FFFFFF', textColor: '#FFFFFF' },
+  { name: 'USA', abbr: 'USA', flag: '🇺🇸', color: '#003366', accent: '#BF0A30', textColor: '#FFFFFF' },
+  { name: 'Mèxic', abbr: 'MEX', flag: '🇲🇽', color: '#006847', accent: '#CE1126', textColor: '#FFFFFF' },
+  { name: 'Marroc', abbr: 'MAR', flag: '🇲🇦', color: '#C1272D', accent: '#006233', textColor: '#FFFFFF' },
+  { name: 'Senegal', abbr: 'SEN', flag: '🇸🇳', color: '#00853F', accent: '#FDEF42', textColor: '#FDEF42' },
+  { name: 'Colòmbia', abbr: 'COL', flag: '🇨🇴', color: '#FCD116', accent: '#003087', textColor: '#003087' },
+  { name: 'Uruguai', abbr: 'URU', flag: '🇺🇾', color: '#5EB6E4', accent: '#FFFFFF', textColor: '#003580' },
+  { name: 'Croàcia', abbr: 'CRO', flag: '🇭🇷', color: '#CC0000', accent: '#FFFFFF', textColor: '#FFFFFF' },
+  { name: 'Bèlgica', abbr: 'BEL', flag: '🇧🇪', color: '#1C1C1C', accent: '#ED2939', textColor: '#FAE042' },
+  { name: 'Equador', abbr: 'ECU', flag: '🇪🇨', color: '#FFD100', accent: '#003893', textColor: '#003893' },
+  { name: 'Ghana', abbr: 'GHA', flag: '🇬🇭', color: '#006B3F', accent: '#FCD116', textColor: '#FCD116' },
 ];
 
 // ─── PHYSICS CONSTANTS ───────────────────────────────────────
-const FRICTION         = 0.980;   // token friction per frame
-const BALL_FRICTION    = 0.984;   // ball is slightly slippier
-const RESTITUTION      = 0.72;    // bounce energy retention
-const STOP_VEL         = 0.05;    // velocity threshold to stop
-const MAX_DRAG_PX      = 110;     // max drag distance in px (canvas space)
-const MAX_SPEED        = 22;      // max launch speed
-const TOKEN_R          = 17;      // token radius px (canvas) — smaller for better fit
-const BALL_R           = 10;      // ball radius px (canvas)
+const FRICTION = 0.980;   // token friction per frame
+const BALL_FRICTION = 0.984;   // ball is slightly slippier
+const RESTITUTION = 0.72;    // bounce energy retention
+const STOP_VEL = 0.05;    // velocity threshold to stop
+const MAX_DRAG_PX = 110;     // max drag distance in px (canvas space)
+const MAX_SPEED = 22;      // max launch speed
+const TOKEN_R = 17;      // token radius px (canvas) — smaller for better fit
+const BALL_R = 10;      // ball radius px (canvas)
 
 // ─── GAME STATE ───────────────────────────────────────────────
 let canvas, ctx;
 let animId;
 let CANVAS_W = 900, CANVAS_H = 540;
 
-let state       = 'LOBBY';        // LOBBY | PLAYING | GOAL_ANIM | GAMEOVER
-let turnPhase   = 'SELECT';       // SELECT | DRAGGING | MOVING
+let state = 'LOBBY';        // LOBBY | PLAYING | GOAL_ANIM | GAMEOVER
+let turnPhase = 'SELECT';       // SELECT | DRAGGING | MOVING
 let currentPlayer = 0;
-let score       = [0, 0];
-let WIN_SCORE   = 5;
+let score = [0, 0];
+let WIN_SCORE = 5;
 let TOKENS_EACH = 4;
 
 let selectedTeams = [null, null];
-let tokens  = [];
-let ball    = {};
+let tokens = [];
+let ball = {};
 let initPos = [];
 
 // Drag / slingshot
@@ -65,7 +65,7 @@ let drag = { active: false, tok: null, ox: 0, oy: 0, cx: 0, cy: 0 };
 let movedTok = null;    // which token was shot this turn
 
 // Goal celebration
-let goalState    = { scoring: -1, timer: 0, particles: [] };
+let goalState = { scoring: -1, timer: 0, particles: [] };
 let goalJustDone = false;
 
 // Pitch geometry (recalculated on resize)
@@ -99,7 +99,7 @@ function getFormation(teamIdx, numTokens) {
 // ─── INIT ─────────────────────────────────────────────────────
 window.addEventListener('DOMContentLoaded', async () => {
   canvas = document.getElementById('gameCanvas');
-  ctx    = canvas.getContext('2d');
+  ctx = canvas.getContext('2d');
 
   // Sync played teams from Firebase (or localStorage) before building lobby
   if (window.DB) {
@@ -142,16 +142,16 @@ function showLobbyStatus(msg) {
 
 // ─── CANVAS SIZING ────────────────────────────────────────────
 function resizeCanvas() {
-  const wrapper    = document.getElementById('canvasWrapper');
+  const wrapper = document.getElementById('canvasWrapper');
   if (!wrapper) return;
   const { clientWidth: W, clientHeight: H } = wrapper;
   // Maintain 5:3 aspect at most
   const aspect = 5 / 3;
   let cw = W, ch = W / aspect;
   if (ch > H) { ch = H; cw = H * aspect; }
-  canvas.width  = CANVAS_W = Math.round(cw);
+  canvas.width = CANVAS_W = Math.round(cw);
   canvas.height = CANVAS_H = Math.round(ch);
-  canvas.style.width  = cw + 'px';
+  canvas.style.width = cw + 'px';
   canvas.style.height = ch + 'px';
   computePitch();
 }
@@ -159,12 +159,12 @@ window.addEventListener('resize', () => { if (state === 'PLAYING' || state === '
 
 function computePitch() {
   const mg = Math.round(CANVAS_W * 0.022); // ultra-tight side margins
-  P.x     = mg;
-  P.y     = Math.round(CANVAS_H * 0.018); // ultra-tight top margin
-  P.w     = CANVAS_W - mg * 2;
-  P.h     = CANVAS_H - Math.round(CANVAS_H * 0.036); // 96% height used
-  P.cx    = P.x + P.w / 2;
-  P.cy    = P.y + P.h / 2;
+  P.x = mg;
+  P.y = Math.round(CANVAS_H * 0.018); // ultra-tight top margin
+  P.w = CANVAS_W - mg * 2;
+  P.h = CANVAS_H - Math.round(CANVAS_H * 0.036); // 96% height used
+  P.cx = P.x + P.w / 2;
+  P.cy = P.y + P.h / 2;
   P.goalH = P.h * 0.28;
   P.goalD = Math.round(CANVAS_W * 0.032); // goal depth
 }
@@ -234,10 +234,10 @@ function selectTeam(panelIdx, teamIdx) {
 function bindLobbyEvents() {
   let goalVal = 5, tokVal = 4;
 
-  document.getElementById('goalUp').onclick   = () => { goalVal = Math.min(goalVal + 1, 10); document.getElementById('goalCount').textContent = goalVal; WIN_SCORE = goalVal; };
-  document.getElementById('goalDown').onclick  = () => { goalVal = Math.max(goalVal - 1, 1);  document.getElementById('goalCount').textContent = goalVal; WIN_SCORE = goalVal; };
-  document.getElementById('tokUp').onclick    = () => { tokVal  = Math.min(tokVal  + 1, 6);  document.getElementById('tokCount').textContent  = tokVal;  TOKENS_EACH = tokVal; };
-  document.getElementById('tokDown').onclick  = () => { tokVal  = Math.max(tokVal  - 1, 2);  document.getElementById('tokCount').textContent  = tokVal;  TOKENS_EACH = tokVal; };
+  document.getElementById('goalUp').onclick = () => { goalVal = Math.min(goalVal + 1, 10); document.getElementById('goalCount').textContent = goalVal; WIN_SCORE = goalVal; };
+  document.getElementById('goalDown').onclick = () => { goalVal = Math.max(goalVal - 1, 1); document.getElementById('goalCount').textContent = goalVal; WIN_SCORE = goalVal; };
+  document.getElementById('tokUp').onclick = () => { tokVal = Math.min(tokVal + 1, 6); document.getElementById('tokCount').textContent = tokVal; TOKENS_EACH = tokVal; };
+  document.getElementById('tokDown').onclick = () => { tokVal = Math.max(tokVal - 1, 2); document.getElementById('tokCount').textContent = tokVal; TOKENS_EACH = tokVal; };
 
   document.getElementById('startBtn').onclick = startMatch;
 }
@@ -245,37 +245,37 @@ function bindLobbyEvents() {
 // ─── GAME EVENTS ──────────────────────────────────────────────
 function bindGameEvents() {
   // Mouse
-  canvas.addEventListener('mousedown',  e => onPointerDown(getCanvasXY(e, canvas)));
-  canvas.addEventListener('mousemove',  e => onPointerMove(getCanvasXY(e, canvas)));
-  canvas.addEventListener('mouseup',    e => onPointerUp(getCanvasXY(e, canvas)));
-  canvas.addEventListener('mouseleave', ()  => { if (drag.active) cancelDrag(); });
+  canvas.addEventListener('mousedown', e => onPointerDown(getCanvasXY(e, canvas)));
+  canvas.addEventListener('mousemove', e => onPointerMove(getCanvasXY(e, canvas)));
+  canvas.addEventListener('mouseup', e => onPointerUp(getCanvasXY(e, canvas)));
+  canvas.addEventListener('mouseleave', () => { if (drag.active) cancelDrag(); });
 
   // Touch
-  canvas.addEventListener('touchstart',  e => { e.preventDefault(); onPointerDown(getTouchXY(e, canvas)); }, { passive: false });
-  canvas.addEventListener('touchmove',   e => { e.preventDefault(); onPointerMove(getTouchXY(e, canvas)); }, { passive: false });
-  canvas.addEventListener('touchend',    e => { e.preventDefault(); onPointerUp(getTouchXY(e, canvas)); },   { passive: false });
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); onPointerDown(getTouchXY(e, canvas)); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); onPointerMove(getTouchXY(e, canvas)); }, { passive: false });
+  canvas.addEventListener('touchend', e => { e.preventDefault(); onPointerUp(getTouchXY(e, canvas)); }, { passive: false });
 
   // Buttons
   document.getElementById('handoffContinue').onclick = resumeAfterHandoff;
-  document.getElementById('menuBtn').onclick          = goToMenu;
-  document.getElementById('skipBtn').onclick          = skipTurn;
-  document.getElementById('replayBtn').onclick        = replayMatch;
-  document.getElementById('backLobbyBtn').onclick     = goToMenu;
+  document.getElementById('menuBtn').onclick = goToMenu;
+  document.getElementById('skipBtn').onclick = skipTurn;
+  document.getElementById('replayBtn').onclick = replayMatch;
+  document.getElementById('backLobbyBtn').onclick = goToMenu;
 }
 
 // ─── MATCH START ──────────────────────────────────────────────
 function startMatch() {
-  WIN_SCORE   = parseInt(document.getElementById('goalCount').textContent);
+  WIN_SCORE = parseInt(document.getElementById('goalCount').textContent);
   TOKENS_EACH = parseInt(document.getElementById('tokCount').textContent);
 
   showScreen('gameScreen');
   resizeCanvas();
 
-  score         = [0, 0];
+  score = [0, 0];
   currentPlayer = 0;
-  state         = 'PLAYING';
-  turnPhase     = 'SELECT';
-  goalJustDone  = false;
+  state = 'PLAYING';
+  turnPhase = 'SELECT';
+  goalJustDone = false;
 
   buildTokens();
   updateHUD();
@@ -286,8 +286,8 @@ function startMatch() {
 function buildTokens() {
   tokens = [];
   for (let t = 0; t < 2; t++) {
-    const team  = TEAMS[selectedTeams[t]];
-    const form  = getFormation(t, TOKENS_EACH);
+    const team = TEAMS[selectedTeams[t]];
+    const form = getFormation(t, TOKENS_EACH);
     for (let i = 0; i < TOKENS_EACH; i++) {
       const f = form[i];
       tokens.push({
@@ -316,7 +316,7 @@ function saveInitPositions() {
 // ─── INPUT HELPERS ────────────────────────────────────────────
 function getCanvasXY(e, cvs) {
   const r = cvs.getBoundingClientRect();
-  const scX = cvs.width  / r.width;
+  const scX = cvs.width / r.width;
   const scY = cvs.height / r.height;
   return { x: (e.clientX - r.left) * scX, y: (e.clientY - r.top) * scY };
 }
@@ -358,10 +358,10 @@ function onPointerUp(pos) {
 
   if (dist > 6) {
     const clamped = Math.min(dist, MAX_DRAG_PX);
-    const speed   = (clamped / MAX_DRAG_PX) * MAX_SPEED;
+    const speed = (clamped / MAX_DRAG_PX) * MAX_SPEED;
     tok.vx = (dx / dist) * speed;
     tok.vy = (dy / dist) * speed;
-    movedTok  = tok;
+    movedTok = tok;
     turnPhase = 'MOVING';
   } else {
     turnPhase = 'SELECT';
@@ -394,8 +394,8 @@ function physicsUpdate() {
     if (obj.vx !== 0 || obj.vy !== 0) anyMoving = true;
 
     // ── Wall collisions (pitch boundary with goal openings) ──
-    const gTop    = P.cy - P.goalH / 2;
-    const gBot    = P.cy + P.goalH / 2;
+    const gTop = P.cy - P.goalH / 2;
+    const gBot = P.cy + P.goalH / 2;
     const isInGoalZone = obj.y > gTop && obj.y < gBot;
 
     // Left wall
@@ -405,7 +405,7 @@ function physicsUpdate() {
         if (obj.x < P.x - P.goalD) { triggerGoal(1); return; }
         // Allow the ball to slide in (don't bounce)
       } else {
-        obj.x  = P.x + obj.r;
+        obj.x = P.x + obj.r;
         obj.vx = Math.abs(obj.vx) * RESTITUTION;
       }
     }
@@ -414,18 +414,18 @@ function physicsUpdate() {
       if (obj.isBall && isInGoalZone) {
         if (obj.x > P.x + P.w + P.goalD) { triggerGoal(0); return; }
       } else {
-        obj.x  = P.x + P.w - obj.r;
+        obj.x = P.x + P.w - obj.r;
         obj.vx = -Math.abs(obj.vx) * RESTITUTION;
       }
     }
     // Top wall
     if (obj.y - obj.r < P.y) {
-      obj.y  = P.y + obj.r;
+      obj.y = P.y + obj.r;
       obj.vy = Math.abs(obj.vy) * RESTITUTION;
     }
     // Bottom wall
     if (obj.y + obj.r > P.y + P.h) {
-      obj.y  = P.y + P.h - obj.r;
+      obj.y = P.y + P.h - obj.r;
       obj.vy = -Math.abs(obj.vy) * RESTITUTION;
     }
   }
@@ -444,10 +444,10 @@ function physicsUpdate() {
 }
 
 function resolveCollision(a, b) {
-  const dx   = b.x - a.x;
-  const dy   = b.y - a.y;
+  const dx = b.x - a.x;
+  const dy = b.y - a.y;
   const dist = Math.hypot(dx, dy);
-  const min  = a.r + b.r;
+  const min = a.r + b.r;
   if (dist < min && dist > 0.001) {
     const nx = dx / dist;
     const ny = dy / dist;
@@ -472,8 +472,8 @@ function resolveCollision(a, b) {
 // ─── TURN END ─────────────────────────────────────────────────
 function endTurn() {
   if (state !== 'PLAYING') return;
-  turnPhase     = 'SELECT';
-  movedTok      = null;
+  turnPhase = 'SELECT';
+  movedTok = null;
   currentPlayer = 1 - currentPlayer;
   updateHUD();
 
@@ -491,7 +491,7 @@ function triggerGoal(scoringTeam) {
   goalState.particles = [];
   for (let i = 0; i < 80; i++) {
     const angle = Math.random() * Math.PI * 2;
-    const spd   = Math.random() * 12 + 3;
+    const spd = Math.random() * 12 + 3;
     goalState.particles.push({
       x: P.cx, y: P.cy,
       vx: Math.cos(angle) * spd, vy: Math.sin(angle) * spd - 5,
@@ -502,12 +502,12 @@ function triggerGoal(scoringTeam) {
     });
   }
   goalState.scoring = scoringTeam;
-  goalState.timer   = 180;
+  goalState.timer = 180;
 
   // Update goal overlay HTML
-  document.getElementById('goalTeamName').textContent    = `${team.flag} ${team.name}`;
+  document.getElementById('goalTeamName').textContent = `${team.flag} ${team.name}`;
   document.getElementById('goalScoreDisplay').textContent = `${score[0]} – ${score[1]}`;
-  document.getElementById('goalOverlay').style.display   = 'flex';
+  document.getElementById('goalOverlay').style.display = 'flex';
 
   updateScores();
 
@@ -520,8 +520,8 @@ function triggerGoal(scoringTeam) {
       resetPositions();
       // After a goal, the team that conceded kicks off
       currentPlayer = 1 - scoringTeam;
-      state         = 'PLAYING';
-      turnPhase     = 'SELECT';
+      state = 'PLAYING';
+      turnPhase = 'SELECT';
       updateHUD();
       showHandoff(true);
     }
@@ -550,12 +550,12 @@ function endGame() {
   // Save result to localStorage tournament system
   saveMatchResult();
 
-  document.getElementById('goWinner').textContent    = `${t.flag} ${t.name} guanya!`;
-  document.getElementById('goScore').textContent     = `${score[0]} – ${score[1]}`;
+  document.getElementById('goWinner').textContent = `${t.flag} ${t.name} guanya!`;
+  document.getElementById('goScore').textContent = `${score[0]} – ${score[1]}`;
   document.getElementById('goBothFlags').textContent = `${TEAMS[selectedTeams[0]].flag}  ${TEAMS[selectedTeams[1]].flag}`;
   document.getElementById('gameoverScreen').style.display = 'flex';
 
-  document.getElementById('replayBtn').onclick    = replayMatch;
+  document.getElementById('replayBtn').onclick = replayMatch;
   document.getElementById('backLobbyBtn').onclick = goToMenu;
 }
 
@@ -583,14 +583,14 @@ function skipTurn() {
 // ─── HANDOFF SCREEN ───────────────────────────────────────────
 function showHandoff(passDevice) {
   const team = TEAMS[selectedTeams[currentPlayer]];
-  const pn   = currentPlayer + 1;
-  document.getElementById('handoffIcon').textContent       = team.flag;
-  document.getElementById('handoffPlayer').textContent     = `Jugador ${pn}`;
-  document.getElementById('handoffTeam').textContent       = team.name;
-  document.getElementById('handoffContinue').textContent   = passDevice ? '▶ Soc el Jugador ' + pn + ', Continuar!' : '▶ Iniciar Partit!';
+  const pn = currentPlayer + 1;
+  document.getElementById('handoffIcon').textContent = team.flag;
+  document.getElementById('handoffPlayer').textContent = `Jugador ${pn}`;
+  document.getElementById('handoffTeam').textContent = team.name;
+  document.getElementById('handoffContinue').textContent = passDevice ? '▶ Soc el Jugador ' + pn + ', Continuar!' : '▶ Iniciar Partit!';
   const instruction = document.querySelector('.handoff-instruction');
   instruction.style.display = passDevice ? 'block' : 'none';
-  document.getElementById('handoffScreen').style.display   = 'flex';
+  document.getElementById('handoffScreen').style.display = 'flex';
 }
 
 function resumeAfterHandoff() {
@@ -601,10 +601,10 @@ function resumeAfterHandoff() {
 function updateHUD() {
   const t0 = TEAMS[selectedTeams[0]];
   const t1 = TEAMS[selectedTeams[1]];
-  document.getElementById('hudFlag1').textContent  = t0.flag;
-  document.getElementById('hudName1').textContent  = t0.name;
-  document.getElementById('hudFlag2').textContent  = t1.flag;
-  document.getElementById('hudName2').textContent  = t1.name;
+  document.getElementById('hudFlag1').textContent = t0.flag;
+  document.getElementById('hudName1').textContent = t0.name;
+  document.getElementById('hudFlag2').textContent = t1.flag;
+  document.getElementById('hudName2').textContent = t1.name;
   updateScores();
   updateTurnUI();
 }
@@ -615,8 +615,8 @@ function updateScores() {
 }
 
 function updateTurnUI() {
-  const dot    = document.getElementById('turnDot');
-  const txt    = document.getElementById('turnText');
+  const dot = document.getElementById('turnDot');
+  const txt = document.getElementById('turnText');
   const pcolor = currentPlayer === 0 ? '#60a5fa' : '#fb923c';
   dot.style.background = pcolor;
   document.getElementById('turnIndicator').style.borderColor = pcolor + '50';
@@ -758,7 +758,7 @@ function drawToken(tok, selected, wasMoved) {
 
   // Shadow
   ctx.shadowColor = selected ? '#ffffff' : tok.color + '99';
-  ctx.shadowBlur  = selected ? 20 : wasMoved ? 12 : 6;
+  ctx.shadowBlur = selected ? 20 : wasMoved ? 12 : 6;
 
   // Main circle (gradient)
   const grad = ctx.createRadialGradient(tok.x - tok.r * 0.3, tok.y - tok.r * 0.35, 0, tok.x, tok.y, tok.r);
@@ -772,7 +772,7 @@ function drawToken(tok, selected, wasMoved) {
 
   // Accent ring
   ctx.strokeStyle = tok.accent;
-  ctx.lineWidth   = tok.r * 0.18;
+  ctx.lineWidth = tok.r * 0.18;
   ctx.stroke();
 
   // Selection ring
@@ -780,7 +780,7 @@ function drawToken(tok, selected, wasMoved) {
     ctx.beginPath();
     ctx.arc(tok.x, tok.y, tok.r + 7, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-    ctx.lineWidth   = 2;
+    ctx.lineWidth = 2;
     ctx.setLineDash([5, 4]);
     ctx.stroke();
     ctx.setLineDash([]);
@@ -795,7 +795,7 @@ function drawToken(tok, selected, wasMoved) {
   // Flag emoji
   ctx.shadowBlur = 0;
   ctx.font = `${Math.round(tok.r * 1.05)}px serif`;
-  ctx.textAlign    = 'center';
+  ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(tok.flag, tok.x, tok.y + tok.r * 0.04);
 
@@ -826,11 +826,11 @@ function drawBall() {
   // Black patches (pentagon-style)
   ctx.fillStyle = 'rgba(10,10,10,0.75)';
   const patches = [
-    { ox:  0,              oy:  0,              r: ball.r * 0.36 },
-    { ox:  ball.r * 0.55,  oy: -ball.r * 0.38,  r: ball.r * 0.196 },
-    { ox: -ball.r * 0.55,  oy: -ball.r * 0.38,  r: ball.r * 0.196 },
-    { ox:  ball.r * 0.34,  oy:  ball.r * 0.53,  r: ball.r * 0.196 },
-    { ox: -ball.r * 0.34,  oy:  ball.r * 0.53,  r: ball.r * 0.196 },
+    { ox: 0, oy: 0, r: ball.r * 0.36 },
+    { ox: ball.r * 0.55, oy: -ball.r * 0.38, r: ball.r * 0.196 },
+    { ox: -ball.r * 0.55, oy: -ball.r * 0.38, r: ball.r * 0.196 },
+    { ox: ball.r * 0.34, oy: ball.r * 0.53, r: ball.r * 0.196 },
+    { ox: -ball.r * 0.34, oy: ball.r * 0.53, r: ball.r * 0.196 },
   ];
   for (const p of patches) {
     ctx.beginPath();
@@ -851,23 +851,23 @@ function drawBall() {
 function drawSlingshot() {
   if (!drag.active || !drag.tok) return;
   const tok = drag.tok;
-  const dx  = drag.cx - tok.x;
-  const dy  = drag.cy - tok.y;
+  const dx = drag.cx - tok.x;
+  const dy = drag.cy - tok.y;
   const dist = Math.hypot(dx, dy);
   if (dist < 2) return;
 
   const clamped = Math.min(dist, MAX_DRAG_PX);
-  const ratio   = clamped / dist;
-  const pullX   = tok.x + dx * ratio;
-  const pullY   = tok.y + dy * ratio;
-  const power   = clamped / MAX_DRAG_PX;
+  const ratio = clamped / dist;
+  const pullX = tok.x + dx * ratio;
+  const pullY = tok.y + dy * ratio;
+  const power = clamped / MAX_DRAG_PX;
 
   ctx.save();
 
   // ── Rubber band lines (from token edges to pull point) ──
-  const angle  = Math.atan2(dy, dx);
-  const perp   = angle + Math.PI / 2;
-  const bw     = tok.r * 0.6;
+  const angle = Math.atan2(dy, dx);
+  const perp = angle + Math.PI / 2;
+  const bw = tok.r * 0.6;
 
   const ax1 = tok.x + Math.cos(perp) * bw;
   const ay1 = tok.y + Math.sin(perp) * bw;
@@ -875,9 +875,9 @@ function drawSlingshot() {
   const ay2 = tok.y - Math.sin(perp) * bw;
 
   ctx.strokeStyle = `rgba(255,220,60,${0.5 + power * 0.5})`;
-  ctx.lineWidth   = 3;
+  ctx.lineWidth = 3;
   ctx.shadowColor = '#ffcc00';
-  ctx.shadowBlur  = 8;
+  ctx.shadowBlur = 8;
   ctx.beginPath();
   ctx.moveTo(ax1, ay1);
   ctx.lineTo(pullX, pullY);
@@ -898,7 +898,7 @@ function drawSlingshot() {
   const shotLen = clamped * 2.8;
 
   ctx.strokeStyle = 'rgba(255,255,255,0.35)';
-  ctx.lineWidth   = 1.5;
+  ctx.lineWidth = 1.5;
   ctx.setLineDash([8, 6]);
   ctx.beginPath();
   ctx.moveTo(tok.x, tok.y);
@@ -911,9 +911,9 @@ function drawSlingshot() {
   ctx.beginPath();
   ctx.arc(tok.x, tok.y, tok.r + 9, -Math.PI / 2, -Math.PI / 2 + Math.PI * 2 * power);
   ctx.strokeStyle = arcColor;
-  ctx.lineWidth   = 3.5;
+  ctx.lineWidth = 3.5;
   ctx.shadowColor = arcColor;
-  ctx.shadowBlur  = 10;
+  ctx.shadowBlur = 10;
   ctx.stroke();
 
   // ── Arrow head ──
@@ -941,8 +941,8 @@ function drawParticles() {
     ctx.fillStyle = p.color;
     ctx.fill();
     ctx.restore();
-    p.x  += p.vx;
-    p.y  += p.vy;
+    p.x += p.vx;
+    p.y += p.vy;
     p.vy += 0.35; // gravity
     p.vx *= 0.97;
     p.vy *= 0.97;
@@ -979,9 +979,9 @@ function loop() {
     for (const tok of tokens) {
       if (!tok.alive) continue;
       const isSelected = drag.active && drag.tok === tok;
-      const wasMoved   = movedTok === tok;
+      const wasMoved = movedTok === tok;
       // Highlight current player's tokens subtly
-      const isMine     = tok.team === currentPlayer;
+      const isMine = tok.team === currentPlayer;
       drawToken(tok, isSelected, wasMoved || (isMine && turnPhase === 'SELECT'));
     }
 
@@ -1026,7 +1026,7 @@ function drawTurnOverlay() {
     ctx.beginPath();
     ctx.arc(tok.x, tok.y, tok.r + 14, 0, Math.PI * 2);
     ctx.strokeStyle = pcolor;
-    ctx.lineWidth   = 2;
+    ctx.lineWidth = 2;
     ctx.stroke();
   }
   ctx.restore();
@@ -1083,7 +1083,7 @@ function saveMatchResult() {
 
     // 1. Save to localStorage immediately (synchronous, instant)
     const matches = JSON.parse(localStorage.getItem(SK_MATCHES) || '[]');
-    const played  = getPlayedTeams();
+    const played = getPlayedTeams();
     matches.push(matchData);
     [t1.name, t2.name].forEach(n => { if (!played.includes(n)) played.push(n); });
     localStorage.setItem(SK_MATCHES, JSON.stringify(matches));

@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🏆 Classificació – Chapas del Mundial 2026</title>
-  <meta name="description" content="Classificació del torneig de Chapas del Mundial 2026. Consulta la taula de punts i tots els partits jugats." />
+  <meta name="description"
+    content="Classificació del torneig de Chapas del Mundial 2026. Consulta la taula de punts i tots els partits jugats." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
   <!-- Firebase SDK -->
@@ -14,203 +16,391 @@
 
   <script src="firebase-config.js"></script>
   <script src="auth.js"></script>
-  <script src="db.js"></script>
-  <style>
-    :root {
-      --dark: #070c18;
-      --dark2: #0d1524;
-      --surface: #1a2540;
-      --border: rgba(255,255,255,0.08);
-      --text: #f0f4ff;
-      --muted: #8094b8;
-      --gold: #f5c518;
-      --blue: #60a5fa;
-      --green: #4ade80;
-      --orange: #fb923c;
-      --radius: 14px;
-      --transition: 180ms ease;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: 'Outfit', sans-serif;
-      background: var(--dark);
-      color: var(--text);
-      min-height: 100vh;
-      -webkit-font-smoothing: antialiased;
-    }
+  <script src="db.js"></script><a>
+    <style>
+      :root {
+        --dark: #070c18;
+        --dark2: #0d1524;
+        --surface: #1a2540;
+        --border: rgba(255, 255, 255, 0.08);
+        --text: #f0f4ff;
+        --muted: #8094b8;
+        --gold: #f5c518;
+        --blue: #60a5fa;
+        --green: #4ade80;
+        --orange: #fb923c;
+        --radius: 14px;
+        --transition: 180ms ease;
+      }
 
-    /* HEADER */
-    header {
-      background: linear-gradient(135deg, #0a101e 0%, #0f1a2e 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 20px 24px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      flex-wrap: wrap;
-    }
-    .hd-brand { display: flex; align-items: center; gap: 10px; }
-    .hd-icon { font-size: 1.8rem; }
-    .hd-title { font-size: 1.1rem; font-weight: 900; letter-spacing: -0.01em; }
-    .hd-title span { background: linear-gradient(135deg, #f5c518, #ff9d00); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-    .hd-links { display: flex; gap: 8px; flex-wrap: wrap; }
-    .hd-link {
-      padding: 7px 14px;
-      border-radius: 99px;
-      font-size: 0.8rem;
-      font-weight: 700;
-      text-decoration: none;
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
-      color: var(--muted);
-      transition: all var(--transition);
-    }
-    .hd-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
-    .hd-link.active { background: rgba(245,197,24,0.1); color: var(--gold); border-color: rgba(245,197,24,0.3); }
-    .last-update { font-size: 0.72rem; color: var(--muted); }
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
 
-    /* MAIN */
-    main { max-width: 1100px; margin: 0 auto; padding: 32px 16px 60px; }
+      body {
+        font-family: 'Outfit', sans-serif;
+        background: var(--dark);
+        color: var(--text);
+        min-height: 100vh;
+        -webkit-font-smoothing: antialiased;
+      }
 
-    /* STATS BANNER */
-    .stats-banner {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-      gap: 12px;
-      margin-bottom: 32px;
-    }
-    .stat-card {
-      background: rgba(255,255,255,0.04);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px;
-      text-align: center;
-    }
-    .stat-val { font-size: 2rem; font-weight: 900; color: var(--gold); }
-    .stat-lbl { font-size: 0.75rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 2px; }
+      /* HEADER */
+      header {
+        background: linear-gradient(135deg, #0a101e 0%, #0f1a2e 100%);
+        border-bottom: 1px solid var(--border);
+        padding: 20px 24px;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        flex-wrap: wrap;
+      }
 
-    /* SECTION TITLE */
-    .sec-title {
-      font-size: 1.1rem;
-      font-weight: 800;
-      color: var(--text);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .sec-badge {
-      font-size: 0.7rem;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 99px;
-      background: rgba(245,197,24,0.12);
-      color: var(--gold);
-      border: 1px solid rgba(245,197,24,0.25);
-    }
+      .hd-brand {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-    /* STANDINGS TABLE */
-    .table-wrap {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      overflow: hidden;
-      margin-bottom: 32px;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.88rem;
-    }
-    thead th {
-      padding: 10px 12px;
-      text-align: center;
-      font-size: 0.72rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: var(--muted);
-      background: rgba(255,255,255,0.03);
-      border-bottom: 1px solid var(--border);
-      font-weight: 700;
-      white-space: nowrap;
-    }
-    thead th:first-child, thead th:nth-child(2) { text-align: left; }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background var(--transition); }
-    tbody tr:hover { background: rgba(255,255,255,0.03); }
-    tbody tr:last-child { border-bottom: none; }
-    td { padding: 10px 12px; text-align: center; color: var(--muted); }
-    td:first-child { font-weight: 800; color: var(--muted); width: 36px; }
-    td:nth-child(2) { text-align: left; }
-    .team-cell { display: flex; align-items: center; gap: 8px; }
-    .team-flag-td { font-size: 1.3rem; line-height: 1; }
-    .team-name-td { font-weight: 700; color: var(--text); }
-    .pts-td { font-size: 1.1rem; font-weight: 900; color: var(--text); }
-    .pts-td-gold { color: var(--gold); }
-    .pts-td-silver { color: #a5b4fc; }
-    .pts-td-bronze { color: #86efac; }
-    .pos-1 td:first-child { color: var(--gold); }
-    .pos-2 td:first-child { color: #a5b4fc; }
-    .pos-3 td:first-child { color: #86efac; }
+      .hd-icon {
+        font-size: 1.8rem;
+      }
 
-    /* MATCH LIST */
-    .match-list { display: flex; flex-direction: column; gap: 10px; }
-    .match-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 14px 18px;
-      display: grid;
-      grid-template-columns: 1fr auto 1fr;
-      align-items: center;
-      gap: 12px;
-      transition: all var(--transition);
-    }
-    .match-card:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.14); }
-    .match-team { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 0.9rem; }
-    .match-team.right { flex-direction: row-reverse; }
-    .match-team-flag { font-size: 1.4rem; }
-    .match-score {
-      font-size: 1.5rem;
-      font-weight: 900;
-      color: var(--text);
-      text-align: center;
-      min-width: 80px;
-      letter-spacing: 0.05em;
-    }
-    .match-winner { color: var(--gold); }
-    .match-loser { color: var(--muted); font-weight: 400; }
-    .match-date { font-size: 0.7rem; color: rgba(128,148,184,0.6); text-align: center; margin-top: 4px; }
-    .match-win-badge {
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 99px;
-      background: rgba(245,197,24,0.12);
-      color: var(--gold);
-    }
+      .hd-title {
+        font-size: 1.1rem;
+        font-weight: 900;
+        letter-spacing: -0.01em;
+      }
 
-    /* EMPTY STATE */
-    .empty-state {
-      text-align: center;
-      padding: 60px 20px;
-      color: var(--muted);
-    }
-    .empty-icon { font-size: 3rem; margin-bottom: 12px; }
-    .empty-text { font-size: 1rem; margin-bottom: 8px; }
-    .empty-sub { font-size: 0.85rem; opacity: 0.7; }
+      .hd-title span {
+        background: linear-gradient(135deg, #f5c518, #ff9d00);
+        -webkit-background-clip: text;
+        background-clip: text;
+        -webkit-text-fill-color: transparent;
+      }
 
-    /* RESPONSIVE */
-    @media (max-width: 600px) {
-      .match-team-name { display: none; }
-      .match-score { min-width: 60px; font-size: 1.2rem; }
-      header { padding: 14px 14px; }
-    }
-  </style>
+      .hd-links {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .hd-link {
+        padding: 7px 14px;
+        border-radius: 99px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        text-decoration: none;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.04);
+        color: var(--muted);
+        transition: all var(--transition);
+      }
+
+      .hd-link:hover {
+        color: var(--text);
+        border-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .hd-link.active {
+        background: rgba(245, 197, 24, 0.1);
+        color: var(--gold);
+        border-color: rgba(245, 197, 24, 0.3);
+      }
+
+      .last-update {
+        font-size: 0.72rem;
+        color: var(--muted);
+      }
+
+      /* MAIN */
+      main {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 32px 16px 60px;
+      }
+
+      /* STATS BANNER */
+      .stats-banner {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 12px;
+        margin-bottom: 32px;
+      }
+
+      .stat-card {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px;
+        text-align: center;
+      }
+
+      .stat-val {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--gold);
+      }
+
+      .stat-lbl {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        margin-top: 2px;
+      }
+
+      /* SECTION TITLE */
+      .sec-title {
+        font-size: 1.1rem;
+        font-weight: 800;
+        color: var(--text);
+        margin-bottom: 14px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .sec-badge {
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 8px;
+        border-radius: 99px;
+        background: rgba(245, 197, 24, 0.12);
+        color: var(--gold);
+        border: 1px solid rgba(245, 197, 24, 0.25);
+      }
+
+      /* STANDINGS TABLE */
+      .table-wrap {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        margin-bottom: 32px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.88rem;
+      }
+
+      thead th {
+        padding: 10px 12px;
+        text-align: center;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        border-bottom: 1px solid var(--border);
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      thead th:first-child,
+      thead th:nth-child(2) {
+        text-align: left;
+      }
+
+      tbody tr {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+        transition: background var(--transition);
+      }
+
+      tbody tr:hover {
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      tbody tr:last-child {
+        border-bottom: none;
+      }
+
+      td {
+        padding: 10px 12px;
+        text-align: center;
+        color: var(--muted);
+      }
+
+      td:first-child {
+        font-weight: 800;
+        color: var(--muted);
+        width: 36px;
+      }
+
+      td:nth-child(2) {
+        text-align: left;
+      }
+
+      .team-cell {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .team-flag-td {
+        font-size: 1.3rem;
+        line-height: 1;
+      }
+
+      .team-name-td {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .pts-td {
+        font-size: 1.1rem;
+        font-weight: 900;
+        color: var(--text);
+      }
+
+      .pts-td-gold {
+        color: var(--gold);
+      }
+
+      .pts-td-silver {
+        color: #a5b4fc;
+      }
+
+      .pts-td-bronze {
+        color: #86efac;
+      }
+
+      .pos-1 td:first-child {
+        color: var(--gold);
+      }
+
+      .pos-2 td:first-child {
+        color: #a5b4fc;
+      }
+
+      .pos-3 td:first-child {
+        color: #86efac;
+      }
+
+      /* MATCH LIST */
+      .match-list {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .match-card {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 14px 18px;
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 12px;
+        transition: all var(--transition);
+      }
+
+      .match-card:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.14);
+      }
+
+      .match-team {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 0.9rem;
+      }
+
+      .match-team.right {
+        flex-direction: row-reverse;
+      }
+
+      .match-team-flag {
+        font-size: 1.4rem;
+      }
+
+      .match-score {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: var(--text);
+        text-align: center;
+        min-width: 80px;
+        letter-spacing: 0.05em;
+      }
+
+      .match-winner {
+        color: var(--gold);
+      }
+
+      .match-loser {
+        color: var(--muted);
+        font-weight: 400;
+      }
+
+      .match-date {
+        font-size: 0.7rem;
+        color: rgba(128, 148, 184, 0.6);
+        text-align: center;
+        margin-top: 4px;
+      }
+
+      .match-win-badge {
+        font-size: 0.65rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 99px;
+        background: rgba(245, 197, 24, 0.12);
+        color: var(--gold);
+      }
+
+      /* EMPTY STATE */
+      .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+      }
+
+      .empty-icon {
+        font-size: 3rem;
+        margin-bottom: 12px;
+      }
+
+      .empty-text {
+        font-size: 1rem;
+        margin-bottom: 8px;
+      }
+
+      .empty-sub {
+        font-size: 0.85rem;
+        opacity: 0.7;
+      }
+
+      /* RESPONSIVE */
+      @media (max-width: 600px) {
+        .match-team-name {
+          display: none;
+        }
+
+        .match-score {
+          min-width: 60px;
+          font-size: 1.2rem;
+        }
+
+        header {
+          padding: 14px 14px;
+        }
+      }
+    </style>
 </head>
+
 <body>
   <header>
     <div class="hd-brand">
@@ -221,7 +411,8 @@
       </div>
     </div>
     <div class="hd-links">
-      <span id="onlineBadge" style="font-size:0.72rem;padding:5px 10px;border-radius:99px;border:1px solid rgba(74,222,128,0.3);background:rgba(74,222,128,0.08);color:#4ade80"></span>
+      <span id="onlineBadge"
+        style="font-size:0.72rem;padding:5px 10px;border-radius:99px;border:1px solid rgba(74,222,128,0.3);background:rgba(74,222,128,0.08);color:#4ade80"></span>
       <button onclick="render()" class="hd-link" style="cursor:pointer">🔄 Refrescar</button>
       <a href="game.html" class="hd-link">⚽ Jugar</a>
       <a href="tournament.html" class="hd-link active">🏆 Classificació</a>
@@ -355,11 +546,11 @@
           </tr></thead>
           <tbody>
             ${standings.map((s, i) => {
-              const pts = s.w * 3 + s.d;
-              const gd = s.gf - s.ga;
-              const pc = posClass[i] || '';
-              const ptsc = ptsClass[i] || 'pts-td';
-              return `<tr class="${pc}">
+          const pts = s.w * 3 + s.d;
+          const gd = s.gf - s.ga;
+          const pc = posClass[i] || '';
+          const ptsc = ptsClass[i] || 'pts-td';
+          return `<tr class="${pc}">
                 <td>${i + 1}</td>
                 <td><div class="team-cell"><span class="team-flag-td">${s.team.flag}</span><span class="team-name-td">${s.team.name}</span></div></td>
                 <td>${s.p}</td>
@@ -371,7 +562,7 @@
                 <td style="color:${gd > 0 ? '#4ade80' : gd < 0 ? '#f87171' : 'inherit'}">${gd > 0 ? '+' : ''}${gd}</td>
                 <td class="pts-td ${ptsc}">${pts}</td>
               </tr>`;
-            }).join('')}
+        }).join('')}
           </tbody>
         </table>`;
       }
@@ -411,4 +602,5 @@
     setInterval(render, window.ONLINE_MODE ? 10000 : 30000);
   </script>
 </body>
+
 </html>

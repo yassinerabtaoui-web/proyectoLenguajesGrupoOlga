@@ -17,18 +17,18 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
   <script src="firebase-config.js"></script>
-  <script src="auth.js"></script>
+  <script src="auth.js"></script><a>
 
-  <script>
-    window.addEventListener('DOMContentLoaded', async () => {
-      if (window.ONLINE_MODE) {
-        const { user } = await AUTH.getCurrentUser();
-        if (!user) {
-          window.location.href = 'login.html';
+    <script>
+      window.addEventListener('DOMContentLoaded', async () => {
+        if (window.ONLINE_MODE) {
+          const { user } = await AUTH.getCurrentUser();
+          if (!user) {
+            window.location.href = 'login.html';
+          }
         }
-      }
-    });
-  </script>
+      });
+    </script>
 </head>
 
 <body>

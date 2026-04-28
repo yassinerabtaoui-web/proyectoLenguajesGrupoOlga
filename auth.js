@@ -2,7 +2,7 @@
 // auth.js — Gestió de l'autenticació i rols amb Firebase
 // ====================================================================
 
-(function() {
+(function () {
   'use strict';
 
   window.AUTH = {};
@@ -20,28 +20,28 @@
   }
 
   // Iniciar sessió amb correu i contrasenya
-  window.AUTH.login = async function(email, password) {
+  window.AUTH.login = async function (email, password) {
     initFirebase();
     if (!isReady()) throw new Error("Firebase no està configurat o el mode ONLINE està desactivat.");
-    
+
     try {
       // Configurar la persistència perquè només duri mentre la pestanya/navegador estigui obert
       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
-      
+
       const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
       const user = userCredential.user;
-      
+
       // Obtenir el rol des de Realtime Database
       const roleSnapshot = await firebase.database().ref(`users/${user.uid}/role`).once('value');
       const role = roleSnapshot.val() || 'client';
-      
+
       // Actualitzar l'email a la base de dades per a la gestió d'usuaris
       await firebase.database().ref(`users/${user.uid}/email`).set(user.email);
-      
+
       // Guardar el rol temporalment a sessionStorage per accessos ràpids
       sessionStorage.setItem('userRole', role);
       sessionStorage.setItem('userUid', user.uid);
-      
+
       return { user, role };
     } catch (error) {
       console.error("Error en login:", error);
@@ -50,26 +50,26 @@
   };
 
   // Registrar nou usuari amb correu i contrasenya
-  window.AUTH.register = async function(email, password) {
+  window.AUTH.register = async function (email, password) {
     initFirebase();
     if (!isReady()) throw new Error("Firebase no està configurat o el mode ONLINE està desactivat.");
-    
+
     try {
       // Configurar la persistència perquè només duri mentre la pestanya/navegador estigui obert
       await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.SESSION);
 
       const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
       const user = userCredential.user;
-      
+
       // Assignar el rol de 'client' per defecte i guardar el correu a la base de dades
       await firebase.database().ref(`users/${user.uid}`).set({
         role: 'client',
         email: user.email
       });
-      
+
       sessionStorage.setItem('userRole', 'client');
       sessionStorage.setItem('userUid', user.uid);
-      
+
       return { user, role: 'client' };
     } catch (error) {
       console.error("Error en el registre:", error);
@@ -78,10 +78,10 @@
   };
 
   // Tancar sessió
-  window.AUTH.logout = async function() {
+  window.AUTH.logout = async function () {
     initFirebase();
     if (!isReady()) return;
-    
+
     try {
       await firebase.auth().signOut();
       sessionStorage.removeItem('userRole');
@@ -93,14 +93,14 @@
   };
 
   // Obtenir l'usuari actual i el seu rol
-  window.AUTH.getCurrentUser = function() {
+  window.AUTH.getCurrentUser = function () {
     return new Promise((resolve) => {
       initFirebase();
       if (!isReady()) {
         resolve({ user: null, role: null });
         return;
       }
-      
+
       const unsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
         unsubscribe(); // Només necessitem el primer valor
         if (user) {
@@ -123,7 +123,7 @@
   };
 
   // Protegir una pàgina per un rol específic (p. ex. 'admin')
-  window.AUTH.requireRole = async function(requiredRole, redirectUrl = 'index.html') {
+  window.AUTH.requireRole = async function (requiredRole, redirectUrl = 'index.html') {
     initFirebase();
     if (!isReady()) {
       // En mode local, podem fer un petit "bypass" si no fem servir Firebase
@@ -131,7 +131,7 @@
       window.location.href = redirectUrl;
       return false;
     }
-    
+
     const { user, role } = await window.AUTH.getCurrentUser();
     if (!user || role !== requiredRole) {
       window.location.href = redirectUrl;

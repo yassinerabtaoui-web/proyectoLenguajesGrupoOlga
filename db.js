@@ -20,7 +20,7 @@ const DB = (() => {
   };
 
   const LOCAL_MATCHES = 'porraMatches';
-  const LOCAL_PLAYED  = 'porraPlayedTeams';
+  const LOCAL_PLAYED = 'porraPlayedTeams';
 
   // Sanitize team names for Firebase keys
   function toKey(name) {
@@ -32,7 +32,7 @@ const DB = (() => {
     try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
   }
   function lsSet(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch { }
   }
 
   return {
@@ -99,18 +99,18 @@ const DB = (() => {
       }
       const ms = (lsGet(LOCAL_MATCHES) || []).filter(m => m._key !== key && m.id != key);
       lsSet(LOCAL_MATCHES, ms);
-      
+
       // Recalculate played teams from remaining matches
       const names = new Set();
       ms.forEach(m => { names.add(m.team1.name); names.add(m.team2.name); });
       lsSet(LOCAL_PLAYED, Array.from(names));
-      
+
       if (isOnline()) {
         try {
           const obj = {};
           names.forEach(n => { obj[toKey(n)] = n; });
           await firebase.database().ref('playedTeams').set(names.size ? obj : null);
-        } catch (e) {}
+        } catch (e) { }
       }
     },
 
@@ -134,7 +134,7 @@ const DB = (() => {
       const current = lsGet(LOCAL_PLAYED) || [];
       teamNames.forEach(n => { if (!current.includes(n)) current.push(n); });
       lsSet(LOCAL_PLAYED, current);
-      
+
       // Push to Firebase
       if (isOnline()) {
         try {
@@ -153,7 +153,7 @@ const DB = (() => {
       if (isOnline()) {
         try {
           await firebase.database().ref('playedTeams/' + toKey(teamName)).remove();
-        } catch (e) {}
+        } catch (e) { }
       }
     },
 
@@ -162,7 +162,7 @@ const DB = (() => {
       if (isOnline()) {
         try {
           await firebase.database().ref('playedTeams').remove();
-        } catch (e) {}
+        } catch (e) { }
       }
     },
 
@@ -171,7 +171,7 @@ const DB = (() => {
       if (isOnline()) {
         try {
           await firebase.database().ref('matches').remove();
-        } catch (e) {}
+        } catch (e) { }
       }
     },
 
@@ -181,7 +181,7 @@ const DB = (() => {
         try {
           await firebase.database().ref('matches').remove();
           await firebase.database().ref('playedTeams').remove();
-        } catch (e) {}
+        } catch (e) { }
       }
     },
 
