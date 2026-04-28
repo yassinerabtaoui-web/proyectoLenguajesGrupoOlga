@@ -247,19 +247,30 @@
     <div class="tab-panel" id="tab-torneo">
       <div class="panel-title">🌍 Apostes de Torneig</div>
       <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;">
-        Fes les teves prediccions per al final del torneig. Les apostes costen 50€ cadascuna.
+        Tria la quantitat que vols apostar i selecciona el teu equip. Es restarà del teu saldo automàticament al confirmar.
       </p>
       
-      <h3 style="color:var(--gold); margin-top:20px;">🏆 Campió del Món (Cuota x3)</h3>
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
+        <h3 style="color:var(--gold);">🏆 Campió del Món (Cuota x3)</h3>
+        <input type="number" id="amt_champion" class="live-bet-input" style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1" oninput="updatePotentials()">
+      </div>
+      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_champion">Guany potencial: 150€</p>
       <div id="championBetWrap" style="margin-bottom:30px;"></div>
       
-      <h3 style="color:var(--text); margin-top:20px;">🥈 Subcampió (Cuota x2)</h3>
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
+        <h3 style="color:var(--text);">🥈 Subcampió (Cuota x2)</h3>
+        <input type="number" id="amt_runnerUp" class="live-bet-input" style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1" oninput="updatePotentials()">
+      </div>
+      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_runnerUp">Guany potencial: 100€</p>
       <div id="runnerUpBetWrap" style="margin-bottom:30px;"></div>
       
-      <h3 style="color:var(--blue); margin-top:20px;">🎖️ Els 4 Semifinalistes (Cuota x5 si encertes els 4)</h3>
-      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;">Selecciona 4 equips i fes clic a 'Apostar Semifinalistes' (Cost: 50€)</p>
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
+        <h3 style="color:var(--blue);">🎖️ Els 4 Semifinalistes (Cuota x5)</h3>
+        <input type="number" id="amt_semifinalists" class="live-bet-input" style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1" oninput="updatePotentials()">
+      </div>
+      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_semifinalists">Selecciona 4 equips. Guany potencial: 250€</p>
       <div id="semiBetWrap" style="margin-bottom:10px;"></div>
-      <button class="btn-save" id="btnSubmitSemis" style="width:100%; padding:14px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(135deg,#60a5fa,#3b82f6); color:white; font-weight:bold; display:none;" onclick="submitSemisBet()">Apostar Semifinalistes</button>
+      <button class="btn-save" id="btnSubmitSemis" style="width:100%; padding:14px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(135deg,#60a5fa,#3b82f6); color:white; font-weight:bold; display:none;" onclick="submitSemisBet()">Apostar a Semifinalistes</button>
     </div>
 
     <!-- ── TAB: RÀNQUING ── -->
@@ -411,6 +422,8 @@
 
     // 1. Champion
     if (myBets.champion) {
+      document.getElementById('amt_champion').style.display = 'none';
+      document.getElementById('pot_champion').style.display = 'none';
       const t = ALL_TEAMS.find(x => x.name === myBets.champion.prediction);
       wrapChamp.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center;">
         <div class="live-bet-title" style="color:var(--green); justify-content:center;">✅ Aposta Registrada</div>
@@ -419,6 +432,8 @@
         <p style="color:var(--muted); margin-top:10px;">Apostaste ${myBets.champion.amount}€. Guany potencial: ${myBets.champion.amount * 3}€</p>
       </div>`;
     } else {
+      document.getElementById('amt_champion').style.display = 'block';
+      document.getElementById('pot_champion').style.display = 'block';
       let html = `<div class="champion-grid">`;
       ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" onclick="selectTourBet('champion', '${t.name}')"><div class="champ-flag">${t.flag}</div><div class="champ-name">${t.name}</div></div>`; });
       wrapChamp.innerHTML = html + `</div>`;
@@ -426,12 +441,16 @@
 
     // 2. RunnerUp
     if (myBets.runnerUp) {
+      document.getElementById('amt_runnerUp').style.display = 'none';
+      document.getElementById('pot_runnerUp').style.display = 'none';
       const t = ALL_TEAMS.find(x => x.name === myBets.runnerUp.prediction);
       wrapRun.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:10px;">
         <div style="font-size:1.5rem;">${t.flag} ${t.name}</div>
         <p style="color:var(--muted); font-size:0.8rem;">Apostaste ${myBets.runnerUp.amount}€. Guany: ${myBets.runnerUp.amount * 2}€</p>
       </div>`;
     } else {
+      document.getElementById('amt_runnerUp').style.display = 'block';
+      document.getElementById('pot_runnerUp').style.display = 'block';
       let html = `<div class="champion-grid">`;
       ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" style="padding:10px" onclick="selectTourBet('runnerUp', '${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
       wrapRun.innerHTML = html + `</div>`;
@@ -439,6 +458,8 @@
 
     // 3. Semis
     if (myBets.semifinalists) {
+      document.getElementById('amt_semifinalists').style.display = 'none';
+      document.getElementById('pot_semifinalists').style.display = 'none';
       const preds = myBets.semifinalists.prediction;
       let text = preds.map(n => {
          const t = ALL_TEAMS.find(x => x.name === n);
@@ -451,11 +472,22 @@
       </div>`;
       document.getElementById('btnSubmitSemis').style.display = 'none';
     } else {
+      document.getElementById('amt_semifinalists').style.display = 'block';
+      document.getElementById('pot_semifinalists').style.display = 'block';
       let html = `<div class="champion-grid" id="semiGrid">`;
       ALL_TEAMS.forEach(t => { html += `<div class="champ-btn semi-btn" id="semi_${t.name}" style="padding:10px" onclick="toggleSemi('${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
       wrapSemi.innerHTML = html + `</div>`;
       document.getElementById('btnSubmitSemis').style.display = 'block';
     }
+  }
+
+  window.updatePotentials = function() {
+    const c = parseInt(document.getElementById('amt_champion').value) || 0;
+    const r = parseInt(document.getElementById('amt_runnerUp').value) || 0;
+    const s = parseInt(document.getElementById('amt_semifinalists').value) || 0;
+    document.getElementById('pot_champion').textContent = `Guany potencial: ${c * 3}€`;
+    document.getElementById('pot_runnerUp').textContent = `Guany potencial: ${r * 2}€`;
+    document.getElementById('pot_semifinalists').textContent = `Selecciona 4 equips. Guany potencial: ${s * 5}€`;
   }
 
   window.toggleSemi = function(teamName) {
@@ -475,29 +507,36 @@
 
   window.submitSemisBet = async function() {
     if (selectedSemis.length !== 4) return showToast('Has de seleccionar 4 equips', 'error');
-    if (!confirm(`¿Apostar 50€ a aquests 4 semifinalistes?`)) return;
+    
+    const amt = parseInt(document.getElementById('amt_semifinalists').value);
+    if (!amt || amt <= 0) return showToast('Introdueix una quantitat vàlida', 'error');
+    
+    if (!confirm(`¿Apostar ${amt}€ a aquests 4 semifinalistes?`)) return;
     
     const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < 50) return showToast('Saldo insuficient.', 'error');
+    if (bal < amt) return showToast('Saldo insuficient.', 'error');
     
-    await DB.updateUserBalance(currentUserUid, -50);
-    await DB.placeTournamentBet(currentUserUid, 'semifinalists', { prediction: selectedSemis, amount: 50 });
+    await DB.updateUserBalance(currentUserUid, -amt);
+    await DB.placeTournamentBet(currentUserUid, 'semifinalists', { prediction: selectedSemis, amount: amt });
     
-    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - 50}€`;
+    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
     showToast('✅ Aposta de semifinals confirmada', 'success');
     renderTournamentBets();
   };
 
   window.selectTourBet = async function(type, teamName) {
     const typeNames = { champion: 'Campió', runnerUp: 'Subcampió' };
-    if (!confirm(`¿Apostar 50€ a que ${teamName} será ${typeNames[type]}?`)) return;
+    const amt = parseInt(document.getElementById('amt_' + type).value);
+    if (!amt || amt <= 0) return showToast('Introdueix una quantitat vàlida', 'error');
+    
+    if (!confirm(`¿Apostar ${amt}€ a que ${teamName} será ${typeNames[type]}?`)) return;
     const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < 50) return showToast('Saldo insuficient.', 'error');
+    if (bal < amt) return showToast('Saldo insuficient.', 'error');
     
-    await DB.updateUserBalance(currentUserUid, -50);
-    await DB.placeTournamentBet(currentUserUid, type, { prediction: teamName, amount: 50 });
+    await DB.updateUserBalance(currentUserUid, -amt);
+    await DB.placeTournamentBet(currentUserUid, type, { prediction: teamName, amount: amt });
     
-    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - 50}€`;
+    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
     showToast(`✅ Aposta confirmada`, 'success');
     renderTournamentBets();
   };
