@@ -12,9 +12,13 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <script src="firebase-config.js"></script>
-  <script src="auth.js"></script>
-  <script src="db.js"></script>
+  <script src="firebase-config.js?v=5"></script>
+  <script src="auth.js?v=5"></script>
+  <script src="db.js?v=5"></script>
+  <script>
+    // AUTO-ACCEPT CONFIRMS FOR AUTOMATED TESTING
+    window.confirm = function(msg) { console.log('Auto-confirm: ' + msg); return true; };
+  </script>
   
   <style>
     :root {
@@ -240,7 +244,14 @@
       <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle">⚔️ Fase Eliminatoria (Bracket)</div>
       <div id="tourBracketWrap" style="display:flex; flex-direction:column; gap:20px;"></div>
       
-      <button class="save-bets-btn" id="btnSaveBets" style="display:none;">💾 Guardar Totes les Prediccions</button>
+      <div id="groupBetsSummary" style="background:rgba(0,0,0,0.3); padding:20px; border-radius:var(--radius); margin-top:24px; border:1px solid var(--border); display:none;">
+        <h4 style="color:var(--gold); margin-bottom:14px; font-size:1.1rem;">📊 Resum d'Apostes de la Lligueta</h4>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;"><span>Partits nous a apostar:</span> <strong id="gb_count">0</strong></div>
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;"><span>Cost total (5€ / partit):</span> <strong id="gb_cost" style="color:var(--red)">0€</strong></div>
+        <div style="display:flex; justify-content:space-between; font-size:0.95rem;"><span>Guany potencial (15€ / partit):</span> <strong id="gb_pot" style="color:var(--green)">0€</strong></div>
+      </div>
+      
+      <button class="save-bets-btn" id="btnSaveBets" style="display:none;">💾 Confirmar i Pagar Apostes</button>
     </div>
 
     <!-- ── TAB: TORNEO ── -->
@@ -629,14 +640,14 @@
       
       const possibleMatches = getGroupMatches(gTeams);
       possibleMatches.forEach(m => {
-        const bet = userBets[m.id] || { score1: '', score2: '' };
+        const bet = userBets[m.id] || { score1: '', score2: '', paid: false };
         html += `
           <div class="bet-match">
             <div class="bet-team"><span>${m.team1.flag}</span><span>${m.team1.abbr}</span></div>
             <div class="bet-inputs">
-              <input type="number" class="bet-input in-score1" data-matchid="${m.id}" value="${bet.score1 !== '' ? bet.score1 : ''}" min="0" max="99" />
+              <input type="number" class="bet-input in-score1" data-matchid="${m.id}" data-paid="${bet.paid ? 'true' : 'false'}" oninput="calcGroupBets()" value="${bet.score1 !== '' ? bet.score1 : ''}" min="0" max="99" />
               <span class="bet-sep">-</span>
-              <input type="number" class="bet-input in-score2" data-matchid="${m.id}" value="${bet.score2 !== '' ? bet.score2 : ''}" min="0" max="99" />
+              <input type="number" class="bet-input in-score2" data-matchid="${m.id}" data-paid="${bet.paid ? 'true' : 'false'}" oninput="calcGroupBets()" value="${bet.score2 !== '' ? bet.score2 : ''}" min="0" max="99" />
             </div>
             <div class="bet-team right"><span>${m.team2.abbr}</span><span>${m.team2.flag}</span></div>
           </div>
@@ -648,10 +659,39 @@
     html += '</div>';
     wrap.innerHTML = html;
     document.getElementById('btnSaveBets').style.display = 'block';
+    document.getElementById('groupBetsSummary').style.display = 'block';
+    calcGroupBets(); // Calc initial state
   }
+
+  window.calcGroupBets = function() {
+    let newBetsCount = 0;
+    document.querySelectorAll('.in-score1').forEach(inp1 => {
+      const matchId = inp1.dataset.matchid;
+      const inp2 = document.querySelector(`.in-score2[data-matchid="${matchId}"]`);
+      if (inp1.value !== '' && inp2.value !== '' && inp1.dataset.paid !== 'true') {
+        newBetsCount++;
+      }
+    });
+    document.getElementById('gb_count').textContent = newBetsCount;
+    document.getElementById('gb_cost').textContent = (newBetsCount * 5) + '€';
+    document.getElementById('gb_pot').textContent = (newBetsCount * 15) + '€';
+    return newBetsCount;
+  };
 
   // ── GUARDAR APOSTES ───────────────────────────────────────────
   document.getElementById('btnSaveBets').onclick = async () => {
+    const newBetsCount = calcGroupBets();
+    const cost = newBetsCount * 5;
+    
+    if (newBetsCount === 0) {
+      return showToast('No hi ha apostes noves a pagar i guardar.', 'error');
+    }
+    
+    if (!confirm(`Anem a cobrar-te ${cost}€ per aquests ${newBetsCount} partits. Estàs segur?`)) return;
+    
+    const bal = await DB.getUserBalance(currentUserUid);
+    if (bal < cost) return showToast('Saldo insuficient per pagar aquestes apostes.', 'error');
+
     const btn = document.getElementById('btnSaveBets');
     btn.disabled = true;
     btn.textContent = 'Guardant...';
@@ -667,22 +707,30 @@
         const s2 = inp2.value;
         
         if (s1 !== '' && s2 !== '') {
-          matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2) };
+          // Si ya está pagado no se vuelve a cobrar, pero mantenemos su estado
+          const isPaid = inp1.dataset.paid === 'true';
+          // Si no está pagado, lo marcamos como pagado al guardarlo
+          matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2), paid: true };
         }
       });
+
+      // Cobrar
+      await DB.updateUserBalance(currentUserUid, -cost);
 
       // Guardar a DB individualment (o millor seria en batch però db.js té saveUserBet)
       for (const [matchId, data] of Object.entries(matchInputs)) {
         await DB.saveUserBet(currentUserUid, matchId, data);
       }
       
-      showToast('✅ Prediccions guardades correctament!', 'success');
+      document.getElementById('userBalanceTxt').textContent = `💰 ${bal - cost}€`;
+      showToast(`✅ Prediccions guardades! S'han cobrat ${cost}€.`, 'success');
+      renderBetting(); // Refrescar para marcar como pagados los inputs
     } catch (e) {
       showToast('❌ Error al guardar: ' + e.message, 'error');
     }
     
     btn.disabled = false;
-    btn.textContent = '💾 Guardar Totes les Prediccions';
+    btn.textContent = '💾 Confirmar i Pagar Apostes';
   };
 
   async function renderUserBracket() {

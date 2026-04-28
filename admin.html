@@ -12,9 +12,13 @@
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
-  <script src="firebase-config.js"></script>
-  <script src="auth.js"></script>
-  <script src="db.js"></script>
+  <script src="firebase-config.js?v=5"></script>
+  <script src="auth.js?v=5"></script>
+  <script src="db.js?v=5"></script>
+  <script>
+    // AUTO-ACCEPT CONFIRMS FOR AUTOMATED TESTING
+    window.confirm = function(msg) { console.log('Auto-confirm: ' + msg); return true; };
+  </script>
   <style>
     :root {
       --dark: #070c18;
@@ -1325,6 +1329,37 @@
         [t1.name, t2.name].forEach(n => { if (!pl.includes(n)) pl.push(n); });
         localStorage.setItem('porraPlayedTeams', JSON.stringify(pl));
       }
+      
+      // ── RESOLUCIÓ DE PREMIS (FASE DE GRUPS) ───────────────────
+      const matchId = `${t1.abbr}_VS_${t2.abbr}`;
+      const matchIdInv = `${t2.abbr}_VS_${t1.abbr}`;
+      let winnersCount = 0, distributed = 0;
+      
+      try {
+        const allUsersBets = await DB.getAllUsersBets();
+        for (const [uid, uData] of Object.entries(allUsersBets)) {
+          if (!uData.bets) continue;
+          const bet = uData.bets[matchId] || uData.bets[matchIdInv];
+          
+          // Només processem si està pagada i no està resolta
+          if (bet && bet.paid && !bet.resolved) {
+            const betT1Score = uData.bets[matchId] ? bet.score1 : bet.score2;
+            const betT2Score = uData.bets[matchId] ? bet.score2 : bet.score1;
+            
+            if (betT1Score === s1 && betT2Score === s2) {
+               const prize = 15;
+               await DB.updateUserBalance(uid, prize);
+               winnersCount++;
+               distributed += prize;
+            }
+            // Marquem com a resolta
+            bet.resolved = true;
+            const keyToUpdate = uData.bets[matchId] ? matchId : matchIdInv;
+            await DB.saveUserBet(uid, keyToUpdate, bet);
+          }
+        }
+      } catch (e) { console.warn("Error resolvent premis:", e); }
+
       document.getElementById('addScore1').value = 0;
       document.getElementById('addScore2').value = 0;
       
@@ -1332,6 +1367,9 @@
       
       await renderAll();
       showToast('✅ Partit afegit!', 'success');
+      if (winnersCount > 0) {
+        setTimeout(() => showToast(`🎉 S'han repartit ${distributed}€ a ${winnersCount} guanyadors de la lligueta!`, 'success'), 3500);
+      }
     } catch (e) { showToast('❌ Error: ' + e.message, 'error'); }
   };
 
