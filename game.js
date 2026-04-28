@@ -6,8 +6,7 @@
 'use strict';
 
 // ─── STORAGE KEYS ─────────────────────────────────────────────
-const SK_MATCHES = 'porraMatches';
-const SK_PLAYED  = 'porraPlayedTeams';
+// (Removed SK_MATCHES and SK_PLAYED as chapas is just for fun)
 
 // ─── TEAMS DATA ──────────────────────────────────────────────
 const TEAMS = [
@@ -127,43 +126,15 @@ function getFormation(teamIdx, numTokens) {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', async () => {
+window.addEventListener('DOMContentLoaded', () => {
   canvas = document.getElementById('gameCanvas');
   ctx    = canvas.getContext('2d');
-
-  // Sync played teams from Firebase (or localStorage) before building lobby
-  if (window.DB) {
-    showLobbyStatus('🌐 Connectant...');
-    await refreshPlayedTeamsFromDB();
-  }
 
   buildLobby();
   bindLobbyEvents();
   bindGameEvents();
   startLoop();
-
-  // Auto-refresh played teams every 20s when in lobby (real-time multi-game support)
-  setInterval(async () => {
-    if (state === 'LOBBY' && window.DB) {
-      await refreshPlayedTeamsFromDB();
-      buildLobby();
-    }
-  }, 20000);
 });
-
-async function refreshPlayedTeamsFromDB() {
-  if (!window.DB) return;
-  try {
-    const played = await DB.getPlayedTeams();
-    localStorage.setItem(SK_PLAYED, JSON.stringify(played));
-    const modeEl = document.getElementById('dbModeInfo');
-    if (modeEl) modeEl.textContent = window.ONLINE_MODE ? '🌐 Mode Online' : '💾 Mode Local';
-    showLobbyStatus('');
-  } catch (e) {
-    console.warn('[Game] DB sync failed:', e.message);
-    showLobbyStatus('⚠️ Mode local (sense connexió)');
-  }
-}
 
 function showLobbyStatus(msg) {
   const el = document.getElementById('teamsRemainingInfo');
@@ -201,7 +172,6 @@ function computePitch() {
 
 // ─── LOBBY BUILDER ────────────────────────────────────────────
 function buildLobby() {
-  const playedTeams = getPlayedTeams();
   ['grid1', 'grid2'].forEach((id, panelIdx) => {
     const grid = document.getElementById(id);
     grid.innerHTML = '';
@@ -212,23 +182,17 @@ function buildLobby() {
       card.dataset.panel = panelIdx;
       card.setAttribute('role', 'option');
       card.setAttribute('aria-label', t.name);
-      const hasPlayed = playedTeams.includes(t.name);
-      if (hasPlayed) card.classList.add('already-played');
-      card.innerHTML = `<span class="tc-flag">${t.flag}</span><span class="tc-abbr">${t.abbr}</span>${hasPlayed ? '<span class="tc-played-badge">✓</span>' : ''}`;
-      if (!hasPlayed) card.addEventListener('click', () => selectTeam(panelIdx, ti));
+      card.innerHTML = `<span class="tc-flag">${t.flag}</span><span class="tc-abbr">${t.abbr}</span>`;
+      card.addEventListener('click', () => selectTeam(panelIdx, ti));
       grid.appendChild(card);
     });
   });
-  // Show count
-  const remaining = TEAMS.filter(t => !playedTeams.includes(t.name)).length;
+  
   const infoEl = document.getElementById('teamsRemainingInfo');
-  if (infoEl) infoEl.textContent = playedTeams.length > 0 ? `${remaining} equips disponibles — ${playedTeams.length} ja han jugat` : '';
+  if (infoEl) infoEl.textContent = 'Selecciona els teus equips i a jugar!';
 }
 
 function selectTeam(panelIdx, teamIdx) {
-  // Prevent picking already-played team
-  const playedTeams = getPlayedTeams();
-  if (playedTeams.includes(TEAMS[teamIdx].name)) return;
   // Prevent picking same team as other player
   const otherIdx = panelIdx === 0 ? 1 : 0;
   if (selectedTeams[otherIdx] === teamIdx) return;
@@ -246,10 +210,8 @@ function selectTeam(panelIdx, teamIdx) {
     document.getElementById(id).querySelectorAll('.team-card').forEach(card => {
       const ci = parseInt(card.dataset.ti);
       card.classList.toggle('selected', selectedTeams[pi] === ci);
-      // Mark as session-disabled if other player has it (but NOT already-played ones)
-      if (!card.classList.contains('already-played')) {
-        card.classList.toggle('disabled', ci === otherSelected);
-      }
+      // Mark as session-disabled if other player has it
+      card.classList.toggle('disabled', ci === otherSelected);
     });
   });
 
@@ -577,9 +539,6 @@ function endGame() {
   const w = score[0] >= WIN_SCORE ? 0 : 1;
   const t = TEAMS[selectedTeams[w]];
 
-  // Save result to localStorage tournament system
-  saveMatchResult();
-
   document.getElementById('goWinner').textContent    = `${t.flag} ${t.name} guanya!`;
   document.getElementById('goScore').textContent     = `${score[0]} – ${score[1]}`;
   document.getElementById('goBothFlags').textContent = `${TEAMS[selectedTeams[0]].flag}  ${TEAMS[selectedTeams[1]].flag}`;
@@ -595,7 +554,6 @@ function replayMatch() {
 }
 function goToMenu() {
   document.getElementById('gameoverScreen').style.display = 'none';
-  cancelAnimationFrame(animId);
   state = 'LOBBY';
   selectedTeams = [null, null];
   buildLobby();
@@ -1090,46 +1048,8 @@ function roundRect(ctx, x, y, w, h, r) {
   }
 }
 
-// ─── TOURNAMENT STORAGE ───────────────────────────────────────
-function getPlayedTeams() {
-  try { return JSON.parse(localStorage.getItem(SK_PLAYED) || '[]'); }
-  catch { return []; }
-}
-
-function saveMatchResult() {
-  if (selectedTeams[0] === null || selectedTeams[1] === null) return;
-  try {
-    const t1 = TEAMS[selectedTeams[0]];
-    const t2 = TEAMS[selectedTeams[1]];
-    const matchData = {
-      id: Date.now(),
-      date: new Date().toISOString(),
-      team1: { name: t1.name, flag: t1.flag, abbr: t1.abbr, color: t1.color },
-      team2: { name: t2.name, flag: t2.flag, abbr: t2.abbr, color: t2.color },
-      score1: score[0],
-      score2: score[1],
-      winner: score[0] > score[1] ? 'team1' : score[1] > score[0] ? 'team2' : 'draw'
-    };
-
-    // 1. Save to localStorage immediately (synchronous, instant)
-    const matches = JSON.parse(localStorage.getItem(SK_MATCHES) || '[]');
-    const played  = getPlayedTeams();
-    matches.push(matchData);
-    [t1.name, t2.name].forEach(n => { if (!played.includes(n)) played.push(n); });
-    localStorage.setItem(SK_MATCHES, JSON.stringify(matches));
-    localStorage.setItem(SK_PLAYED, JSON.stringify(played));
-
-    // 2. Push to Firebase in background (async, fire-and-forget)
-    if (window.DB) {
-      DB.addMatch(matchData)
-        .then(() => DB.markTeamsPlayed([t1.name, t2.name]))
-        .then(() => console.log('[DB] Result pushed online ✓'))
-        .catch(e => console.warn('[DB] Push failed:', e.message));
-    }
-
-    console.log('Result saved:', t1.name, score[0], '-', score[1], t2.name);
-  } catch (e) { console.error('Could not save:', e); }
-}
+// ─── TOURNAMENT STORAGE REMOVED ───────────────────────────────
+// Chapas game is just for fun now, no data is stored.
 
 console.log('⚽ Chapas del Mundial 2026 — Game Engine v2.0 loaded!');
 console.log('ℹ️  Admin panel: admin.html | Tournament: tournament.html');

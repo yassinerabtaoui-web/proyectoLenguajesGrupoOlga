@@ -213,7 +213,7 @@
     <div class="admin-brand">🎲 La Porra 2026</div>
     <div class="admin-tabs">
       <button class="tab-btn active" data-tab="prediccions">📝 Les Meves Prediccions</button>
-      <button class="tab-btn" data-tab="campeon">🌍 Campeón</button>
+      <button class="tab-btn" data-tab="torneo">🌍 Torneig</button>
       <button class="tab-btn" data-tab="ranking">🏆 Rànquing Porra</button>
     </div>
     <div class="admin-actions">
@@ -243,13 +243,23 @@
       <button class="save-bets-btn" id="btnSaveBets" style="display:none;">💾 Guardar Totes les Prediccions</button>
     </div>
 
-    <!-- ── TAB: CAMPEÓN ── -->
-    <div class="tab-panel" id="tab-campeon">
-      <div class="panel-title">🌍 ¿Quién ganará el Mundial?</div>
+    <!-- ── TAB: TORNEO ── -->
+    <div class="tab-panel" id="tab-torneo">
+      <div class="panel-title">🌍 Apostes de Torneig</div>
       <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;">
-        Apuesta a tu favorito para ganar el torneo entero. ¡Si aciertas, la cuota es de <strong>x10.00</strong>! (Cuesta 50€ apostar).
+        Fes les teves prediccions per al final del torneig. Les apostes costen 50€ cadascuna.
       </p>
-      <div id="championBetWrap"></div>
+      
+      <h3 style="color:var(--gold); margin-top:20px;">🏆 Campió del Món (Cuota x3)</h3>
+      <div id="championBetWrap" style="margin-bottom:30px;"></div>
+      
+      <h3 style="color:var(--text); margin-top:20px;">🥈 Subcampió (Cuota x2)</h3>
+      <div id="runnerUpBetWrap" style="margin-bottom:30px;"></div>
+      
+      <h3 style="color:var(--blue); margin-top:20px;">🎖️ Els 4 Semifinalistes (Cuota x5 si encertes els 4)</h3>
+      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;">Selecciona 4 equips i fes clic a 'Apostar Semifinalistes' (Cost: 50€)</p>
+      <div id="semiBetWrap" style="margin-bottom:10px;"></div>
+      <button class="btn-save" id="btnSubmitSemis" style="width:100%; padding:14px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(135deg,#60a5fa,#3b82f6); color:white; font-weight:bold; display:none;" onclick="submitSemisBet()">Apostar Semifinalistes</button>
     </div>
 
     <!-- ── TAB: RÀNQUING ── -->
@@ -387,43 +397,109 @@
   }
 
   async function renderChampionBet() {
-    const wrap = document.getElementById('championBetWrap');
-    const bets = await DB.getChampionBets();
-    const myBet = bets[currentUserUid];
+    renderTournamentBets(); // Updated name
+  }
+  
+  let selectedSemis = [];
+  async function renderTournamentBets() {
+    const wrapChamp = document.getElementById('championBetWrap');
+    const wrapRun = document.getElementById('runnerUpBetWrap');
+    const wrapSemi = document.getElementById('semiBetWrap');
+    
+    const allBets = await DB.getTournamentBets();
+    const myBets = allBets[currentUserUid] || {};
 
-    if (myBet) {
-      const t = ALL_TEAMS.find(x => x.name === myBet.team);
-      wrap.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center;">
-        <div class="live-bet-title" style="color:var(--green); justify-content:center;">✅ Apuesta Registrada</div>
+    // 1. Champion
+    if (myBets.champion) {
+      const t = ALL_TEAMS.find(x => x.name === myBets.champion.prediction);
+      wrapChamp.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center;">
+        <div class="live-bet-title" style="color:var(--green); justify-content:center;">✅ Aposta Registrada</div>
         <div class="champ-flag" style="font-size:4rem; margin:20px 0;">${t.flag}</div>
         <h2 style="margin:0; color:var(--text);">${t.name}</h2>
-        <p style="color:var(--muted); margin-top:10px;">Apostaste ${myBet.amount}€. Ganancia potencial: ${myBet.amount * 10}€</p>
+        <p style="color:var(--muted); margin-top:10px;">Apostaste ${myBets.champion.amount}€. Guany potencial: ${myBets.champion.amount * 3}€</p>
       </div>`;
-      return;
+    } else {
+      let html = `<div class="champion-grid">`;
+      ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" onclick="selectTourBet('champion', '${t.name}')"><div class="champ-flag">${t.flag}</div><div class="champ-name">${t.name}</div></div>`; });
+      wrapChamp.innerHTML = html + `</div>`;
     }
 
-    let html = `<div class="champion-grid">`;
-    ALL_TEAMS.forEach(t => {
-      html += `<div class="champ-btn" onclick="selectChampion('${t.name}')">
-        <div class="champ-flag">${t.flag}</div>
-        <div class="champ-name">${t.name}</div>
+    // 2. RunnerUp
+    if (myBets.runnerUp) {
+      const t = ALL_TEAMS.find(x => x.name === myBets.runnerUp.prediction);
+      wrapRun.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:10px;">
+        <div style="font-size:1.5rem;">${t.flag} ${t.name}</div>
+        <p style="color:var(--muted); font-size:0.8rem;">Apostaste ${myBets.runnerUp.amount}€. Guany: ${myBets.runnerUp.amount * 2}€</p>
       </div>`;
-    });
-    html += `</div>`;
-    wrap.innerHTML = html;
+    } else {
+      let html = `<div class="champion-grid">`;
+      ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" style="padding:10px" onclick="selectTourBet('runnerUp', '${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
+      wrapRun.innerHTML = html + `</div>`;
+    }
+
+    // 3. Semis
+    if (myBets.semifinalists) {
+      const preds = myBets.semifinalists.prediction;
+      let text = preds.map(n => {
+         const t = ALL_TEAMS.find(x => x.name === n);
+         return t ? `${t.flag} ${t.name}` : n;
+      }).join(' <span style="color:var(--border)">|</span> ');
+      
+      wrapSemi.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:15px;">
+        <div style="font-size:1.1rem; font-weight:800; margin-bottom:10px;">${text}</div>
+        <p style="color:var(--muted); font-size:0.8rem;">Apostaste ${myBets.semifinalists.amount}€. Guany: ${myBets.semifinalists.amount * 5}€</p>
+      </div>`;
+      document.getElementById('btnSubmitSemis').style.display = 'none';
+    } else {
+      let html = `<div class="champion-grid" id="semiGrid">`;
+      ALL_TEAMS.forEach(t => { html += `<div class="champ-btn semi-btn" id="semi_${t.name}" style="padding:10px" onclick="toggleSemi('${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
+      wrapSemi.innerHTML = html + `</div>`;
+      document.getElementById('btnSubmitSemis').style.display = 'block';
+    }
   }
 
-  window.selectChampion = async function(teamName) {
-    if (!confirm(`¿Apostar ${CHAMPION_COST}€ a que ${teamName} gana el Mundial?`)) return;
+  window.toggleSemi = function(teamName) {
+    const el = document.getElementById('semi_'+teamName);
+    if (selectedSemis.includes(teamName)) {
+      selectedSemis = selectedSemis.filter(t => t !== teamName);
+      el.classList.remove('selected');
+    } else {
+      if (selectedSemis.length >= 4) return showToast('Només pots seleccionar 4 equips', 'error');
+      selectedSemis.push(teamName);
+      el.classList.add('selected');
+    }
+    const btn = document.getElementById('btnSubmitSemis');
+    if (selectedSemis.length === 4) btn.style.opacity = '1';
+    else btn.style.opacity = '0.5';
+  }
+
+  window.submitSemisBet = async function() {
+    if (selectedSemis.length !== 4) return showToast('Has de seleccionar 4 equips', 'error');
+    if (!confirm(`¿Apostar 50€ a aquests 4 semifinalistes?`)) return;
+    
     const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < CHAMPION_COST) return showToast('Saldo insuficiente. Haz clic en tu saldo para recargar.', 'error');
+    if (bal < 50) return showToast('Saldo insuficient.', 'error');
     
-    await DB.updateUserBalance(currentUserUid, -CHAMPION_COST);
-    await DB.placeChampionBet(currentUserUid, teamName, CHAMPION_COST);
+    await DB.updateUserBalance(currentUserUid, -50);
+    await DB.placeTournamentBet(currentUserUid, 'semifinalists', { prediction: selectedSemis, amount: 50 });
     
-    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - CHAMPION_COST}€`;
-    showToast('✅ Apuesta de campeón confirmada', 'success');
-    renderChampionBet();
+    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - 50}€`;
+    showToast('✅ Aposta de semifinals confirmada', 'success');
+    renderTournamentBets();
+  };
+
+  window.selectTourBet = async function(type, teamName) {
+    const typeNames = { champion: 'Campió', runnerUp: 'Subcampió' };
+    if (!confirm(`¿Apostar 50€ a que ${teamName} será ${typeNames[type]}?`)) return;
+    const bal = await DB.getUserBalance(currentUserUid);
+    if (bal < 50) return showToast('Saldo insuficient.', 'error');
+    
+    await DB.updateUserBalance(currentUserUid, -50);
+    await DB.placeTournamentBet(currentUserUid, type, { prediction: teamName, amount: 50 });
+    
+    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - 50}€`;
+    showToast(`✅ Aposta confirmada`, 'success');
+    renderTournamentBets();
   };
 
   let selectedLivePrediction = null;

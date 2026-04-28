@@ -220,20 +220,21 @@ const DB = (() => {
         catch (e) {}
       }
     },
-    async placeChampionBet(uid, teamName, amount) {
+    async placeTournamentBet(uid, betType, data) {
       if (!isOnline()) {
-        const bets = lsGet('porraChampionBets') || {};
-        bets[uid] = { team: teamName, amount };
-        lsSet('porraChampionBets', bets);
+        const bets = lsGet('porraTournamentBets') || {};
+        if (!bets[uid]) bets[uid] = {};
+        bets[uid][betType] = data;
+        lsSet('porraTournamentBets', bets);
         return;
       }
-      try { await firebase.database().ref(`championBets/${uid}`).set({ team: teamName, amount }); }
+      try { await firebase.database().ref(`tournamentBets/${uid}/${betType}`).set(data); }
       catch (e) {}
     },
-    async getChampionBets() {
-      if (!isOnline()) return lsGet('porraChampionBets') || {};
+    async getTournamentBets() {
+      if (!isOnline()) return lsGet('porraTournamentBets') || {};
       try {
-        const snapshot = await firebase.database().ref('championBets').once('value');
+        const snapshot = await firebase.database().ref('tournamentBets').once('value');
         return snapshot.val() || {};
       } catch (e) { return {}; }
     },

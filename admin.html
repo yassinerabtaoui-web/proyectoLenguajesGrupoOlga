@@ -730,12 +730,41 @@
     if (groups && Object.keys(groups).length > 0) {
       tEl.style.display = 'block';
       bTitle.style.display = 'block';
-      gEl.innerHTML = Object.entries(groups).map(([gName, gTeams]) => `
-        <div class="tour-group-card">
+      
+      const matches = await getMatches();
+      const standings = calcStandings(matches);
+      
+      const renderGroupTable = (gName, gTeams) => {
+        const fullStandings = gTeams.map(t => {
+           const s = standings.find(x => x.team.name === t.name);
+           return s ? s : { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 };
+        });
+        fullStandings.sort((a,b) => {
+           const pts = (b.w*3+b.d) - (a.w*3+a.d);
+           if (pts !== 0) return pts;
+           return (b.gf-b.ga) - (a.gf-a.ga);
+        });
+        
+        let html = `<div class="tour-group-card" style="min-width:300px">
           <div class="tour-group-title">Grup ${gName}</div>
-          ${gTeams.map(t => `<div class="tour-group-team"><span>${t.flag}</span><span>${t.name}</span></div>`).join('')}
-        </div>
-      `).join('');
+          <table style="width:100%;font-size:0.8rem;text-align:center">
+          <thead><tr><th style="text-align:left">Equip</th><th>PJ</th><th>DG</th><th>PTS</th></tr></thead><tbody>`;
+        fullStandings.forEach((s, idx) => {
+           const pts = s.w*3+s.d;
+           const dg = s.gf-s.ga;
+           const color = idx < 2 ? 'var(--green)' : 'inherit';
+           html += `<tr style="color:${color}">
+             <td style="text-align:left">${s.team.flag} ${s.team.abbr}</td>
+             <td>${s.p}</td>
+             <td>${dg>0?'+':''}${dg}</td>
+             <td style="font-weight:bold">${pts}</td>
+           </tr>`;
+        });
+        html += `</tbody></table></div>`;
+        return html;
+      };
+
+      gEl.innerHTML = Object.entries(groups).map(([gName, gTeams]) => renderGroupTable(gName, gTeams)).join('');
       
       const bracket = await DB.getTournamentBracket();
       if (!bracket) {
@@ -821,11 +850,28 @@
     };
 
     document.getElementById('btnTourGenerateBracket').onclick = async () => {
-      if (!confirm('Crear Cuadro Eliminatorio cogiendo los 2 primeros equipos de cada grupo?')) return;
+      if (!confirm('Crear Cuadro Eliminatorio cogiendo los 2 primeros equipos de cada grupo según su clasificación real?')) return;
       const groups = await DB.getTournamentGroups();
       if (!groups) return;
 
-      const g = (letter, pos) => groups[letter][pos];
+      const matches = await getMatches();
+      const standings = calcStandings(matches);
+      
+      const getTop2 = (letter) => {
+        const groupTeams = groups[letter].map(t => t.name);
+        const fullStandings = groups[letter].map(t => {
+           const s = standings.find(x => x.team.name === t.name);
+           return s ? s : { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 };
+        });
+        fullStandings.sort((a,b) => {
+           const pts = (b.w*3+b.d) - (a.w*3+a.d);
+           if (pts !== 0) return pts;
+           return (b.gf-b.ga) - (a.gf-a.ga);
+        });
+        return [fullStandings[0].team, fullStandings[1].team];
+      };
+
+      const g = (letter, pos) => getTop2(letter)[pos];
       // Octavos: A1-B2, C1-D2, E1-F2, G1-H2, B1-A2, D1-C2, F1-E2, H1-G2
       const matchups = [
         [g('A',0), g('B',1)], [g('C',0), g('D',1)],
@@ -881,8 +927,51 @@
         }
       }
       
+      // Resolve Tournament Bets (Futures)
+      if (round === 'quarterFinals') {
+         const allQuarterFinished = bracket.quarterFinals.every(m => m.winner !== null);
+         if (allQuarterFinished) {
+            const semiTeams = bracket.quarterFinals.map(m => m.winner.name);
+            const tbets = await DB.getTournamentBets();
+            for (const [uid, userBets] of Object.entries(tbets)) {
+              if (userBets.semifinalists && userBets.semifinalists.prediction) {
+                 const preds = userBets.semifinalists.prediction;
+                 let hits = 0;
+                 preds.forEach(p => { if (semiTeams.includes(p)) hits++; });
+                 if (hits === 4) {
+                    const prize = userBets.semifinalists.amount * 5;
+                    await DB.updateUserBalance(uid, prize);
+                    distributed += prize;
+                    winnersCount++;
+                 }
+              }
+            }
+         }
+      }
+      
+      if (round === 'final') {
+         const champion = winnerTeam.name;
+         const runnerUp = winnerTeam.name === bracket.final[0].team1.name ? bracket.final[0].team2.name : bracket.final[0].team1.name;
+         
+         const tbets = await DB.getTournamentBets();
+         for (const [uid, userBets] of Object.entries(tbets)) {
+            if (userBets.champion && userBets.champion.prediction === champion) {
+               const prize = userBets.champion.amount * 3;
+               await DB.updateUserBalance(uid, prize);
+               distributed += prize;
+               winnersCount++;
+            }
+            if (userBets.runnerUp && userBets.runnerUp.prediction === runnerUp) {
+               const prize = userBets.runnerUp.amount * 2;
+               await DB.updateUserBalance(uid, prize);
+               distributed += prize;
+               winnersCount++;
+            }
+         }
+      }
+      
       await DB.saveTournamentBracket(bracket);
-      showToast(`✅ Avanzado a la siguiente ronda. ${winnersCount} acertantes (repartidos ${distributed}€)`, 'success');
+      showToast(`✅ Avanzat. ${winnersCount} encerts (repartits ${distributed}€)`, 'success');
       renderAll();
     }
 
