@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="ca">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎲 La Porra – Chapas 2026</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+  <script src="firebase-config.js"></script>
+  <script src="auth.js"></script>
+  <script src="db.js"></script>
+  
+  <style>
+    :root {
+      --dark: #070c18;
+      --surface: #1a2540;
+      --border: rgba(255,255,255,0.08);
+      --text: #f0f4ff;
+      --muted: #8094b8;
+      --gold: #f5c518;
+      --blue: #60a5fa;
+      --green: #4ade80;
+      --red: #f87171;
+      --radius: 14px;
+      --radius-sm: 8px;
+      --transition: 180ms ease;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Outfit', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+    button { font-family: 'Outfit', sans-serif; cursor: pointer; }
+
+    /* ── DASHBOARD ── */
+    #dashboard { display: none; flex-direction: column; min-height: 100vh; }
+    
+    #loadingScreen {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    /* Top bar */
+    .admin-topbar {
+      background: #0a101e;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      gap: 0;
+      flex-wrap: wrap;
+      min-height: 56px;
+    }
+    .admin-brand { font-weight: 900; font-size: 0.95rem; padding: 16px 20px 16px 0; border-right: 1px solid var(--border); margin-right: 20px; color: var(--gold); white-space: nowrap; }
+    .admin-tabs { display: flex; gap: 2px; flex: 1; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 8px 16px;
+      background: none;
+      border: none;
+      color: var(--muted);
+      font-size: 0.85rem;
+      font-weight: 700;
+      border-radius: var(--radius-sm);
+      transition: all var(--transition);
+    }
+    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+    .tab-btn.active { color: var(--gold); background: rgba(245,197,24,0.1); }
+    .admin-actions { display: flex; gap: 8px; margin-left: auto; padding: 8px 0; }
+    .logout-btn {
+      padding: 6px 12px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.25);
+      border-radius: 99px;
+      color: var(--red);
+      font-size: 0.78rem;
+      font-weight: 700;
+      transition: all var(--transition);
+    }
+    .logout-btn:hover { background: rgba(248,113,113,0.2); }
+
+    .hd-link {
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      text-decoration: none;
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.04);
+      color: var(--muted);
+      transition: all var(--transition);
+    }
+    .hd-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    /* Content area */
+    .admin-content { flex: 1; max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; width: 100%; }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .panel-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 16px; color: var(--text); }
+
+    /* Empty state */
+    .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
+    .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
+    .empty-text { font-size: 0.95rem; }
+
+    /* Betting grid */
+    .groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .group-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+    .group-title { font-weight: 900; color: var(--gold); margin-bottom: 12px; text-align: center; font-size: 1.1rem; letter-spacing: 0.05em; }
+    
+    .bet-match {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .bet-match:last-child { border-bottom: none; }
+    .bet-team { flex: 1; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
+    .bet-team.right { justify-content: flex-end; flex-direction: row-reverse; }
+    
+    .bet-inputs { display: flex; align-items: center; gap: 6px; }
+    .bet-input {
+      width: 44px; height: 36px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 900;
+      text-align: center;
+      outline: none;
+      transition: border-color var(--transition);
+    }
+    .bet-input:focus { border-color: var(--gold); }
+    .bet-sep { font-weight: 900; color: var(--muted); }
+
+    .save-bets-btn {
+      display: block; width: 100%; padding: 14px; margin-top: 24px;
+      background: linear-gradient(135deg,#f5c518,#ff9d00); border: none; border-radius: var(--radius-sm);
+      color: #000; font-weight: 800; font-size: 1rem; transition: all var(--transition);
+    }
+    .save-bets-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.3); }
+
+    /* Ranking Table */
+    .table-wrap { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+    thead th { padding: 12px; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-weight: 700; }
+    thead th:first-child, thead th:nth-child(2) { text-align: left; }
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
+    tbody tr:last-child { border-bottom: none; }
+    td { padding: 12px; text-align: center; color: var(--text); font-weight: 600; }
+    td:first-child { width: 40px; color: var(--muted); }
+    td:nth-child(2) { text-align: left; }
+    .pts-bold { font-weight: 900; color: var(--gold); font-size: 1.1rem; }
+
+    /* Toast */
+    .toast { position: fixed; bottom: 24px; right: 24px; background: #1a2540; border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; font-size: 0.88rem; font-weight: 700; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.4); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 2000; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    .toast.success { border-color: rgba(74,222,128,0.4); color: var(--green); }
+    .toast.error { border-color: rgba(248,113,113,0.4); color: var(--red); }
+  </style>
+</head>
+<body>
+
+<!-- ── LOADING SCREEN ── -->
+<div id="loadingScreen">
+  <div style="font-size:3rem;margin-bottom:10px;animation:spin 1s linear infinite">⚽</div>
+  <div>Verificant credencials...</div>
+</div>
+<style>@keyframes spin { 100% { transform:rotate(360deg); } }</style>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <div class="admin-topbar">
+    <div class="admin-brand">🎲 La Porra 2026</div>
+    <div class="admin-tabs">
+      <button class="tab-btn active" data-tab="prediccions">📝 Les Meves Prediccions</button>
+      <button class="tab-btn" data-tab="ranking">🏆 Rànquing Porra</button>
+    </div>
+    <div class="admin-actions">
+      <span style="color:var(--muted);font-size:0.8rem;margin-right:10px;display:flex;align-items:center;" id="userEmailTxt"></span>
+      <a href="tournament.html" class="hd-link">🌍 Resultats Reals</a>
+      <button class="logout-btn" id="logoutBtn">Tancar sessió</button>
+    </div>
+  </div>
+
+  <div class="admin-content">
+
+    <!-- ── TAB: PREDICCIONS ── -->
+    <div class="tab-panel active" id="tab-prediccions">
+      <div class="panel-title">📝 Fes la teva Porra</div>
+      <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;">
+        Introdueix els resultats que creus que es donaran en els partits de la fase de grups. 
+        Guanyaràs <strong>3 punts</strong> si encertes el resultat exacte, i <strong>1 punt</strong> si encertes el guanyador o l'empat.
+      </p>
+      
+      <div id="bettingWrap"></div>
+      <button class="save-bets-btn" id="btnSaveBets" style="display:none;">💾 Guardar Totes les Prediccions</button>
+    </div>
+
+    <!-- ── TAB: RÀNQUING ── -->
+    <div class="tab-panel" id="tab-ranking">
+      <div class="panel-title">🏆 Classificació de la Porra</div>
+      <div class="table-wrap" id="rankingWrap">
+        <div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text">Carregant rànquing...</div></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── TOAST ── -->
+<div class="toast" id="toast"></div>
+
+<script>
+  let currentUserUid = null;
+  let currentUserEmail = null;
+  let tournamentGroups = null;
+  let matchesData = [];
+
+  // ── AUTH ──────────────────────────────────────────────────────
+  async function checkAuth() {
+    // Si estem aquí, podem ser 'client' o 'admin', però exigim estar logejats
+    await AUTH.getCurrentUser().then(({ user, role }) => {
+      if (!user) {
+        window.location.href = 'login.html';
+      } else {
+        currentUserUid = user.uid;
+        currentUserEmail = user.email || 'Usuari Anònim';
+        document.getElementById('userEmailTxt').textContent = '👤 ' + currentUserEmail;
+        document.getElementById('loadingScreen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'flex';
+        renderAll();
+      }
+    });
+  }
+
+  checkAuth();
+
+  document.getElementById('logoutBtn').onclick = () => {
+    AUTH.logout();
+  };
+
+  // ── TABS ──────────────────────────────────────────────────────
+  document.querySelectorAll('.tab-btn').forEach(btn => {
+    btn.onclick = () => {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      if (btn.dataset.tab === 'ranking') renderRanking();
+    };
+  });
+
+  // ── DATA ──────────────────────────────────────────────────────
+  async function loadData() {
+    try {
+      if (window.DB) {
+        tournamentGroups = await DB.getTournamentGroups();
+        matchesData = await DB.getMatches();
+      } else {
+        tournamentGroups = JSON.parse(localStorage.getItem('porraTournamentGroups'));
+        matchesData = JSON.parse(localStorage.getItem('porraMatches') || '[]');
+      }
+    } catch (e) {
+      console.warn("Error loading data:", e);
+    }
+  }
+
+  // Generem tots els enfrontaments possibles dins d'un grup
+  function getGroupMatches(gTeams) {
+    const matches = [];
+    for (let i = 0; i < gTeams.length; i++) {
+      for (let j = i + 1; j < gTeams.length; j++) {
+        const id = `${gTeams[i].abbr}_VS_${gTeams[j].abbr}`;
+        matches.push({ id, team1: gTeams[i], team2: gTeams[j] });
+      }
+    }
+    return matches;
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────
+  async function renderAll() {
+    await loadData();
+    renderBetting();
+    renderRanking(); // Preload ranking
+  }
+
+  async function renderBetting() {
+    const wrap = document.getElementById('bettingWrap');
+    if (!tournamentGroups || Object.keys(tournamentGroups).length === 0) {
+      wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El torneig encara no ha començat. Espera a que l\'administrador el creï.</div></div>';
+      document.getElementById('btnSaveBets').style.display = 'none';
+      return;
+    }
+
+    const userBets = await DB.getUserBets(currentUserUid);
+
+    let html = '<div class="groups-grid">';
+    
+    Object.entries(tournamentGroups).forEach(([gName, gTeams]) => {
+      html += `<div class="group-card">
+        <div class="group-title">GRUP ${gName}</div>`;
+      
+      const possibleMatches = getGroupMatches(gTeams);
+      possibleMatches.forEach(m => {
+        const bet = userBets[m.id] || { score1: '', score2: '' };
+        html += `
+          <div class="bet-match">
+            <div class="bet-team"><span>${m.team1.flag}</span><span>${m.team1.abbr}</span></div>
+            <div class="bet-inputs">
+              <input type="number" class="bet-input in-score1" data-matchid="${m.id}" value="${bet.score1 !== '' ? bet.score1 : ''}" min="0" max="99" />
+              <span class="bet-sep">-</span>
+              <input type="number" class="bet-input in-score2" data-matchid="${m.id}" value="${bet.score2 !== '' ? bet.score2 : ''}" min="0" max="99" />
+            </div>
+            <div class="bet-team right"><span>${m.team2.abbr}</span><span>${m.team2.flag}</span></div>
+          </div>
+        `;
+      });
+      html += `</div>`;
+    });
+    
+    html += '</div>';
+    wrap.innerHTML = html;
+    document.getElementById('btnSaveBets').style.display = 'block';
+  }
+
+  // ── GUARDAR APOSTES ───────────────────────────────────────────
+  document.getElementById('btnSaveBets').onclick = async () => {
+    const btn = document.getElementById('btnSaveBets');
+    btn.disabled = true;
+    btn.textContent = 'Guardant...';
+    
+    try {
+      // Recopilar tots els inputs
+      const matchInputs = {};
+      document.querySelectorAll('.in-score1').forEach(inp1 => {
+        const matchId = inp1.dataset.matchid;
+        const inp2 = document.querySelector(`.in-score2[data-matchid="${matchId}"]`);
+        
+        const s1 = inp1.value;
+        const s2 = inp2.value;
+        
+        if (s1 !== '' && s2 !== '') {
+          matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2) };
+        }
+      });
+
+      // Guardar a DB individualment (o millor seria en batch però db.js té saveUserBet)
+      for (const [matchId, data] of Object.entries(matchInputs)) {
+        await DB.saveUserBet(currentUserUid, matchId, data);
+      }
+      
+      showToast('✅ Prediccions guardades correctament!', 'success');
+    } catch (e) {
+      showToast('❌ Error al guardar: ' + e.message, 'error');
+    }
+    
+    btn.disabled = false;
+    btn.textContent = '💾 Guardar Totes les Prediccions';
+  };
+
+  // ── RÀNQUING ──────────────────────────────────────────────────
+  async function renderRanking() {
+    const wrap = document.getElementById('rankingWrap');
+    
+    if (!tournamentGroups || Object.keys(tournamentGroups).length === 0) {
+      wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El torneig encara no ha començat.</div></div>';
+      return;
+    }
+
+    try {
+      const allUsers = await DB.getAllUsersBets();
+      const ranking = [];
+
+      // Mapejar resultats reals per matchId
+      const realResults = {};
+      matchesData.forEach(m => {
+        // En matches els equips poden estar en qualsevol ordre
+        const id1 = `${m.team1.abbr}_VS_${m.team2.abbr}`;
+        const id2 = `${m.team2.abbr}_VS_${m.team1.abbr}`;
+        realResults[id1] = { score1: m.score1, score2: m.score2, winner: m.winner };
+        // Si l'aposta estava invertida:
+        realResults[id2] = { score1: m.score2, score2: m.score1, winner: m.winner === 'team1' ? 'team2' : m.winner === 'team2' ? 'team1' : 'draw' };
+      });
+
+      // Calcular punts per cada usuari
+      Object.entries(allUsers).forEach(([uid, userData]) => {
+        let pts = 0;
+        let acertsExacs = 0;
+        let acertsGuanyador = 0;
+        
+        if (userData.role !== 'admin' && userData.bets) { // Podem excloure l'admin si volem
+          Object.entries(userData.bets).forEach(([matchId, bet]) => {
+            const real = realResults[matchId];
+            if (real) {
+              const betWinner = bet.score1 > bet.score2 ? 'team1' : bet.score2 > bet.score1 ? 'team2' : 'draw';
+              const realWinner = real.score1 > real.score2 ? 'team1' : real.score2 > real.score1 ? 'team2' : 'draw'; // Safe check
+              
+              if (bet.score1 === real.score1 && bet.score2 === real.score2) {
+                pts += 3; // Resultat exacte
+                acertsExacs++;
+              } else if (betWinner === realWinner) {
+                pts += 1; // Guanyador/Empat encertat
+                acertsGuanyador++;
+              }
+            }
+          });
+        }
+        
+        ranking.push({
+          uid,
+          email: userData.email || 'Usuari',
+          pts,
+          acertsExacs,
+          acertsGuanyador
+        });
+      });
+
+      // Ordenar per punts descendent
+      ranking.sort((a, b) => b.pts - a.pts);
+
+      if (ranking.length === 0) {
+        wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No hi ha usuaris participants encara.</div></div>';
+        return;
+      }
+
+      wrap.innerHTML = `<table>
+        <thead><tr>
+          <th>#</th><th>Usuari</th><th>Exactes (3p)</th><th>Tendència (1p)</th><th>PUNTS</th>
+        </tr></thead>
+        <tbody>
+          ${ranking.map((r, i) => `<tr>
+            <td>${i + 1}</td>
+            <td>${r.email} ${r.uid === currentUserUid ? '<span style="color:var(--gold);font-size:0.7rem;margin-left:5px;">(Tu)</span>' : ''}</td>
+            <td>${r.acertsExacs}</td>
+            <td>${r.acertsGuanyador}</td>
+            <td class="pts-bold">${r.pts}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+    } catch (e) {
+      console.warn("Error calc ranking:", e);
+      wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">Error carregant el rànquing.</div></div>';
+    }
+  }
+
+  // ── TOAST ─────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    el.textContent = msg;
+    el.className = `toast ${type} show`;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
+  }
+</script>
+
+</body>
+</html>

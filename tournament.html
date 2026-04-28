@@ -152,9 +152,14 @@
     .pts-td-gold { color: var(--gold); }
     .pts-td-silver { color: #a5b4fc; }
     .pts-td-bronze { color: #86efac; }
+    .pts-td-bronze { color: #86efac; }
     .pos-1 td:first-child { color: var(--gold); }
     .pos-2 td:first-child { color: #a5b4fc; }
     .pos-3 td:first-child { color: #86efac; }
+    
+    .groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 32px; }
+    .group-table-wrap { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+    .group-title { padding: 12px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); font-weight: 900; color: var(--gold); text-align: center; letter-spacing: 0.05em; }
 
     /* MATCH LIST */
     .match-list { display: flex; flex-direction: column; gap: 10px; }
@@ -285,17 +290,30 @@
       } catch (e) { console.warn('[Tournament] DB error:', e.message); }
       try { return JSON.parse(localStorage.getItem('porraMatches') || '[]'); } catch { return []; }
     }
+    
+    async function loadTournamentGroups() {
+      try {
+        if (window.DB) return await DB.getTournamentGroups();
+      } catch (e) {}
+      try { return JSON.parse(localStorage.getItem('porraTournamentGroups')); } catch { return null; }
+    }
 
-    function calcStandings(matches) {
+    function calcStandings(matches, filterTeams = null) {
       const map = {};
+      if (filterTeams) {
+        filterTeams.forEach(t => { map[t.name] = { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 }; });
+      }
       for (const m of matches) {
         [m.team1, m.team2].forEach((t, idx) => {
+          if (filterTeams && !map[t.name]) return; // Skip teams not in this group
           if (!map[t.name]) map[t.name] = { team: t, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0 };
           const s = map[t.name];
           s.p++;
           s.gf += idx === 0 ? m.score1 : m.score2;
           s.ga += idx === 0 ? m.score2 : m.score1;
         });
+        if (filterTeams && (!map[m.team1.name] || !map[m.team2.name])) continue;
+        
         if (m.winner === 'team1') { map[m.team1.name].w++; map[m.team2.name].l++; }
         else if (m.winner === 'team2') { map[m.team2.name].w++; map[m.team1.name].l++; }
         else { map[m.team1.name].d++; map[m.team2.name].d++; }
@@ -318,7 +336,13 @@
 
     async function render() {
       const matches = await loadMatches();
-      const standings = calcStandings(matches);
+      const groups = await loadTournamentGroups();
+      let standings = [];
+      let isTournament = groups && Object.keys(groups).length > 0;
+      
+      if (!isTournament) {
+        standings = calcStandings(matches);
+      }
 
       // Online badge
       const badge = document.getElementById('onlineBadge');
@@ -327,7 +351,7 @@
       // Stats
       const totalGoals = matches.reduce((s, m) => s + m.score1 + m.score2, 0);
       document.getElementById('statMatches').textContent = matches.length;
-      document.getElementById('statTeams').textContent = standings.length;
+      document.getElementById('statTeams').textContent = isTournament ? 32 : standings.length;
       document.getElementById('statGoals').textContent = totalGoals;
       document.getElementById('statAvg').textContent = matches.length > 0 ? (totalGoals / matches.length).toFixed(1) : '–';
       document.getElementById('lastUpdate').textContent = 'Actualitzat: ' + new Date().toLocaleTimeString('ca-ES');
@@ -335,45 +359,57 @@
       // Standings table
       const sw = document.getElementById('standingsWrap');
       const tc = document.getElementById('teamsCount');
-      tc.textContent = standings.length + ' equips';
-      if (standings.length === 0) {
-        sw.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Encara no s\'han jugat partits</div><div class="empty-sub">Juga el primer partit per veure la classificació!</div></div>';
-      } else {
+      tc.textContent = (isTournament ? 32 : standings.length) + ' equips';
+      
+      function renderTableRows(stData) {
         const posClass = ['pos-1', 'pos-2', 'pos-3'];
         const ptsClass = ['pts-td-gold', 'pts-td-silver', 'pts-td-bronze'];
-        sw.innerHTML = `<table>
-          <thead><tr>
-            <th>#</th><th>Equip</th>
-            <th title="Partits Jugats">PJ</th>
-            <th title="Guanyats">PG</th>
-            <th title="Empatats">PE</th>
-            <th title="Perduts">PP</th>
-            <th title="Gols a Favor">GF</th>
-            <th title="Gols en Contra">GC</th>
-            <th title="Diferència de Gols">DG</th>
-            <th title="Punts">PTS</th>
-          </tr></thead>
-          <tbody>
-            ${standings.map((s, i) => {
-              const pts = s.w * 3 + s.d;
-              const gd = s.gf - s.ga;
-              const pc = posClass[i] || '';
-              const ptsc = ptsClass[i] || 'pts-td';
-              return `<tr class="${pc}">
-                <td>${i + 1}</td>
-                <td><div class="team-cell"><span class="team-flag-td">${s.team.flag}</span><span class="team-name-td">${s.team.name}</span></div></td>
-                <td>${s.p}</td>
-                <td>${s.w}</td>
-                <td>${s.d}</td>
-                <td>${s.l}</td>
-                <td>${s.gf}</td>
-                <td>${s.ga}</td>
-                <td style="color:${gd > 0 ? '#4ade80' : gd < 0 ? '#f87171' : 'inherit'}">${gd > 0 ? '+' : ''}${gd}</td>
-                <td class="pts-td ${ptsc}">${pts}</td>
-              </tr>`;
-            }).join('')}
-          </tbody>
-        </table>`;
+        return stData.map((s, i) => {
+          const pts = s.w * 3 + s.d;
+          const gd = s.gf - s.ga;
+          const pc = posClass[i] || '';
+          const ptsc = ptsClass[i] || 'pts-td';
+          return `<tr class="${pc}">
+            <td>${i + 1}</td>
+            <td><div class="team-cell"><span class="team-flag-td">${s.team.flag}</span><span class="team-name-td">${s.team.name}</span></div></td>
+            <td>${s.p}</td>
+            <td>${s.w}</td>
+            <td>${s.d}</td>
+            <td>${s.l}</td>
+            <td>${s.gf}</td>
+            <td>${s.ga}</td>
+            <td style="color:${gd > 0 ? '#4ade80' : gd < 0 ? '#f87171' : 'inherit'}">${gd > 0 ? '+' : ''}${gd}</td>
+            <td class="pts-td ${ptsc}">${pts}</td>
+          </tr>`;
+        }).join('');
+      }
+
+      if (isTournament) {
+        sw.className = 'groups-grid';
+        sw.innerHTML = Object.entries(groups).map(([gName, gTeams]) => {
+          const stData = calcStandings(matches, gTeams);
+          return `<div class="group-table-wrap">
+            <div class="group-title">GRUP ${gName}</div>
+            <table>
+              <thead><tr>
+                <th>#</th><th>Equip</th><th title="Partits Jugats">PJ</th><th>PG</th><th>PE</th><th>PP</th><th>GF</th><th>GC</th><th>DG</th><th>PTS</th>
+              </tr></thead>
+              <tbody>${renderTableRows(stData)}</tbody>
+            </table>
+          </div>`;
+        }).join('');
+      } else {
+        sw.className = 'table-wrap';
+        if (standings.length === 0) {
+          sw.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Encara no s\'han jugat partits</div><div class="empty-sub">Juga el primer partit per veure la classificació!</div></div>';
+        } else {
+          sw.innerHTML = `<table>
+            <thead><tr>
+              <th>#</th><th>Equip</th><th title="Partits Jugats">PJ</th><th title="Guanyats">PG</th><th title="Empatats">PE</th><th title="Perduts">PP</th><th title="Gols a Favor">GF</th><th title="Gols en Contra">GC</th><th title="Diferència de Gols">DG</th><th title="Punts">PTS</th>
+            </tr></thead>
+            <tbody>${renderTableRows(standings)}</tbody>
+          </table>`;
+        }
       }
 
       // Match list

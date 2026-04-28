@@ -21,6 +21,7 @@ const DB = (() => {
 
   const LOCAL_MATCHES = 'porraMatches';
   const LOCAL_PLAYED  = 'porraPlayedTeams';
+  const LOCAL_TOURNAMENT = 'porraTournamentGroups';
 
   // Sanitize team names for Firebase keys
   function toKey(name) {
@@ -176,12 +177,85 @@ const DB = (() => {
     },
 
     async resetAll() {
-      lsSet(LOCAL_MATCHES, []); lsSet(LOCAL_PLAYED, []);
+      lsSet(LOCAL_MATCHES, []); lsSet(LOCAL_PLAYED, []); lsSet(LOCAL_TOURNAMENT, null);
       if (isOnline()) {
         try {
           await firebase.database().ref('matches').remove();
           await firebase.database().ref('playedTeams').remove();
+          await firebase.database().ref('tournamentGroups').remove();
         } catch (e) {}
+      }
+    },
+
+    // ── TOURNAMENT GROUPS ────────────────────────────────────
+    async getTournamentGroups() {
+      if (isOnline()) {
+        try {
+          const snapshot = await firebase.database().ref('tournamentGroups').once('value');
+          return snapshot.val() || null;
+        } catch (e) {
+          console.warn('Firebase getTournamentGroups error:', e);
+        }
+      }
+      return lsGet(LOCAL_TOURNAMENT);
+    },
+
+    async saveTournamentGroups(groups) {
+      lsSet(LOCAL_TOURNAMENT, groups);
+      if (isOnline()) {
+        try {
+          await firebase.database().ref('tournamentGroups').set(groups);
+        } catch (e) {
+          console.warn('Firebase saveTournamentGroups error:', e);
+        }
+      }
+    },
+
+    // ── APUESTAS (PORRA) ─────────────────────────────────────
+    async saveUserBet(uid, betId, data) {
+      if (!isOnline()) {
+        const bets = lsGet('porraBets_' + uid) || {};
+        bets[betId] = data;
+        lsSet('porraBets_' + uid, bets);
+        return;
+      }
+      try {
+        await firebase.database().ref(`users/${uid}/bets/${betId}`).set(data);
+      } catch (e) {
+        console.warn('Firebase saveUserBet error:', e);
+      }
+    },
+
+    async getUserBets(uid) {
+      if (!isOnline()) return lsGet('porraBets_' + uid) || {};
+      try {
+        const snapshot = await firebase.database().ref(`users/${uid}/bets`).once('value');
+        return snapshot.val() || {};
+      } catch (e) {
+        console.warn('Firebase getUserBets error:', e);
+        return {};
+      }
+    },
+
+    async getAllUsersBets() {
+      if (!isOnline()) {
+        // Fallback local: cercar a localStorage
+        const result = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith('porraBets_')) {
+            const uid = key.replace('porraBets_', '');
+            result[uid] = { bets: lsGet(key), email: 'Local User ' + uid.substring(0,4) };
+          }
+        }
+        return result;
+      }
+      try {
+        const snapshot = await firebase.database().ref('users').once('value');
+        return snapshot.val() || {};
+      } catch (e) {
+        console.warn('Firebase getAllUsersBets error:', e);
+        return {};
       }
     },
 

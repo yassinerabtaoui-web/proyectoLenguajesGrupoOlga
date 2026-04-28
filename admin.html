@@ -161,6 +161,15 @@
     .tam-flag { font-size: 1.3rem; }
     .team-status-played { font-size: 0.68rem; font-weight: 700; color: var(--orange); background: rgba(251,146,60,0.1); border: 1px solid rgba(251,146,60,0.25); border-radius: 99px; padding: 2px 7px; }
     .team-status-free { font-size: 0.68rem; font-weight: 700; color: var(--green); background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.25); border-radius: 99px; padding: 2px 7px; }
+    .team-tour-card { cursor: pointer; transition: all var(--transition); }
+    .team-tour-card:hover { background: rgba(255,255,255,0.08); }
+    .team-tour-card.selected { background: rgba(245,197,24,0.1); border-color: rgba(245,197,24,0.4); }
+    .team-tour-check { opacity: 0.2; font-size: 1.2rem; }
+    .team-tour-card.selected .team-tour-check { opacity: 1; color: var(--gold); }
+    .tour-group-card { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+    .tour-group-title { font-weight: 900; color: var(--gold); margin-bottom: 12px; text-align: center; }
+    .tour-group-team { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; padding: 4px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .tour-group-team:last-child { border-bottom: none; }
     .btn-reset-team {
       padding: 4px 10px;
       background: rgba(74,222,128,0.08);
@@ -318,6 +327,7 @@
     <div class="admin-tabs">
       <button class="tab-btn active" data-tab="partits">📋 Partits</button>
       <button class="tab-btn" data-tab="classificacio">🏆 Classificació</button>
+      <button class="tab-btn" data-tab="torneig">🌍 Torneig Mundial</button>
       <button class="tab-btn" data-tab="equips">👥 Equips</button>
       <button class="tab-btn" data-tab="usuaris">👥 Usuaris</button>
       <button class="tab-btn" data-tab="config">⚙️ Configuració</button>
@@ -358,6 +368,30 @@
       <div class="table-wrap" id="adminStandingsWrap">
         <div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">Encara no hi ha dades</div></div>
       </div>
+    </div>
+
+    <!-- ── TAB: TORNEIG ── -->
+    <div class="tab-panel" id="tab-torneig">
+      <div class="panel-title">🌍 Torneig Mundial (32 Equips)</div>
+      
+      <div class="danger-zone" style="background:rgba(245,197,24,0.05); border-color:rgba(245,197,24,0.2);">
+        <div class="danger-title" style="color:var(--gold);">🛠️ Creador de Tornejos</div>
+        <div class="danger-action" style="border-bottom:none; padding-bottom:0;">
+          <div class="danger-action-info">
+            <h4 style="color:var(--text);">Estat: <span id="tourSelectedCount">0</span>/32 equips seleccionats</h4>
+            <p>Selecciona manualment o genera aleatòriament els equips participants.</p>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
+            <button class="btn-danger" style="background:rgba(96,165,250,0.12); color:var(--blue); border-color:rgba(96,165,250,0.3);" id="btnTourRandom">🎲 Aleatori</button>
+            <button class="btn-save" id="btnTourGenerate" style="opacity:0.5; pointer-events:none;">⚽ Sortear Grups</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="teams-admin-grid" id="tourTeamsGrid"></div>
+      
+      <div class="panel-title" style="margin-top:30px; display:none;" id="tourActiveTitle">🏆 Grups del Torneig Actual</div>
+      <div id="tourActiveGroups" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
     </div>
 
     <!-- ── TAB: EQUIPS ── -->
@@ -511,6 +545,36 @@
     { name: 'Bèlgica',       abbr: 'BEL', flag: '🇧🇪' },
     { name: 'Equador',       abbr: 'ECU', flag: '🇪🇨' },
     { name: 'Ghana',         abbr: 'GHA', flag: '🇬🇭' },
+    { name: 'Suïssa',        abbr: 'SUI', flag: '🇨🇭' },
+    { name: 'Dinamarca',     abbr: 'DEN', flag: '🇩🇰' },
+    { name: 'Sèrbia',        abbr: 'SRB', flag: '🇷🇸' },
+    { name: 'Polònia',       abbr: 'POL', flag: '🇵🇱' },
+    { name: 'Gal·les',       abbr: 'WAL', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
+    { name: 'Camerun',       abbr: 'CMR', flag: '🇨🇲' },
+    { name: 'Canadà',        abbr: 'CAN', flag: '🇨🇦' },
+    { name: 'Corea Sud',     abbr: 'KOR', flag: '🇰🇷' },
+    { name: 'Austràlia',     abbr: 'AUS', flag: '🇦🇺' },
+    { name: 'Iran',          abbr: 'IRN', flag: '🇮🇷' },
+    { name: 'Aràbia S.',     abbr: 'KSA', flag: '🇸🇦' },
+    { name: 'Tunísia',       abbr: 'TUN', flag: '🇹🇳' },
+    { name: 'Costa Rica',    abbr: 'CRC', flag: '🇨🇷' },
+    { name: 'Suècia',        abbr: 'SWE', flag: '🇸🇪' },
+    { name: 'Xile',          abbr: 'CHI', flag: '🇨🇱' },
+    { name: 'Perú',          abbr: 'PER', flag: '🇵🇪' },
+    { name: 'Nigèria',       abbr: 'NGA', flag: '🇳🇬' },
+    { name: 'Algèria',       abbr: 'ALG', flag: '🇩🇿' },
+    { name: 'Egipte',        abbr: 'EGY', flag: '🇪🇬' },
+    { name: "Costa d'Iv.",   abbr: 'CIV', flag: '🇨🇮' },
+    { name: 'Ucraïna',       abbr: 'UKR', flag: '🇺🇦' },
+    { name: 'Noruega',       abbr: 'NOR', flag: '🇳🇴' },
+    { name: 'Turquia',       abbr: 'TUR', flag: '🇹🇷' },
+    { name: 'Grècia',        abbr: 'GRE', flag: '🇬🇷' },
+    { name: 'Rep. Txeca',    abbr: 'CZE', flag: '🇨🇿' },
+    { name: 'Àustria',       abbr: 'AUT', flag: '🇦🇹' },
+    { name: 'Paraguai',      abbr: 'PAR', flag: '🇵🇾' },
+    { name: 'Veneçuela',     abbr: 'VEN', flag: '🇻🇪' },
+    { name: 'Xina',          abbr: 'CHN', flag: '🇨🇳' },
+    { name: 'Nova Zelanda',  abbr: 'NZL', flag: '🇳🇿' }
   ];
 
   // ── RENDER ALL ────────────────────────────────────────────────
@@ -635,6 +699,107 @@
         </div>
       </div>`;
     }).join('');
+    
+    renderTournamentTab();
+  }
+
+  // ── TOURNAMENT TAB ──────────────────────────────────────────
+  let tourSelected = [];
+  
+  async function renderTournamentTab() {
+    const groups = window.DB ? await DB.getTournamentGroups() : JSON.parse(localStorage.getItem('porraTournamentGroups'));
+    const gEl = document.getElementById('tourActiveGroups');
+    const tEl = document.getElementById('tourActiveTitle');
+    
+    if (groups && Object.keys(groups).length > 0) {
+      tEl.style.display = 'block';
+      gEl.innerHTML = Object.entries(groups).map(([gName, gTeams]) => `
+        <div class="tour-group-card">
+          <div class="tour-group-title">Grup ${gName}</div>
+          ${gTeams.map(t => `<div class="tour-group-team"><span>${t.flag}</span><span>${t.name}</span></div>`).join('')}
+        </div>
+      `).join('');
+    } else {
+      tEl.style.display = 'none';
+      gEl.innerHTML = '';
+    }
+
+    renderTourGrid();
+  }
+
+  function renderTourGrid() {
+    const el = document.getElementById('tourTeamsGrid');
+    el.innerHTML = ALL_TEAMS.map(t => {
+      const isSel = tourSelected.includes(t.name);
+      return `<div class="team-admin-card team-tour-card ${isSel ? 'selected' : ''}" onclick="toggleTourTeam('${t.name}')">
+        <div class="team-admin-info">
+          <span class="tam-flag">${t.flag}</span>
+          <span>${t.name}</span>
+        </div>
+        <div class="team-tour-check">✔️</div>
+      </div>`;
+    }).join('');
+    updateTourBtn();
+  }
+
+  window.toggleTourTeam = function(name) {
+    if (tourSelected.includes(name)) {
+      tourSelected = tourSelected.filter(n => n !== name);
+    } else {
+      if (tourSelected.length >= 32) return showToast('Ja tens 32 equips', 'error');
+      tourSelected.push(name);
+    }
+    renderTourGrid();
+  };
+
+  document.getElementById('btnTourRandom').onclick = () => {
+    const shuffled = [...ALL_TEAMS].sort(() => 0.5 - Math.random());
+    tourSelected = shuffled.slice(0, 32).map(t => t.name);
+    renderTourGrid();
+  };
+
+  document.getElementById('btnTourGenerate').onclick = async () => {
+    if (tourSelected.length !== 32) return;
+    if (!confirm('Crear un nou torneig amb aquests 32 equips? Això esborrarà els partits anteriors.')) return;
+    
+    const shuffled = [...tourSelected].sort(() => 0.5 - Math.random());
+    const groups = {};
+    const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+    
+    for (let i = 0; i < 8; i++) {
+      groups[letters[i]] = shuffled.slice(i * 4, i * 4 + 4).map(name => {
+        const t = ALL_TEAMS.find(x => x.name === name);
+        return { name: t.name, flag: t.flag, abbr: t.abbr };
+      });
+    }
+    
+    try {
+      if (window.DB) {
+        await DB.resetAll();
+        await DB.saveTournamentGroups(groups);
+      } else {
+        localStorage.setItem('porraMatches', '[]');
+        localStorage.setItem('porraPlayedTeams', '[]');
+        localStorage.setItem('porraTournamentGroups', JSON.stringify(groups));
+      }
+      tourSelected = [];
+      await renderAll();
+      showToast('🎉 Torneig creat correctament!', 'success');
+    } catch (e) {
+      showToast('❌ Error: ' + e.message, 'error');
+    }
+  };
+
+  function updateTourBtn() {
+    document.getElementById('tourSelectedCount').textContent = tourSelected.length;
+    const btn = document.getElementById('btnTourGenerate');
+    if (tourSelected.length === 32) {
+      btn.style.opacity = '1';
+      btn.style.pointerEvents = 'auto';
+    } else {
+      btn.style.opacity = '0.5';
+      btn.style.pointerEvents = 'none';
+    }
   }
 
   // ── USERS GRID ────────────────────────────────────────────────
