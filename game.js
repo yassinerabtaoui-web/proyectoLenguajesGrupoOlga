@@ -34,7 +34,8 @@ const TEAMS = [
 ];
 
 // ─── PHYSICS CONSTANTS ───────────────────────────────────────
-const FRICTION = 0.980;   // token friction per frame
+const FRICTION = 0.980;
+// token friction per frame
 const BALL_FRICTION = 0.984;   // ball is slightly slippier
 const RESTITUTION = 0.72;    // bounce energy retention
 const STOP_VEL = 0.05;    // velocity threshold to stop

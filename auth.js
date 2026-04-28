@@ -14,6 +14,7 @@
     }
   }
 
+
   // Comprova si Firebase està llest
   function isReady() {
     return window.ONLINE_MODE && window.firebase;

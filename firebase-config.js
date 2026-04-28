@@ -22,7 +22,6 @@ window.firebaseConfig = {
   messagingSenderId: "119186226643",
   appId: "1:119186226643:web:7218c392019c4708f84326",
   measurementId: "G-ZF2XML0M44"
-
 };
 
 // Mode Online si hi ha un apiKey configurat
