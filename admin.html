@@ -17,10 +17,6 @@
   <script src="auth.js?v=5"></script>
   <script src="i18n.js"></script>
   <script src="db.js?v=5"></script>
-  <script>
-    // AUTO-ACCEPT CONFIRMS FOR AUTOMATED TESTING
-    window.confirm = function (msg) { console.log('Auto-confirm: ' + msg); return true; };
-  </script>
   <style>
     :root {
       --dark: #070c18;
@@ -854,10 +850,11 @@
         <button class="tab-btn" data-tab="config" data-i18n="admin_tab_config">⚙️ Configuració</button>
       </div>
       <div class="admin-actions">
-      <select class="lang-selector" aria-label="Idioma" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 4px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; margin-right: 10px;">
-        <option value="ca">VAL</option>
-        <option value="es" style="color: black;">ESP</option>
-      </select>
+        <select class="lang-selector" aria-label="Idioma"
+          style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 4px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; margin-right: 10px;">
+          <option value="ca">VAL</option>
+          <option value="es" style="color: black;">ESP</option>
+        </select>
         <a href="tournament.html" class="hd-link" data-i18n="admin_link_pub">🏆 Pública</a>
         <a href="game.html" class="hd-link" data-i18n="admin_link_game">⚽ Joc</a>
         <button class="logout-btn" id="logoutBtn" data-i18n="logout">Tancar sessió</button>
@@ -872,7 +869,8 @@
 
         <!-- Live Match (Partido en Curso) -->
         <div class="add-match-form" style="border-color:var(--gold)">
-          <div class="aform-title" style="color:var(--gold)" data-i18n="admin_live_match">🔴 Partido en Curso (Apuestas en Vivo)</div>
+          <div class="aform-title" style="color:var(--gold)" data-i18n="admin_live_match">🔴 Partido en Curso (Apuestas
+            en Vivo)</div>
           <div id="activeMatchWrap">
             <!-- Rendered via JS -->
           </div>
@@ -911,17 +909,20 @@
         <div class="panel-title" data-i18n="admin_tour_title">🌍 Torneig Mundial (32 Equips)</div>
 
         <div class="danger-zone" style="background:rgba(245,197,24,0.05); border-color:rgba(245,197,24,0.2);">
-          <div class="danger-title" style="color:var(--gold);" data-i18n="admin_tour_creator">🛠️ Creador de Tornejos</div>
+          <div class="danger-title" style="color:var(--gold);" data-i18n="admin_tour_creator">🛠️ Creador de Tornejos
+          </div>
           <div class="danger-action" style="border-bottom:none; padding-bottom:0;">
             <div class="danger-action-info">
               <h4 style="color:var(--text);">Estat: <span id="tourSelectedCount">0</span>/32 equips seleccionats</h4>
-              <p data-i18n="admin_tour_creator_desc">Selecciona manualment o genera aleatòriament els equips participants.</p>
+              <p data-i18n="admin_tour_creator_desc">Selecciona manualment o genera aleatòriament els equips
+                participants.</p>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
               <button class="btn-danger"
                 style="background:rgba(96,165,250,0.12); color:var(--blue); border-color:rgba(96,165,250,0.3);"
                 id="btnTourRandom" data-i18n="admin_btn_random">🎲 Aleatori</button>
-              <button class="btn-save" id="btnTourGenerate" style="opacity:0.5; pointer-events:none;" data-i18n="admin_btn_draw">⚽ Sortear
+              <button class="btn-save" id="btnTourGenerate" style="opacity:0.5; pointer-events:none;"
+                data-i18n="admin_btn_draw">⚽ Sortear
                 Grups</button>
             </div>
           </div>
@@ -929,26 +930,31 @@
 
         <div class="teams-admin-grid" id="tourTeamsGrid"></div>
 
-        <div class="panel-title" style="margin-top:30px; display:none;" id="tourActiveTitle" data-i18n="admin_tour_active_title">🏆 Grups del Torneig Actual
+        <div class="panel-title" style="margin-top:30px; display:none;" id="tourActiveTitle"
+          data-i18n="admin_tour_active_title">🏆 Grups del Torneig Actual
         </div>
         <div id="tourActiveGroups"
           style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
 
-        <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle" data-i18n="admin_tour_bracket_title">⚔️ Fase Eliminatoria
+        <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle"
+          data-i18n="admin_tour_bracket_title">⚔️ Fase Eliminatoria
           (Bracket)</div>
         <button class="btn-save" id="btnTourGenerateBracket"
-          style="display:none; margin-bottom:20px; background:linear-gradient(135deg,var(--red),#ff6b6b)" data-i18n="admin_btn_generate_bracket">⚔️ Generar
+          style="display:none; margin-bottom:20px; background:linear-gradient(135deg,var(--red),#ff6b6b)"
+          data-i18n="admin_btn_generate_bracket">⚔️ Generar
           Cuadro (Octavos)</button>
         <div id="tourBracketWrap" style="display:flex; flex-direction:column; gap:20px;"></div>
       </div>
 
       <!-- ── TAB: EQUIPS ── -->
       <div class="tab-panel" id="tab-equips">
-        <div class="panel-title">👥 Gestió d'Equips <span style="font-size:0.8rem;color:var(--muted);font-weight:400" data-i18n="admin_teams_desc">—
+        <div class="panel-title">👥 Gestió d'Equips <span style="font-size:0.8rem;color:var(--muted);font-weight:400"
+            data-i18n="admin_teams_desc">—
             Reinicia l'estat "jugat" d'un equip perquè pugui tornar a participar</span></div>
         <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-reset-team" id="resetAllTeamsBtn"
-            style="background:rgba(96,165,250,0.1);color:var(--blue);border-color:rgba(96,165,250,0.25)" data-i18n="admin_btn_reset_teams">🔄 Reiniciar
+            style="background:rgba(96,165,250,0.1);color:var(--blue);border-color:rgba(96,165,250,0.25)"
+            data-i18n="admin_btn_reset_teams">🔄 Reiniciar
             tots els equips</button>
         </div>
         <div class="teams-admin-grid" id="teamsAdminGrid"></div>
@@ -976,14 +982,16 @@
               <h4 data-i18n="admin_reset_teams_title">Reiniciar equips jugats</h4>
               <p data-i18n="admin_reset_teams_desc">Permet que tots els equips puguin tornar a ser seleccionats.</p>
             </div>
-            <button class="btn-danger" id="cfgResetTeams" data-i18n="admin_btn_reset_teams_2">🔄 Reiniciar equips</button>
+            <button class="btn-danger" id="cfgResetTeams" data-i18n="admin_btn_reset_teams_2">🔄 Reiniciar
+              equips</button>
           </div>
           <div class="danger-action">
             <div class="danger-action-info">
               <h4 data-i18n="admin_clear_matches_title">Esborrar tots els partits</h4>
               <p data-i18n="admin_clear_matches_desc">Esborra l'historial de partits però manté els equips jugats.</p>
             </div>
-            <button class="btn-danger" id="cfgClearMatches" data-i18n="admin_btn_clear_matches">🗑️ Esborrar partits</button>
+            <button class="btn-danger" id="cfgClearMatches" data-i18n="admin_btn_clear_matches">🗑️ Esborrar
+              partits</button>
           </div>
           <div class="danger-action">
             <div class="danger-action-info">
@@ -995,7 +1003,8 @@
         </div>
 
         <div class="add-match-form" style="margin-bottom:20px;">
-          <div class="aform-title" style="color:var(--blue)" data-i18n="admin_tg_title">✈️ Configuració de Telegram</div>
+          <div class="aform-title" style="color:var(--blue)" data-i18n="admin_tg_title">✈️ Configuració de Telegram
+          </div>
           <div style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">
             Configura el Bot de Telegram per enviar automàticament els resultats dels partits finalitzats i generar el
             codi QR públic.
@@ -1543,11 +1552,16 @@
       let distributed = 0;
       for (const [uid, userBets] of Object.entries(betsData)) {
         const bet = userBets[mId];
-        if (bet && bet.prediction === winnerTeam.name) {
-          const prize = bet.amount * 2;
-          await DB.updateUserBalance(uid, prize);
-          winnersCount++;
-          distributed += prize;
+        if (bet) {
+          if (bet.prediction === winnerTeam.name) {
+            const prize = bet.amount * 2;
+            await DB.updateUserBalance(uid, prize);
+            winnersCount++;
+            distributed += prize;
+            await DB.addInboxMessage(uid, { title: '✅ Aposta Eliminatoria!', text: `Has encertat la victòria de ${winnerTeam.name}. Guanyes ${prize}€.`, amount: prize, type: 'win' });
+          } else {
+            await DB.addInboxMessage(uid, { title: '❌ Aposta Eliminatoria', text: `No has encertat el partit. Guanyador real: ${winnerTeam.name}.`, amount: 0, type: 'loss' });
+          }
         }
       }
 
@@ -1826,8 +1840,6 @@
         await DB.clearLiveBets(activeMatch.id);
         await DB.clearActiveMatch();
 
-        await sendTelegramMessage(matchData);
-
         await renderAll();
         showToast(`✅ Finalizado. ${winnersCount} ganadores. Repartidos ${distributed}€`, 'success');
       } catch (e) { showToast('❌ Error: ' + e.message, 'error'); }
@@ -1905,9 +1917,6 @@
 
         document.getElementById('addScore1').value = 0;
         document.getElementById('addScore2').value = 0;
-
-        await sendTelegramMessage(matchData);
-
         await renderAll();
         showToast('✅ Partit afegit!', 'success');
         if (winnersCount > 0) {

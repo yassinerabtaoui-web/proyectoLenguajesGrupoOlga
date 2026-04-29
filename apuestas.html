@@ -1,12 +1,13 @@
 <!DOCTYPE html>
 <html lang="ca">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title data-i18n="dash_title">🎲 La Porra – Chapas 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
-  
+
   <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
   <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -16,16 +17,12 @@
   <script src="auth.js?v=5"></script>
   <script src="i18n.js"></script>
   <script src="db.js?v=5"></script>
-  <script>
-    // AUTO-ACCEPT CONFIRMS FOR AUTOMATED TESTING
-    window.confirm = function(msg) { console.log('Auto-confirm: ' + msg); return true; };
-  </script>
-  
+
   <style>
     :root {
       --dark: #070c18;
       --surface: #1a2540;
-      --border: rgba(255,255,255,0.08);
+      --border: rgba(255, 255, 255, 0.08);
       --text: #f0f4ff;
       --muted: #8094b8;
       --gold: #f5c518;
@@ -36,13 +33,35 @@
       --radius-sm: 8px;
       --transition: 180ms ease;
     }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'Outfit', sans-serif; background: var(--dark); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
-    button { font-family: 'Outfit', sans-serif; cursor: pointer; }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--dark);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button {
+      font-family: 'Outfit', sans-serif;
+      cursor: pointer;
+    }
 
     /* ── DASHBOARD ── */
-    #dashboard { display: none; flex-direction: column; min-height: 100vh; }
-    
+    #dashboard {
+      display: none;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
     #loadingScreen {
       min-height: 100vh;
       display: flex;
@@ -65,8 +84,24 @@
       flex-wrap: wrap;
       min-height: 56px;
     }
-    .admin-brand { font-weight: 900; font-size: 0.95rem; padding: 16px 20px 16px 0; border-right: 1px solid var(--border); margin-right: 20px; color: var(--gold); white-space: nowrap; }
-    .admin-tabs { display: flex; gap: 2px; flex: 1; flex-wrap: wrap; }
+
+    .admin-brand {
+      font-weight: 900;
+      font-size: 0.95rem;
+      padding: 16px 20px 16px 0;
+      border-right: 1px solid var(--border);
+      margin-right: 20px;
+      color: var(--gold);
+      white-space: nowrap;
+    }
+
+    .admin-tabs {
+      display: flex;
+      gap: 2px;
+      flex: 1;
+      flex-wrap: wrap;
+    }
+
     .tab-btn {
       padding: 8px 16px;
       background: none;
@@ -77,20 +112,38 @@
       border-radius: var(--radius-sm);
       transition: all var(--transition);
     }
-    .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-    .tab-btn.active { color: var(--gold); background: rgba(245,197,24,0.1); }
-    .admin-actions { display: flex; gap: 8px; margin-left: auto; padding: 8px 0; }
+
+    .tab-btn:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .tab-btn.active {
+      color: var(--gold);
+      background: rgba(245, 197, 24, 0.1);
+    }
+
+    .admin-actions {
+      display: flex;
+      gap: 8px;
+      margin-left: auto;
+      padding: 8px 0;
+    }
+
     .logout-btn {
       padding: 6px 12px;
-      background: rgba(248,113,113,0.1);
-      border: 1px solid rgba(248,113,113,0.25);
+      background: rgba(248, 113, 113, 0.1);
+      border: 1px solid rgba(248, 113, 113, 0.25);
       border-radius: 99px;
       color: var(--red);
       font-size: 0.78rem;
       font-weight: 700;
       transition: all var(--transition);
     }
-    .logout-btn:hover { background: rgba(248,113,113,0.2); }
+
+    .logout-btn:hover {
+      background: rgba(248, 113, 113, 0.2);
+    }
 
     .hd-link {
       padding: 6px 12px;
@@ -99,45 +152,115 @@
       font-weight: 700;
       text-decoration: none;
       border: 1px solid var(--border);
-      background: rgba(255,255,255,0.04);
+      background: rgba(255, 255, 255, 0.04);
       color: var(--muted);
       transition: all var(--transition);
     }
-    .hd-link:hover { color: var(--text); border-color: rgba(255,255,255,0.2); }
+
+    .hd-link:hover {
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
 
     /* Content area */
-    .admin-content { flex: 1; max-width: 1100px; margin: 0 auto; padding: 28px 16px 60px; width: 100%; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-    .panel-title { font-size: 1.1rem; font-weight: 800; margin-bottom: 16px; color: var(--text); }
+    .admin-content {
+      flex: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 28px 16px 60px;
+      width: 100%;
+    }
+
+    .tab-panel {
+      display: none;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: var(--text);
+    }
 
     /* Empty state */
-    .empty-state { text-align: center; padding: 48px 20px; color: var(--muted); }
-    .empty-icon { font-size: 2.5rem; margin-bottom: 10px; }
-    .empty-text { font-size: 0.95rem; }
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: var(--muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-text {
+      font-size: 0.95rem;
+    }
 
     /* Betting grid */
-    .groups-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; }
+    .groups-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+
     .group-card {
-      background: rgba(255,255,255,0.03);
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid var(--border);
       border-radius: var(--radius);
       padding: 16px;
     }
-    .group-title { font-weight: 900; color: var(--gold); margin-bottom: 12px; text-align: center; font-size: 1.1rem; letter-spacing: 0.05em; }
-    
-    .bet-match {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+
+    .group-title {
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 12px;
+      text-align: center;
+      font-size: 1.1rem;
+      letter-spacing: 0.05em;
     }
-    .bet-match:last-child { border-bottom: none; }
-    .bet-team { flex: 1; display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 0.9rem; }
-    .bet-team.right { justify-content: flex-end; flex-direction: row-reverse; }
-    
-    .bet-inputs { display: flex; align-items: center; gap: 6px; }
+
+    .bet-match {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    .bet-match:last-child {
+      border-bottom: none;
+    }
+
+    .bet-team {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .bet-team.right {
+      justify-content: flex-end;
+      flex-direction: row-reverse;
+    }
+
+    .bet-inputs {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .bet-input {
-      width: 44px; height: 36px;
-      background: rgba(255,255,255,0.08);
+      width: 44px;
+      height: 36px;
+      background: rgba(255, 255, 255, 0.08);
       border: 1px solid var(--border);
       border-radius: var(--radius-sm);
       color: var(--text);
@@ -148,429 +271,760 @@
       outline: none;
       transition: border-color var(--transition);
     }
-    .bet-input:focus { border-color: var(--gold); }
-    .bet-sep { font-weight: 900; color: var(--muted); }
+
+    .bet-input:focus {
+      border-color: var(--gold);
+    }
+
+    .bet-sep {
+      font-weight: 900;
+      color: var(--muted);
+    }
 
     .save-bets-btn {
-      display: block; width: 100%; padding: 14px; margin-top: 24px;
-      background: linear-gradient(135deg,#f5c518,#ff9d00); border: none; border-radius: var(--radius-sm);
-      color: #000; font-weight: 800; font-size: 1rem; transition: all var(--transition);
+      display: block;
+      width: 100%;
+      padding: 14px;
+      margin-top: 24px;
+      background: linear-gradient(135deg, #f5c518, #ff9d00);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #000;
+      font-weight: 800;
+      font-size: 1rem;
+      transition: all var(--transition);
     }
-    .save-bets-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(245,197,24,0.3); }
+
+    .save-bets-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(245, 197, 24, 0.3);
+    }
 
     /* Ranking Table */
-    .table-wrap { background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
-    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
-    thead th { padding: 12px; text-align: center; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--border); font-weight: 700; }
-    thead th:first-child, thead th:nth-child(2) { text-align: left; }
-    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
-    tbody tr:last-child { border-bottom: none; }
-    td { padding: 12px; text-align: center; color: var(--text); font-weight: 600; }
-    td:first-child { width: 40px; color: var(--muted); }
-    td:nth-child(2) { text-align: left; }
-    .pts-bold { font-weight: 900; color: var(--gold); font-size: 1.1rem; }
+    .table-wrap {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead th {
+      padding: 12px;
+      text-align: center;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+      border-bottom: 1px solid var(--border);
+      font-weight: 700;
+    }
+
+    thead th:first-child,
+    thead th:nth-child(2) {
+      text-align: left;
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    td {
+      padding: 12px;
+      text-align: center;
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    td:first-child {
+      width: 40px;
+      color: var(--muted);
+    }
+
+    td:nth-child(2) {
+      text-align: left;
+    }
+
+    .pts-bold {
+      font-weight: 900;
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
 
     /* Toast */
-    .toast { position: fixed; bottom: 24px; right: 24px; background: #1a2540; border: 1px solid var(--border); border-radius: 12px; padding: 14px 20px; font-size: 0.88rem; font-weight: 700; color: var(--text); box-shadow: 0 8px 24px rgba(0,0,0,0.4); transform: translateY(100px); opacity: 0; transition: all 0.3s ease; z-index: 2000; }
-    .toast.show { transform: translateY(0); opacity: 1; }
-    .toast.success { border-color: rgba(74,222,128,0.4); color: var(--green); }
-    .toast.error { border-color: rgba(248,113,113,0.4); color: var(--red); }
-    
-    .balance-badge { background: rgba(74,222,128,0.1); border: 1px solid rgba(74,222,128,0.3); color: var(--green); padding: 6px 12px; border-radius: 99px; font-weight: 800; font-size: 0.85rem; margin-right: 10px; }
-    .live-bet-card { background: linear-gradient(145deg, #1a2540, #131c31); border: 2px solid var(--gold); border-radius: var(--radius); padding: 20px; margin-bottom: 24px; position: relative; overflow: hidden; }
-    .live-bet-title { font-size: 1.2rem; font-weight: 900; color: var(--gold); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
-    .live-bet-title::before { content: ''; width: 10px; height: 10px; background: var(--red); border-radius: 50%; animation: pulse 1.5s infinite; }
-    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(248,113,113,0.7); } 70% { box-shadow: 0 0 0 10px rgba(248,113,113,0); } 100% { box-shadow: 0 0 0 0 rgba(248,113,113,0); } }
-    .live-bet-teams { display: flex; justify-content: space-around; align-items: center; font-size: 1.1rem; font-weight: 800; margin-bottom: 20px; }
-    .live-bet-vs { color: var(--muted); font-size: 0.9rem; }
-    .live-bet-options { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; }
-    .lbo-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 12px; color: var(--text); font-weight: 800; transition: all var(--transition); cursor: pointer; }
-    .lbo-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); }
-    .lbo-btn.selected { background: rgba(245,197,24,0.15); border-color: var(--gold); color: var(--gold); }
-    .live-bet-action { display: flex; gap: 10px; margin-top: 16px; align-items: center; }
-    .live-bet-input { flex: 1; padding: 12px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); border-radius: var(--radius-sm); color: var(--gold); font-weight: 900; font-size: 1.1rem; outline: none; }
-    .live-bet-input:focus { border-color: var(--gold); }
-    .live-bet-submit { padding: 12px 24px; background: linear-gradient(135deg,#f5c518,#ff9d00); border: none; border-radius: var(--radius-sm); color: #000; font-weight: 800; font-size: 1rem; cursor: pointer; }
-    .live-bet-submit:disabled { opacity: 0.5; cursor: not-allowed; }
-    .champion-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-top: 20px; }
-    .champ-btn { background: rgba(255,255,255,0.05); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; text-align: center; cursor: pointer; transition: all 0.2s; }
-    .champ-btn:hover { background: rgba(255,255,255,0.1); border-color: var(--gold); }
-    .champ-btn.selected { background: rgba(245,197,24,0.15); border-color: var(--gold); box-shadow: 0 0 15px rgba(245,197,24,0.3); }
-    .champ-flag { font-size: 2rem; margin-bottom: 8px; }
-    .champ-name { font-weight: 800; color: var(--text); }
-    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:1000; align-items:center; justify-content:center; }
-    .modal.open { display:flex; }
-    .modal-content { background:var(--surface); padding:24px; border-radius:var(--radius); border:1px solid var(--border); width:90%; max-width:400px; }
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1a2540;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 14px 20px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--text);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 2000;
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    .toast.success {
+      border-color: rgba(74, 222, 128, 0.4);
+      color: var(--green);
+    }
+
+    .toast.error {
+      border-color: rgba(248, 113, 113, 0.4);
+      color: var(--red);
+    }
+
+    .balance-badge {
+      background: rgba(74, 222, 128, 0.1);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      color: var(--green);
+      padding: 6px 12px;
+      border-radius: 99px;
+      font-weight: 800;
+      font-size: 0.85rem;
+      margin-right: 10px;
+    }
+
+    .live-bet-card {
+      background: linear-gradient(145deg, #1a2540, #131c31);
+      border: 2px solid var(--gold);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .live-bet-title {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--gold);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-bet-title::before {
+      content: '';
+      width: 10px;
+      height: 10px;
+      background: var(--red);
+      border-radius: 50%;
+      animation: pulse 1.5s infinite;
+    }
+
+    @keyframes pulse {
+      0% {
+        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0.7);
+      }
+
+      70% {
+        box-shadow: 0 0 0 10px rgba(248, 113, 113, 0);
+      }
+
+      100% {
+        box-shadow: 0 0 0 0 rgba(248, 113, 113, 0);
+      }
+    }
+
+    .live-bet-teams {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+
+    .live-bet-vs {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .live-bet-options {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    .lbo-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      color: var(--text);
+      font-weight: 800;
+      transition: all var(--transition);
+      cursor: pointer;
+    }
+
+    .lbo-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--gold);
+    }
+
+    .lbo-btn.selected {
+      background: rgba(245, 197, 24, 0.15);
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+
+    .live-bet-action {
+      display: flex;
+      gap: 10px;
+      margin-top: 16px;
+      align-items: center;
+    }
+
+    .live-bet-input {
+      flex: 1;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 1.1rem;
+      outline: none;
+    }
+
+    .live-bet-input:focus {
+      border-color: var(--gold);
+    }
+
+    .live-bet-submit {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #f5c518, #ff9d00);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #000;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .live-bet-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .champion-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .champ-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .champ-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--gold);
+    }
+
+    .champ-btn.selected {
+      background: rgba(245, 197, 24, 0.15);
+      border-color: var(--gold);
+      box-shadow: 0 0 15px rgba(245, 197, 24, 0.3);
+    }
+
+    .champ-flag {
+      font-size: 2rem;
+      margin-bottom: 8px;
+    }
+
+    .champ-name {
+      font-weight: 800;
+      color: var(--text);
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      padding: 24px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      width: 90%;
+      max-width: 400px;
+    }
   </style>
 </head>
+
 <body>
 
-<!-- ── LOADING SCREEN ── -->
-<div id="loadingScreen">
-  <div style="font-size:3rem;margin-bottom:10px;animation:spin 1s linear infinite">⚽</div>
-  <div data-i18n="loading">Verificant credencials...</div>
-</div>
-<style>@keyframes spin { 100% { transform:rotate(360deg); } }</style>
+  <!-- ── LOADING SCREEN ── -->
+  <div id="loadingScreen">
+    <div style="font-size:3rem;margin-bottom:10px;animation:spin 1s linear infinite">⚽</div>
+    <div data-i18n="loading">Verificant credencials...</div>
+  </div>
+  <style>
+    @keyframes spin {
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
 
-<!-- ── DASHBOARD ── -->
-<div id="dashboard">
-  <div class="admin-topbar">
-    <div class="admin-brand" data-i18n="dash_brand">🎲 La Porra 2026</div>
-    <div class="admin-tabs">
-      <button class="tab-btn active" data-tab="prediccions" data-i18n="dash_tab_pred">📝 Les Meves Prediccions</button>
-      <button class="tab-btn" data-tab="torneo" data-i18n="dash_tab_tour">🌍 Torneig</button>
-      <button class="tab-btn" data-tab="ranking" data-i18n="dash_tab_rank">🏆 Rànquing Porra</button>
+  <!-- ── DASHBOARD ── -->
+  <div id="dashboard">
+    <div class="admin-topbar">
+      <div class="admin-brand" data-i18n="dash_brand">🎲 La Porra 2026</div>
+      <div class="admin-tabs">
+        <button class="tab-btn active" data-tab="prediccions">📝 Les Meves Prediccions</button>
+        <button class="tab-btn" data-tab="torneo">🌍 Torneig</button>
+        <button class="tab-btn" data-tab="ranking">🏆 Rànquing Porra</button>
+        <button class="tab-btn" data-tab="inbox" id="btnInboxTab">📬 Bústia (0)</button>
+      </div>
+      <div class="admin-actions">
+        <select class="lang-selector" aria-label="Idioma"
+          style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 4px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; margin-right: 10px;">
+          <option value="ca">VAL</option>
+          <option value="es" style="color: black;">ESP</option>
+        </select>
+        <span class="balance-badge" id="userBalanceTxt" title="Fes clic per afegir saldo"
+          data-i18n-title="dash_balance_title" data-i18n-title="dash_balance_title"
+          style="cursor:pointer; transition: transform 0.2s;">💰 --</span>
+        <span style="color:var(--muted);font-size:0.8rem;margin-right:10px;display:flex;align-items:center;"
+          id="userEmailTxt"></span>
+        <a href="tournament.html" class="hd-link" data-i18n="dash_hd_link">🌍 Resultats Reals</a>
+        <button class="logout-btn" id="logoutBtn" data-i18n="logout">Tancar sessió</button>
+      </div>
     </div>
-    <div class="admin-actions">
-      <select class="lang-selector" aria-label="Idioma" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 4px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; margin-right: 10px;">
-        <option value="ca">VAL</option>
-        <option value="es" style="color: black;">ESP</option>
-      </select>
-      <span class="balance-badge" id="userBalanceTxt" title="Fes clic per afegir saldo" data-i18n-title="dash_balance_title" data-i18n-title="dash_balance_title" style="cursor:pointer; transition: transform 0.2s;">💰 --</span>
-      <span style="color:var(--muted);font-size:0.8rem;margin-right:10px;display:flex;align-items:center;" id="userEmailTxt"></span>
-      <a href="tournament.html" class="hd-link" data-i18n="dash_hd_link">🌍 Resultats Reals</a>
-      <button class="logout-btn" id="logoutBtn" data-i18n="logout">Tancar sessió</button>
+
+    <div class="admin-content">
+
+      <!-- ── TAB: PREDICCIONS ── -->
+      <div class="tab-panel active" id="tab-prediccions">
+        <div class="panel-title" data-i18n="dash_pred_title">📝 Fes la teva Porra</div>
+        <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;" data-i18n="dash_pred_desc">
+          Introdueix els resultats que creus que es donaran en els partits de la fase de grups.
+          Guanyaràs <strong>3 punts</strong> si encertes el resultat exacte, i <strong>1 punt</strong> si encertes el
+          guanyador o l'empat.
+        </p>
+
+        <div id="liveBettingWrap"></div>
+        <div id="bettingWrap"></div>
+
+        <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle">⚔️ Fase Eliminatoria
+          (Bracket)</div>
+        <div id="tourBracketWrap" style="display:flex; flex-direction:column; gap:20px;"></div>
+
+        <div id="groupBetsSummary"
+          style="background:rgba(0,0,0,0.3); padding:20px; border-radius:var(--radius); margin-top:24px; border:1px solid var(--border); display:none;">
+          <h4 style="color:var(--gold); margin-bottom:14px; font-size:1.1rem;" data-i18n="dash_summary_title">📊 Resum
+            d'Apostes de la Lligueta</h4>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;"><span
+              data-i18n="dash_summary_new">Partits nous a apostar:</span> <strong id="gb_count">0</strong></div>
+          <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;"><span
+              data-i18n="dash_summary_cost">Cost total (5€ / partit):</span> <strong id="gb_cost"
+              style="color:var(--red)">0€</strong></div>
+          <div style="display:flex; justify-content:space-between; font-size:0.95rem;"><span
+              data-i18n="dash_summary_pot">Guany potencial (15€ / partit):</span> <strong id="gb_pot"
+              style="color:var(--green)">0€</strong></div>
+        </div>
+
+        <button class="save-bets-btn" id="btnSaveBets" style="display:none;" data-i18n="dash_btn_save_bets">💾 Confirmar
+          i Pagar Apostes</button>
+      </div>
+
+      <!-- ── TAB: TORNEO ── -->
+      <div class="tab-panel" id="tab-torneo">
+        <div class="panel-title" data-i18n="dash_tour_title">🌍 Apostes de Torneig</div>
+        <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;" data-i18n="dash_tour_desc">
+          Tria la quantitat que vols apostar i selecciona el teu equip. Es restarà del teu saldo automàticament al
+          confirmar.
+        </p>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
+          <h3 style="color:var(--gold);" data-i18n="dash_tour_champ">🏆 Campió del Món (Cuota x3)</h3>
+          <input type="number" id="amt_champion" class="live-bet-input"
+            style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1"
+            oninput="updatePotentials()">
+        </div>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_champion"
+          data-i18n="dash_pot_champ">Guany potencial: 150€</p>
+        <div id="championBetWrap" style="margin-bottom:30px;"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
+          <h3 style="color:var(--text);" data-i18n="dash_tour_run">🥈 Subcampió (Cuota x2)</h3>
+          <input type="number" id="amt_runnerUp" class="live-bet-input"
+            style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1"
+            oninput="updatePotentials()">
+        </div>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_runnerUp" data-i18n="dash_pot_run">
+          Guany potencial: 100€</p>
+        <div id="runnerUpBetWrap" style="margin-bottom:30px;"></div>
+
+        <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
+          <h3 style="color:var(--blue);" data-i18n="dash_tour_semi">🎖️ Els 4 Semifinalistes (Cuota x5)</h3>
+          <input type="number" id="amt_semifinalists" class="live-bet-input"
+            style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1"
+            oninput="updatePotentials()">
+        </div>
+        <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_semifinalists"
+          data-i18n="dash_pot_semi">Selecciona 4 equips. Guany potencial: 250€</p>
+        <div id="semiBetWrap" style="margin-bottom:10px;"></div>
+        <button class="btn-save" id="btnSubmitSemis"
+          style="width:100%; padding:14px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(135deg,#60a5fa,#3b82f6); color:white; font-weight:bold; display:none;"
+          onclick="submitSemisBet()" data-i18n="dash_btn_semi">Apostar a Semifinalistes</button>
+      </div>
+
+      <!-- ── TAB: RÀNQUING ── -->
+      <div class="tab-panel" id="tab-ranking">
+        <div class="panel-title" data-i18n="dash_rank_title">🏆 Classificació de la Porra</div>
+        <div class="table-wrap" id="rankingWrap">
+          <div class="empty-state">
+            <div class="empty-icon">📊</div>
+            <div class="empty-text" data-i18n="dash_rank_loading">Carregant rànquing...</div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <!-- ── TAB: INBOX ── -->
+      <div class="tab-panel" id="tab-inbox">
+        <div class="panel-title">📬 Bústia i Apostes en Curs</div>
+        <div id="inboxPendingWrap" style="margin-bottom:30px;">
+          <h3 style="color:var(--gold); margin-bottom:15px; font-size:1.1rem;">⏳ Apostes en Curs</h3>
+          <div id="inboxPendingList"></div>
+        </div>
+        <div id="inboxMessagesWrap">
+          <h3 style="color:var(--text); margin-bottom:15px; font-size:1.1rem;">📥 Notificacions</h3>
+          <div id="inboxMessagesList"></div>
+        </div>
+      </div>
+
     </div>
   </div>
 
-  <div class="admin-content">
+  <!-- ── TOAST ── -->
+  <div class="toast" id="toast"></div>
 
-    <!-- ── TAB: PREDICCIONS ── -->
-    <div class="tab-panel active" id="tab-prediccions">
-      <div class="panel-title" data-i18n="dash_pred_title">📝 Fes la teva Porra</div>
-      <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;" data-i18n="dash_pred_desc">
-        Introdueix els resultats que creus que es donaran en els partits de la fase de grups. 
-        Guanyaràs <strong>3 punts</strong> si encertes el resultat exacte, i <strong>1 punt</strong> si encertes el guanyador o l'empat.
-      </p>
-      
-      <div id="liveBettingWrap"></div>
-      <div id="bettingWrap"></div>
-      
-      <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle">⚔️ Fase Eliminatoria (Bracket)</div>
-      <div id="tourBracketWrap" style="display:flex; flex-direction:column; gap:20px;"></div>
-      
-      <div id="groupBetsSummary" style="background:rgba(0,0,0,0.3); padding:20px; border-radius:var(--radius); margin-top:24px; border:1px solid var(--border); display:none;">
-        <h4 style="color:var(--gold); margin-bottom:14px; font-size:1.1rem;" data-i18n="dash_summary_title">📊 Resum d'Apostes de la Lligueta</h4>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;"><span data-i18n="dash_summary_new">Partits nous a apostar:</span> <strong id="gb_count">0</strong></div>
-        <div style="display:flex; justify-content:space-between; margin-bottom:8px; font-size:0.95rem;"><span data-i18n="dash_summary_cost">Cost total (5€ / partit):</span> <strong id="gb_cost" style="color:var(--red)">0€</strong></div>
-        <div style="display:flex; justify-content:space-between; font-size:0.95rem;"><span data-i18n="dash_summary_pot">Guany potencial (15€ / partit):</span> <strong id="gb_pot" style="color:var(--green)">0€</strong></div>
+  <!-- ── RECHARGE MODAL ── -->
+  <div class="modal" id="rechargeModal">
+    <div class="modal-content">
+      <h3 style="color:var(--gold); margin-bottom:10px;" data-i18n="dash_modal_add_title">Añadir Saldo</h3>
+      <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px;" data-i18n="dash_modal_add_desc">¿Cuánto saldo
+        quieres añadir? (Máximo 10000)</p>
+      <input type="number" id="rechargeAmount" class="live-bet-input"
+        style="width:100%; margin-bottom:15px; box-sizing:border-box;" placeholder="Ej. 100" min="1" max="10000" />
+      <div style="display:flex; gap:10px; justify-content:flex-end;">
+        <button class="btn-danger"
+          style="padding:10px 16px; border-radius:4px; border:none; color:white; cursor:pointer;"
+          onclick="closeRechargeModal()">Cancelar</button>
+        <button class="btn-save"
+          style="padding:10px 16px; border-radius:4px; border:none; cursor:pointer; background:linear-gradient(135deg,#f5c518,#ff9d00); color:black; font-weight:bold;"
+          onclick="confirmRecharge()" data-i18n="dash_modal_btn_add">✅ Añadir</button>
       </div>
-      
-      <button class="save-bets-btn" id="btnSaveBets" style="display:none;" data-i18n="dash_btn_save_bets">💾 Confirmar i Pagar Apostes</button>
-    </div>
-
-    <!-- ── TAB: TORNEO ── -->
-    <div class="tab-panel" id="tab-torneo">
-      <div class="panel-title" data-i18n="dash_tour_title">🌍 Apostes de Torneig</div>
-      <p style="color:var(--muted); margin-bottom:20px; font-size:0.9rem;" data-i18n="dash_tour_desc">
-        Tria la quantitat que vols apostar i selecciona el teu equip. Es restarà del teu saldo automàticament al confirmar.
-      </p>
-      
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
-        <h3 style="color:var(--gold);" data-i18n="dash_tour_champ">🏆 Campió del Món (Cuota x3)</h3>
-        <input type="number" id="amt_champion" class="live-bet-input" style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1" oninput="updatePotentials()">
-      </div>
-      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_champion" data-i18n="dash_pot_champ">Guany potencial: 150€</p>
-      <div id="championBetWrap" style="margin-bottom:30px;"></div>
-      
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
-        <h3 style="color:var(--text);" data-i18n="dash_tour_run">🥈 Subcampió (Cuota x2)</h3>
-        <input type="number" id="amt_runnerUp" class="live-bet-input" style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1" oninput="updatePotentials()">
-      </div>
-      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_runnerUp" data-i18n="dash_pot_run">Guany potencial: 100€</p>
-      <div id="runnerUpBetWrap" style="margin-bottom:30px;"></div>
-      
-      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-top:20px;">
-        <h3 style="color:var(--blue);" data-i18n="dash_tour_semi">🎖️ Els 4 Semifinalistes (Cuota x5)</h3>
-        <input type="number" id="amt_semifinalists" class="live-bet-input" style="width:120px; padding:8px; font-size:1rem;" placeholder="€" value="50" min="1" oninput="updatePotentials()">
-      </div>
-      <p style="color:var(--muted); font-size:0.8rem; margin-bottom:10px;" id="pot_semifinalists" data-i18n="dash_pot_semi">Selecciona 4 equips. Guany potencial: 250€</p>
-      <div id="semiBetWrap" style="margin-bottom:10px;"></div>
-      <button class="btn-save" id="btnSubmitSemis" style="width:100%; padding:14px; border:none; border-radius:8px; cursor:pointer; background:linear-gradient(135deg,#60a5fa,#3b82f6); color:white; font-weight:bold; display:none;" onclick="submitSemisBet()" data-i18n="dash_btn_semi">Apostar a Semifinalistes</button>
-    </div>
-
-    <!-- ── TAB: RÀNQUING ── -->
-    <div class="tab-panel" id="tab-ranking">
-      <div class="panel-title" data-i18n="dash_rank_title">🏆 Classificació de la Porra</div>
-      <div class="table-wrap" id="rankingWrap">
-        <div class="empty-state"><div class="empty-icon">📊</div><div class="empty-text" data-i18n="dash_rank_loading">Carregant rànquing...</div></div>
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<!-- ── TOAST ── -->
-<div class="toast" id="toast"></div>
-
-<!-- ── RECHARGE MODAL ── -->
-<div class="modal" id="rechargeModal">
-  <div class="modal-content">
-    <h3 style="color:var(--gold); margin-bottom:10px;" data-i18n="dash_modal_add_title">Añadir Saldo</h3>
-    <p style="color:var(--muted); font-size:0.9rem; margin-bottom:20px;" data-i18n="dash_modal_add_desc">¿Cuánto saldo quieres añadir? (Máximo 10000)</p>
-    <input type="number" id="rechargeAmount" class="live-bet-input" style="width:100%; margin-bottom:15px; box-sizing:border-box;" placeholder="Ej. 100" min="1" max="10000" />
-    <div style="display:flex; gap:10px; justify-content:flex-end;">
-      <button class="btn-danger" style="padding:10px 16px; border-radius:4px; border:none; color:white; cursor:pointer;" onclick="closeRechargeModal()">Cancelar</button>
-      <button class="btn-save" style="padding:10px 16px; border-radius:4px; border:none; cursor:pointer; background:linear-gradient(135deg,#f5c518,#ff9d00); color:black; font-weight:bold;" onclick="confirmRecharge()" data-i18n="dash_modal_btn_add">✅ Añadir</button>
     </div>
   </div>
-</div>
 
-<script>
-  let currentUserUid = null;
-  let currentUserEmail = null;
-  let tournamentGroups = null;
-  let matchesData = [];
+  <script>
+    let currentUserUid = null;
+    let currentUserEmail = null;
+    let tournamentGroups = null;
+    let matchesData = [];
 
-  // ── AUTH ──────────────────────────────────────────────────────
-  async function checkAuth() {
-    // Si estem aquí, podem ser 'client' o 'admin', però exigim estar logejats
-    await AUTH.getCurrentUser().then(async ({ user, role }) => {
-      if (!user) {
-        window.location.href = 'login.html';
-      } else {
-        currentUserUid = user.uid;
-        currentUserEmail = user.email || 'Usuari Anònim';
-        document.getElementById('userEmailTxt').textContent = '👤 ' + currentUserEmail;
-        
-        let bal = await DB.getUserBalance(currentUserUid);
-        if (bal === null) {
-          bal = await DB.updateUserBalance(currentUserUid, 20); // Regalo de bienvenida
-          setTimeout(() => showToast('🎁 ¡Regalo de bienvenida! Has recibido 20€ para apostar.', 'success'), 1000);
+    // ── AUTH ──────────────────────────────────────────────────────
+    async function checkAuth() {
+      // Si estem aquí, podem ser 'client' o 'admin', però exigim estar logejats
+      await AUTH.getCurrentUser().then(async ({ user, role }) => {
+        if (!user) {
+          window.location.href = 'login.html';
+        } else {
+          currentUserUid = user.uid;
+          currentUserEmail = user.email || 'Usuari Anònim';
+          document.getElementById('userEmailTxt').textContent = '👤 ' + currentUserEmail;
+
+          let bal = await DB.getUserBalance(currentUserUid);
+          if (bal === null) {
+            bal = await DB.updateUserBalance(currentUserUid, 20); // Regalo de bienvenida
+            setTimeout(() => showToast('🎁 ¡Regalo de bienvenida! Has recibido 20€ para apostar.', 'success'), 1000);
+          }
+
+          const balEl = document.getElementById('userBalanceTxt');
+          balEl.textContent = `💰 ${bal}€`;
+          balEl.onclick = () => {
+            document.getElementById('rechargeAmount').value = '';
+            document.getElementById('rechargeModal').classList.add('open');
+          };
+
+          document.getElementById('loadingScreen').style.display = 'none';
+          document.getElementById('dashboard').style.display = 'flex';
+          renderAll();
         }
-        
-        const balEl = document.getElementById('userBalanceTxt');
-        balEl.textContent = `💰 ${bal}€`;
-        balEl.onclick = () => {
-          document.getElementById('rechargeAmount').value = '';
-          document.getElementById('rechargeModal').classList.add('open');
-        };
+      });
+    }
 
-        document.getElementById('loadingScreen').style.display = 'none';
-        document.getElementById('dashboard').style.display = 'flex';
-        renderAll();
-      }
-    });
-  }
+    window.closeRechargeModal = () => document.getElementById('rechargeModal').classList.remove('open');
+    window.confirmRecharge = async () => {
+      const input = document.getElementById('rechargeAmount').value;
+      if (!input) return;
+      const amt = parseInt(input);
+      if (isNaN(amt) || amt < 1 || amt > 10000) return showToast('Cantidad inválida. Introduce entre 1 y 10000.', 'error');
 
-  window.closeRechargeModal = () => document.getElementById('rechargeModal').classList.remove('open');
-  window.confirmRecharge = async () => {
-    const input = document.getElementById('rechargeAmount').value;
-    if (!input) return;
-    const amt = parseInt(input);
-    if (isNaN(amt) || amt < 1 || amt > 10000) return showToast('Cantidad inválida. Introduce entre 1 y 10000.', 'error');
-    
-    closeRechargeModal();
-    const newBal = await DB.updateUserBalance(currentUserUid, amt);
-    document.getElementById('userBalanceTxt').textContent = `💰 ${newBal}€`;
-    showToast(`✅ Has añadido ${amt}€ a tu cuenta`, 'success');
-  };
-
-  checkAuth();
-
-  document.getElementById('logoutBtn').onclick = () => {
-    AUTH.logout();
-  };
-
-  // ── TABS ──────────────────────────────────────────────────────
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.onclick = () => {
-      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-      btn.classList.add('active');
-      document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      if (btn.dataset.tab === 'ranking') renderRanking();
+      closeRechargeModal();
+      const newBal = await DB.updateUserBalance(currentUserUid, amt);
+      document.getElementById('userBalanceTxt').textContent = `💰 ${newBal}€`;
+      showToast(`✅ Has añadido ${amt}€ a tu cuenta`, 'success');
     };
-  });
 
-  // ── DATA ──────────────────────────────────────────────────────
-  async function loadData() {
-    try {
-      if (window.DB) {
-        tournamentGroups = await DB.getTournamentGroups();
-        matchesData = await DB.getMatches();
-      } else {
-        tournamentGroups = JSON.parse(localStorage.getItem('porraTournamentGroups'));
-        matchesData = JSON.parse(localStorage.getItem('porraMatches') || '[]');
+    checkAuth();
+
+    document.getElementById('logoutBtn').onclick = () => {
+      AUTH.logout();
+    };
+
+    // ── TABS ──────────────────────────────────────────────────────
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.onclick = () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+        if (btn.dataset.tab === 'ranking') renderRanking();
+        if (btn.dataset.tab === 'inbox') {
+          DB.markInboxRead(currentUserUid).then(() => renderInbox());
+        }
+      };
+    });
+
+    // ── DATA ──────────────────────────────────────────────────────
+    async function loadData() {
+      try {
+        if (window.DB) {
+          tournamentGroups = await DB.getTournamentGroups();
+          matchesData = await DB.getMatches();
+        } else {
+          tournamentGroups = JSON.parse(localStorage.getItem('porraTournamentGroups'));
+          matchesData = JSON.parse(localStorage.getItem('porraMatches') || '[]');
+        }
+      } catch (e) {
+        console.warn("Error loading data:", e);
       }
-    } catch (e) {
-      console.warn("Error loading data:", e);
     }
-  }
 
-  // Generem tots els enfrontaments possibles dins d'un grup
-  function getGroupMatches(gTeams) {
-    const matches = [];
-    for (let i = 0; i < gTeams.length; i++) {
-      for (let j = i + 1; j < gTeams.length; j++) {
-        const id = `${gTeams[i].abbr}_VS_${gTeams[j].abbr}`;
-        matches.push({ id, team1: gTeams[i], team2: gTeams[j] });
+    // Generem tots els enfrontaments possibles dins d'un grup
+    function getGroupMatches(gTeams) {
+      const matches = [];
+      for (let i = 0; i < gTeams.length; i++) {
+        for (let j = i + 1; j < gTeams.length; j++) {
+          const id = `${gTeams[i].abbr}_VS_${gTeams[j].abbr}`;
+          matches.push({ id, team1: gTeams[i], team2: gTeams[j] });
+        }
       }
+      return matches;
     }
-    return matches;
-  }
 
-  // ── RENDER ────────────────────────────────────────────────────
-  let activeMatch = null;
-  const CHAMPION_COST = 50;
-  async function renderAll() {
-    await loadData();
-    activeMatch = await DB.getActiveMatch();
-    await renderLiveBetting();
-    await renderChampionBet();
-    renderBetting();
-    await renderUserBracket();
-    renderRanking(); // Preload ranking
-  }
+    // ── RENDER ────────────────────────────────────────────────────
+    let activeMatch = null;
+    const CHAMPION_COST = 50;
+    async function renderAll() {
+      await loadData();
+      activeMatch = await DB.getActiveMatch();
+      await renderLiveBetting();
+      await renderChampionBet();
+      renderBetting();
+      await renderUserBracket();
+      renderRanking(); // Preload ranking
+      await renderInbox(); // Load inbox
+    }
 
-  async function renderChampionBet() {
-    renderTournamentBets(); // Updated name
-  }
-  
-  let selectedSemis = [];
-  async function renderTournamentBets() {
-    const wrapChamp = document.getElementById('championBetWrap');
-    const wrapRun = document.getElementById('runnerUpBetWrap');
-    const wrapSemi = document.getElementById('semiBetWrap');
-    
-    const allBets = await DB.getTournamentBets();
-    const myBets = allBets[currentUserUid] || {};
+    async function renderChampionBet() {
+      renderTournamentBets(); // Updated name
+    }
 
-    // 1. Champion
-    if (myBets.champion) {
-      document.getElementById('amt_champion').style.display = 'none';
-      document.getElementById('pot_champion').style.display = 'none';
-      const t = ALL_TEAMS.find(x => x.name === myBets.champion.prediction);
-      wrapChamp.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center;">
+    let selectedSemis = [];
+    async function renderTournamentBets() {
+      const wrapChamp = document.getElementById('championBetWrap');
+      const wrapRun = document.getElementById('runnerUpBetWrap');
+      const wrapSemi = document.getElementById('semiBetWrap');
+
+      const allBets = await DB.getTournamentBets();
+      const myBets = allBets[currentUserUid] || {};
+
+      // 1. Champion
+      if (myBets.champion) {
+        document.getElementById('amt_champion').style.display = 'none';
+        document.getElementById('pot_champion').style.display = 'none';
+        const t = ALL_TEAMS.find(x => x.name === myBets.champion.prediction);
+        wrapChamp.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center;">
         <div class="live-bet-title" style="color:var(--green); justify-content:center;">✅ Aposta Registrada</div>
         <div class="champ-flag" style="font-size:4rem; margin:20px 0;">${t.flag}</div>
         <h2 style="margin:0; color:var(--text);">${t.name}</h2>
         <p style="color:var(--muted); margin-top:10px;">Apostaste ${myBets.champion.amount}€. Guany potencial: ${myBets.champion.amount * 3}€</p>
       </div>`;
-    } else {
-      document.getElementById('amt_champion').style.display = 'block';
-      document.getElementById('pot_champion').style.display = 'block';
-      let html = `<div class="champion-grid">`;
-      ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" onclick="selectTourBet('champion', '${t.name}')"><div class="champ-flag">${t.flag}</div><div class="champ-name">${t.name}</div></div>`; });
-      wrapChamp.innerHTML = html + `</div>`;
-    }
+      } else {
+        document.getElementById('amt_champion').style.display = 'block';
+        document.getElementById('pot_champion').style.display = 'block';
+        let html = `<div class="champion-grid">`;
+        ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" onclick="selectTourBet('champion', '${t.name}')"><div class="champ-flag">${t.flag}</div><div class="champ-name">${t.name}</div></div>`; });
+        wrapChamp.innerHTML = html + `</div>`;
+      }
 
-    // 2. RunnerUp
-    if (myBets.runnerUp) {
-      document.getElementById('amt_runnerUp').style.display = 'none';
-      document.getElementById('pot_runnerUp').style.display = 'none';
-      const t = ALL_TEAMS.find(x => x.name === myBets.runnerUp.prediction);
-      wrapRun.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:10px;">
+      // 2. RunnerUp
+      if (myBets.runnerUp) {
+        document.getElementById('amt_runnerUp').style.display = 'none';
+        document.getElementById('pot_runnerUp').style.display = 'none';
+        const t = ALL_TEAMS.find(x => x.name === myBets.runnerUp.prediction);
+        wrapRun.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:10px;">
         <div style="font-size:1.5rem;">${t.flag} ${t.name}</div>
         <p style="color:var(--muted); font-size:0.8rem;">Apostaste ${myBets.runnerUp.amount}€. Guany: ${myBets.runnerUp.amount * 2}€</p>
       </div>`;
-    } else {
-      document.getElementById('amt_runnerUp').style.display = 'block';
-      document.getElementById('pot_runnerUp').style.display = 'block';
-      let html = `<div class="champion-grid">`;
-      ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" style="padding:10px" onclick="selectTourBet('runnerUp', '${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
-      wrapRun.innerHTML = html + `</div>`;
-    }
+      } else {
+        document.getElementById('amt_runnerUp').style.display = 'block';
+        document.getElementById('pot_runnerUp').style.display = 'block';
+        let html = `<div class="champion-grid">`;
+        ALL_TEAMS.forEach(t => { html += `<div class="champ-btn" style="padding:10px" onclick="selectTourBet('runnerUp', '${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
+        wrapRun.innerHTML = html + `</div>`;
+      }
 
-    // 3. Semis
-    if (myBets.semifinalists) {
-      document.getElementById('amt_semifinalists').style.display = 'none';
-      document.getElementById('pot_semifinalists').style.display = 'none';
-      const preds = myBets.semifinalists.prediction;
-      let text = preds.map(n => {
-         const t = ALL_TEAMS.find(x => x.name === n);
-         return t ? `${t.flag} ${t.name}` : n;
-      }).join(' <span style="color:var(--border)">|</span> ');
-      
-      wrapSemi.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:15px;">
+      // 3. Semis
+      if (myBets.semifinalists) {
+        document.getElementById('amt_semifinalists').style.display = 'none';
+        document.getElementById('pot_semifinalists').style.display = 'none';
+        const preds = myBets.semifinalists.prediction;
+        let text = preds.map(n => {
+          const t = ALL_TEAMS.find(x => x.name === n);
+          return t ? `${t.flag} ${t.name}` : n;
+        }).join(' <span style="color:var(--border)">|</span> ');
+
+        wrapSemi.innerHTML = `<div class="live-bet-card" style="border-color:var(--green); text-align:center; padding:15px;">
         <div style="font-size:1.1rem; font-weight:800; margin-bottom:10px;">${text}</div>
         <p style="color:var(--muted); font-size:0.8rem;">Apostaste ${myBets.semifinalists.amount}€. Guany: ${myBets.semifinalists.amount * 5}€</p>
       </div>`;
-      document.getElementById('btnSubmitSemis').style.display = 'none';
-    } else {
-      document.getElementById('amt_semifinalists').style.display = 'block';
-      document.getElementById('pot_semifinalists').style.display = 'block';
-      let html = `<div class="champion-grid" id="semiGrid">`;
-      ALL_TEAMS.forEach(t => { html += `<div class="champ-btn semi-btn" id="semi_${t.name}" style="padding:10px" onclick="toggleSemi('${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
-      wrapSemi.innerHTML = html + `</div>`;
-      document.getElementById('btnSubmitSemis').style.display = 'block';
+        document.getElementById('btnSubmitSemis').style.display = 'none';
+      } else {
+        document.getElementById('amt_semifinalists').style.display = 'block';
+        document.getElementById('pot_semifinalists').style.display = 'block';
+        let html = `<div class="champion-grid" id="semiGrid">`;
+        ALL_TEAMS.forEach(t => { html += `<div class="champ-btn semi-btn" id="semi_${t.name}" style="padding:10px" onclick="toggleSemi('${t.name}')"><div class="champ-flag" style="font-size:1.2rem">${t.flag}</div><div class="champ-name" style="font-size:0.8rem">${t.name}</div></div>`; });
+        wrapSemi.innerHTML = html + `</div>`;
+        document.getElementById('btnSubmitSemis').style.display = 'block';
+      }
     }
-  }
 
-  window.updatePotentials = function() {
-    const c = parseInt(document.getElementById('amt_champion').value) || 0;
-    const r = parseInt(document.getElementById('amt_runnerUp').value) || 0;
-    const s = parseInt(document.getElementById('amt_semifinalists').value) || 0;
-    document.getElementById('pot_champion').textContent = `Guany potencial: ${c * 3}€`;
-    document.getElementById('pot_runnerUp').textContent = `Guany potencial: ${r * 2}€`;
-    document.getElementById('pot_semifinalists').textContent = `Selecciona 4 equips. Guany potencial: ${s * 5}€`;
-  }
-
-  window.toggleSemi = function(teamName) {
-    const el = document.getElementById('semi_'+teamName);
-    if (selectedSemis.includes(teamName)) {
-      selectedSemis = selectedSemis.filter(t => t !== teamName);
-      el.classList.remove('selected');
-    } else {
-      if (selectedSemis.length >= 4) return showToast('Només pots seleccionar 4 equips', 'error');
-      selectedSemis.push(teamName);
-      el.classList.add('selected');
+    window.updatePotentials = function () {
+      const c = parseInt(document.getElementById('amt_champion').value) || 0;
+      const r = parseInt(document.getElementById('amt_runnerUp').value) || 0;
+      const s = parseInt(document.getElementById('amt_semifinalists').value) || 0;
+      document.getElementById('pot_champion').textContent = `Guany potencial: ${c * 3}€`;
+      document.getElementById('pot_runnerUp').textContent = `Guany potencial: ${r * 2}€`;
+      document.getElementById('pot_semifinalists').textContent = `Selecciona 4 equips. Guany potencial: ${s * 5}€`;
     }
-    const btn = document.getElementById('btnSubmitSemis');
-    if (selectedSemis.length === 4) btn.style.opacity = '1';
-    else btn.style.opacity = '0.5';
-  }
 
-  window.submitSemisBet = async function() {
-    if (selectedSemis.length !== 4) return showToast('Has de seleccionar 4 equips', 'error');
-    
-    const amt = parseInt(document.getElementById('amt_semifinalists').value);
-    if (!amt || amt <= 0) return showToast('Introdueix una quantitat vàlida', 'error');
-    
-    if (!confirm(`¿Apostar ${amt}€ a aquests 4 semifinalistes?`)) return;
-    
-    const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < amt) return showToast('Saldo insuficient.', 'error');
-    
-    await DB.updateUserBalance(currentUserUid, -amt);
-    await DB.placeTournamentBet(currentUserUid, 'semifinalists', { prediction: selectedSemis, amount: amt });
-    
-    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
-    showToast('✅ Aposta de semifinals confirmada', 'success');
-    renderTournamentBets();
-  };
-
-  window.selectTourBet = async function(type, teamName) {
-    const typeNames = { champion: 'Campió', runnerUp: 'Subcampió' };
-    const amt = parseInt(document.getElementById('amt_' + type).value);
-    if (!amt || amt <= 0) return showToast('Introdueix una quantitat vàlida', 'error');
-    
-    if (!confirm(`¿Apostar ${amt}€ a que ${teamName} será ${typeNames[type]}?`)) return;
-    const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < amt) return showToast('Saldo insuficient.', 'error');
-    
-    await DB.updateUserBalance(currentUserUid, -amt);
-    await DB.placeTournamentBet(currentUserUid, type, { prediction: teamName, amount: amt });
-    
-    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
-    showToast(`✅ Aposta confirmada`, 'success');
-    renderTournamentBets();
-  };
-
-  let selectedLivePrediction = null;
-  async function renderLiveBetting() {
-    const wrap = document.getElementById('liveBettingWrap');
-    if (!activeMatch) {
-      wrap.innerHTML = '';
-      return;
+    window.toggleSemi = function (teamName) {
+      const el = document.getElementById('semi_' + teamName);
+      if (selectedSemis.includes(teamName)) {
+        selectedSemis = selectedSemis.filter(t => t !== teamName);
+        el.classList.remove('selected');
+      } else {
+        if (selectedSemis.length >= 4) return showToast('Només pots seleccionar 4 equips', 'error');
+        selectedSemis.push(teamName);
+        el.classList.add('selected');
+      }
+      const btn = document.getElementById('btnSubmitSemis');
+      if (selectedSemis.length === 4) btn.style.opacity = '1';
+      else btn.style.opacity = '0.5';
     }
-    
-    const liveBets = await DB.getLiveBets(activeMatch.id);
-    const myBet = liveBets[currentUserUid];
 
-    if (myBet) {
-      const pText = myBet.prediction === 'team1' ? activeMatch.team1.name : (myBet.prediction === 'team2' ? activeMatch.team2.name : 'Empate');
-      wrap.innerHTML = `<div class="live-bet-card" style="border-color:var(--green)">
+    window.submitSemisBet = async function () {
+      if (selectedSemis.length !== 4) return showToast('Has de seleccionar 4 equips', 'error');
+
+      const amt = parseInt(document.getElementById('amt_semifinalists').value);
+      if (!amt || amt <= 0) return showToast('Introdueix una quantitat vàlida', 'error');
+
+      if (!confirm(`¿Apostar ${amt}€ a aquests 4 semifinalistes?`)) return;
+
+      const bal = await DB.getUserBalance(currentUserUid);
+      if (bal < amt) return showToast('Saldo insuficient.', 'error');
+
+      await DB.updateUserBalance(currentUserUid, -amt);
+      await DB.placeTournamentBet(currentUserUid, 'semifinalists', { prediction: selectedSemis, amount: amt });
+
+      document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
+      showToast('✅ Aposta de semifinals confirmada', 'success');
+      renderTournamentBets();
+    };
+
+    window.selectTourBet = async function (type, teamName) {
+      const typeNames = { champion: 'Campió', runnerUp: 'Subcampió' };
+      const amt = parseInt(document.getElementById('amt_' + type).value);
+      if (!amt || amt <= 0) return showToast('Introdueix una quantitat vàlida', 'error');
+
+      if (!confirm(`¿Apostar ${amt}€ a que ${teamName} será ${typeNames[type]}?`)) return;
+      const bal = await DB.getUserBalance(currentUserUid);
+      if (bal < amt) return showToast('Saldo insuficient.', 'error');
+
+      await DB.updateUserBalance(currentUserUid, -amt);
+      await DB.placeTournamentBet(currentUserUid, type, { prediction: teamName, amount: amt });
+
+      document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
+      showToast(`✅ Aposta confirmada`, 'success');
+      renderTournamentBets();
+    };
+
+    let selectedLivePrediction = null;
+    async function renderLiveBetting() {
+      const wrap = document.getElementById('liveBettingWrap');
+      if (!activeMatch) {
+        wrap.innerHTML = '';
+        return;
+      }
+
+      const liveBets = await DB.getLiveBets(activeMatch.id);
+      const myBet = liveBets[currentUserUid];
+
+      if (myBet) {
+        const pText = myBet.prediction === 'team1' ? activeMatch.team1.name : (myBet.prediction === 'team2' ? activeMatch.team2.name : 'Empate');
+        wrap.innerHTML = `<div class="live-bet-card" style="border-color:var(--green)">
         <div class="live-bet-title" style="color:var(--green)">✅ Apuesta en Vivo Registrada</div>
         <div class="live-bet-teams">
           <span>${activeMatch.team1.flag} ${activeMatch.team1.name}</span>
@@ -580,11 +1034,11 @@
         <p style="text-align:center; color:var(--text); font-weight:700;">Apostaste <strong style="color:var(--gold)">${myBet.amount}€</strong> a: ${pText}</p>
         <p style="text-align:center; color:var(--muted); font-size:0.85rem; margin-top:8px;">Cuota: x2.00. Ganancia potencial: ${myBet.amount * 2}€</p>
       </div>`;
-      return;
-    }
+        return;
+      }
 
-    selectedLivePrediction = null;
-    wrap.innerHTML = `<div class="live-bet-card">
+      selectedLivePrediction = null;
+      wrap.innerHTML = `<div class="live-bet-card">
       <div class="live-bet-title">🔴 Partido en Curso (Cuota x2.00)</div>
       <div class="live-bet-teams">
         <span>${activeMatch.team1.flag} ${activeMatch.team1.name}</span>
@@ -602,51 +1056,51 @@
       </div>
     </div>`;
 
-    document.getElementById('btnSubmitLiveBet').onclick = async () => {
-      const amt = parseInt(document.getElementById('liveBetAmount').value);
-      if (!amt || amt <= 0) return showToast('Introduce una cantidad válida', 'error');
-      if (!selectedLivePrediction) return showToast('Selecciona un resultado', 'error');
-      
-      const bal = await DB.getUserBalance(currentUserUid);
-      if (bal < amt) return showToast('Saldo insuficiente', 'error');
+      document.getElementById('btnSubmitLiveBet').onclick = async () => {
+        const amt = parseInt(document.getElementById('liveBetAmount').value);
+        if (!amt || amt <= 0) return showToast('Introduce una cantidad válida', 'error');
+        if (!selectedLivePrediction) return showToast('Selecciona un resultado', 'error');
 
-      // Deduct balance & save bet
-      await DB.updateUserBalance(currentUserUid, -amt);
-      await DB.placeLiveBet(currentUserUid, activeMatch.id, amt, selectedLivePrediction);
-      
-      document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
-      showToast('✅ Apuesta confirmada', 'success');
-      renderLiveBetting(); // Re-render to show success state
-    };
-  }
+        const bal = await DB.getUserBalance(currentUserUid);
+        if (bal < amt) return showToast('Saldo insuficiente', 'error');
 
-  window.selectLiveBet = function(pred, btn) {
-    selectedLivePrediction = pred;
-    document.querySelectorAll('.lbo-btn').forEach(b => b.classList.remove('selected'));
-    btn.classList.add('selected');
-    document.getElementById('btnSubmitLiveBet').disabled = false;
-  }
+        // Deduct balance & save bet
+        await DB.updateUserBalance(currentUserUid, -amt);
+        await DB.placeLiveBet(currentUserUid, activeMatch.id, amt, selectedLivePrediction);
 
-  async function renderBetting() {
-    const wrap = document.getElementById('bettingWrap');
-    if (!tournamentGroups || Object.keys(tournamentGroups).length === 0) {
-      wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El torneig encara no ha començat. Espera a que l\'administrador el creï.</div></div>';
-      document.getElementById('btnSaveBets').style.display = 'none';
-      return;
+        document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
+        showToast('✅ Apuesta confirmada', 'success');
+        renderLiveBetting(); // Re-render to show success state
+      };
     }
 
-    const userBets = await DB.getUserBets(currentUserUid);
+    window.selectLiveBet = function (pred, btn) {
+      selectedLivePrediction = pred;
+      document.querySelectorAll('.lbo-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      document.getElementById('btnSubmitLiveBet').disabled = false;
+    }
 
-    let html = '<div class="groups-grid">';
-    
-    Object.entries(tournamentGroups).forEach(([gName, gTeams]) => {
-      html += `<div class="group-card">
+    async function renderBetting() {
+      const wrap = document.getElementById('bettingWrap');
+      if (!tournamentGroups || Object.keys(tournamentGroups).length === 0) {
+        wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El torneig encara no ha començat. Espera a que l\'administrador el creï.</div></div>';
+        document.getElementById('btnSaveBets').style.display = 'none';
+        return;
+      }
+
+      const userBets = await DB.getUserBets(currentUserUid);
+
+      let html = '<div class="groups-grid">';
+
+      Object.entries(tournamentGroups).forEach(([gName, gTeams]) => {
+        html += `<div class="group-card">
         <div class="group-title">GRUP ${gName}</div>`;
-      
-      const possibleMatches = getGroupMatches(gTeams);
-      possibleMatches.forEach(m => {
-        const bet = userBets[m.id] || { score1: '', score2: '', paid: false };
-        html += `
+
+        const possibleMatches = getGroupMatches(gTeams);
+        possibleMatches.forEach(m => {
+          const bet = userBets[m.id] || { score1: '', score2: '', paid: false };
+          html += `
           <div class="bet-match">
             <div class="bet-team"><span>${m.team1.flag}</span><span>${m.team1.abbr}</span></div>
             <div class="bet-inputs">
@@ -657,136 +1111,136 @@
             <div class="bet-team right"><span>${m.team2.abbr}</span><span>${m.team2.flag}</span></div>
           </div>
         `;
+        });
+        html += `</div>`;
       });
-      html += `</div>`;
-    });
-    
-    html += '</div>';
-    wrap.innerHTML = html;
-    document.getElementById('btnSaveBets').style.display = 'block';
-    document.getElementById('groupBetsSummary').style.display = 'block';
-    calcGroupBets(); // Calc initial state
-  }
 
-  window.calcGroupBets = function() {
-    let newBetsCount = 0;
-    document.querySelectorAll('.in-score1').forEach(inp1 => {
-      const matchId = inp1.dataset.matchid;
-      const inp2 = document.querySelector(`.in-score2[data-matchid="${matchId}"]`);
-      if (inp1.value !== '' && inp2.value !== '' && inp1.dataset.paid !== 'true') {
-        newBetsCount++;
-      }
-    });
-    document.getElementById('gb_count').textContent = newBetsCount;
-    document.getElementById('gb_cost').textContent = (newBetsCount * 5) + '€';
-    document.getElementById('gb_pot').textContent = (newBetsCount * 15) + '€';
-    return newBetsCount;
-  };
-
-  // ── GUARDAR APOSTES ───────────────────────────────────────────
-  document.getElementById('btnSaveBets').onclick = async () => {
-    const newBetsCount = calcGroupBets();
-    const cost = newBetsCount * 5;
-    
-    if (newBetsCount === 0) {
-      return showToast('No hi ha apostes noves a pagar i guardar.', 'error');
+      html += '</div>';
+      wrap.innerHTML = html;
+      document.getElementById('btnSaveBets').style.display = 'block';
+      document.getElementById('groupBetsSummary').style.display = 'block';
+      calcGroupBets(); // Calc initial state
     }
-    
-    if (!confirm(`Anem a cobrar-te ${cost}€ per aquests ${newBetsCount} partits. Estàs segur?`)) return;
-    
-    const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < cost) return showToast('Saldo insuficient per pagar aquestes apostes.', 'error');
 
-    const btn = document.getElementById('btnSaveBets');
-    btn.disabled = true;
-    btn.textContent = 'Guardant...';
-    
-    try {
-      // Recopilar tots els inputs
-      const matchInputs = {};
+    window.calcGroupBets = function () {
+      let newBetsCount = 0;
       document.querySelectorAll('.in-score1').forEach(inp1 => {
         const matchId = inp1.dataset.matchid;
         const inp2 = document.querySelector(`.in-score2[data-matchid="${matchId}"]`);
-        
-        const s1 = inp1.value;
-        const s2 = inp2.value;
-        
-        if (s1 !== '' && s2 !== '') {
-          // Si ya está pagado no se vuelve a cobrar, pero mantenemos su estado
-          const isPaid = inp1.dataset.paid === 'true';
-          // Si no está pagado, lo marcamos como pagado al guardarlo
-          matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2), paid: true };
+        if (inp1.value !== '' && inp2.value !== '' && inp1.dataset.paid !== 'true') {
+          newBetsCount++;
         }
       });
+      document.getElementById('gb_count').textContent = newBetsCount;
+      document.getElementById('gb_cost').textContent = (newBetsCount * 5) + '€';
+      document.getElementById('gb_pot').textContent = (newBetsCount * 15) + '€';
+      return newBetsCount;
+    };
 
-      // Cobrar
-      await DB.updateUserBalance(currentUserUid, -cost);
+    // ── GUARDAR APOSTES ───────────────────────────────────────────
+    document.getElementById('btnSaveBets').onclick = async () => {
+      const newBetsCount = calcGroupBets();
+      const cost = newBetsCount * 5;
 
-      // Guardar a DB individualment (o millor seria en batch però db.js té saveUserBet)
-      for (const [matchId, data] of Object.entries(matchInputs)) {
-        await DB.saveUserBet(currentUserUid, matchId, data);
+      if (newBetsCount === 0) {
+        return showToast('No hi ha apostes noves a pagar i guardar.', 'error');
       }
-      
-      document.getElementById('userBalanceTxt').textContent = `💰 ${bal - cost}€`;
-      showToast(`✅ Prediccions guardades! S'han cobrat ${cost}€.`, 'success');
-      renderBetting(); // Refrescar para marcar como pagados los inputs
-    } catch (e) {
-      showToast('❌ Error al guardar: ' + e.message, 'error');
-    }
-    
-    btn.disabled = false;
-    btn.textContent = '💾 Confirmar i Pagar Apostes';
-  };
 
-  async function renderUserBracket() {
-    const bracket = await DB.getTournamentBracket();
-    const title = document.getElementById('tourBracketTitle');
-    const wrap = document.getElementById('tourBracketWrap');
-    
-    if (!bracket) {
-      title.style.display = 'none';
-      wrap.innerHTML = '';
-      return;
-    }
-    
-    const bracketBetsData = await DB.getBracketBets();
-    const myBracketBets = bracketBetsData[currentUserUid] || {};
+      if (!confirm(`Anem a cobrar-te ${cost}€ per aquests ${newBetsCount} partits. Estàs segur?`)) return;
 
-    title.style.display = 'block';
-    let html = '';
-    
-    const renderRound = (matches, roundTitle) => {
-      if (!matches || matches.length === 0) return '';
-      let res = `<div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
+      const bal = await DB.getUserBalance(currentUserUid);
+      if (bal < cost) return showToast('Saldo insuficient per pagar aquestes apostes.', 'error');
+
+      const btn = document.getElementById('btnSaveBets');
+      btn.disabled = true;
+      btn.textContent = 'Guardant...';
+
+      try {
+        // Recopilar tots els inputs
+        const matchInputs = {};
+        document.querySelectorAll('.in-score1').forEach(inp1 => {
+          const matchId = inp1.dataset.matchid;
+          const inp2 = document.querySelector(`.in-score2[data-matchid="${matchId}"]`);
+
+          const s1 = inp1.value;
+          const s2 = inp2.value;
+
+          if (s1 !== '' && s2 !== '') {
+            // Si ya está pagado no se vuelve a cobrar, pero mantenemos su estado
+            const isPaid = inp1.dataset.paid === 'true';
+            // Si no está pagado, lo marcamos como pagado al guardarlo
+            matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2), paid: true };
+          }
+        });
+
+        // Cobrar
+        await DB.updateUserBalance(currentUserUid, -cost);
+
+        // Guardar a DB individualment (o millor seria en batch però db.js té saveUserBet)
+        for (const [matchId, data] of Object.entries(matchInputs)) {
+          await DB.saveUserBet(currentUserUid, matchId, data);
+        }
+
+        document.getElementById('userBalanceTxt').textContent = `💰 ${bal - cost}€`;
+        showToast(`✅ Prediccions guardades! S'han cobrat ${cost}€.`, 'success');
+        renderBetting(); // Refrescar para marcar como pagados los inputs
+      } catch (e) {
+        showToast('❌ Error al guardar: ' + e.message, 'error');
+      }
+
+      btn.disabled = false;
+      btn.textContent = '💾 Confirmar i Pagar Apostes';
+    };
+
+    async function renderUserBracket() {
+      const bracket = await DB.getTournamentBracket();
+      const title = document.getElementById('tourBracketTitle');
+      const wrap = document.getElementById('tourBracketWrap');
+
+      if (!bracket) {
+        title.style.display = 'none';
+        wrap.innerHTML = '';
+        return;
+      }
+
+      const bracketBetsData = await DB.getBracketBets();
+      const myBracketBets = bracketBetsData[currentUserUid] || {};
+
+      title.style.display = 'block';
+      let html = '';
+
+      const renderRound = (matches, roundTitle) => {
+        if (!matches || matches.length === 0) return '';
+        let res = `<div style="background:rgba(0,0,0,0.2); padding:16px; border-radius:var(--radius); border:1px solid var(--border);">
         <h4 style="color:var(--gold); margin-bottom:12px;">${roundTitle}</h4>
         <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(250px, 1fr)); gap:10px;">`;
-      matches.forEach(m => {
-        if (!m) return;
-        const t1 = m.team1 ? `${m.team1.flag} ${m.team1.name}` : 'TBD';
-        const t2 = m.team2 ? `${m.team2.flag} ${m.team2.name}` : 'TBD';
-        const isT1Win = m.winner && m.winner.name === m.team1?.name;
-        const isT2Win = m.winner && m.winner.name === m.team2?.name;
-        
-        let betHtml = '';
-        if (m.team1 && m.team2) {
-          const myBet = myBracketBets[m.id];
-          if (myBet) {
-             const pText = myBet.prediction === m.team1.name ? m.team1.name : m.team2.name;
-             betHtml = `<div style="margin-top:10px; font-size:0.8rem; color:var(--green); text-align:center; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">
+        matches.forEach(m => {
+          if (!m) return;
+          const t1 = m.team1 ? `${m.team1.flag} ${m.team1.name}` : 'TBD';
+          const t2 = m.team2 ? `${m.team2.flag} ${m.team2.name}` : 'TBD';
+          const isT1Win = m.winner && m.winner.name === m.team1?.name;
+          const isT2Win = m.winner && m.winner.name === m.team2?.name;
+
+          let betHtml = '';
+          if (m.team1 && m.team2) {
+            const myBet = myBracketBets[m.id];
+            if (myBet) {
+              const pText = myBet.prediction === m.team1.name ? m.team1.name : m.team2.name;
+              betHtml = `<div style="margin-top:10px; font-size:0.8rem; color:var(--green); text-align:center; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">
                ✅ Apostaste <strong>${myBet.amount}€</strong> a ${pText}
              </div>`;
-          } else if (!m.winner) {
-             betHtml = `<div style="margin-top:10px; display:flex; gap:6px; flex-direction:column; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">
+            } else if (!m.winner) {
+              betHtml = `<div style="margin-top:10px; display:flex; gap:6px; flex-direction:column; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">
                <div style="display:flex; gap:6px;">
                  <input type="number" id="amt_${m.id}" placeholder="€" style="width:60px; padding:6px; border-radius:4px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:var(--gold);" min="1">
                  <button onclick="placeBracketBet('${m.id}', '${m.team1.name}')" style="flex:1; background:rgba(255,255,255,0.1); border:none; color:var(--text); border-radius:4px; cursor:pointer;">1</button>
                  <button onclick="placeBracketBet('${m.id}', '${m.team2.name}')" style="flex:1; background:rgba(255,255,255,0.1); border:none; color:var(--text); border-radius:4px; cursor:pointer;">2</button>
                </div>
              </div>`;
+            }
           }
-        }
 
-        res += `<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:var(--radius-sm); border:1px solid ${m.winner ? 'var(--green)' : 'var(--border)'};">
+          res += `<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:var(--radius-sm); border:1px solid ${m.winner ? 'var(--green)' : 'var(--border)'};">
           <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
             <span style="font-weight:800; ${isT1Win ? 'color:var(--green)' : ''}">${t1}</span>
           </div>
@@ -795,101 +1249,215 @@
           </div>
           ${betHtml}
         </div>`;
-      });
-      res += `</div></div>`;
-      return res;
-    };
+        });
+        res += `</div></div>`;
+        return res;
+      };
 
-    html += renderRound(bracket.roundOf16, 'Octavos de Final');
-    html += renderRound(bracket.quarterFinals, 'Cuartos de Final');
-    html += renderRound(bracket.semiFinals, 'Semifinales');
-    html += renderRound(bracket.final ? [bracket.final[0]] : bracket.final, 'Final');
+      html += renderRound(bracket.roundOf16, 'Octavos de Final');
+      html += renderRound(bracket.quarterFinals, 'Cuartos de Final');
+      html += renderRound(bracket.semiFinals, 'Semifinales');
+      html += renderRound(bracket.final ? [bracket.final[0]] : bracket.final, 'Final');
 
-    wrap.innerHTML = html;
-  }
-
-  window.placeBracketBet = async function(matchId, teamName) {
-    const input = document.getElementById('amt_' + matchId);
-    const amt = parseInt(input.value);
-    if (!amt || amt <= 0) return showToast('Introduce una cantidad válida', 'error');
-    
-    const bal = await DB.getUserBalance(currentUserUid);
-    if (bal < amt) return showToast('Saldo insuficiente', 'error');
-
-    await DB.updateUserBalance(currentUserUid, -amt);
-    await DB.placeBracketBet(currentUserUid, matchId, amt, teamName);
-    
-    document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
-    showToast('✅ Apuesta confirmada en el torneo', 'success');
-    renderUserBracket();
-  };
-
-  // ── RÀNQUING ──────────────────────────────────────────────────
-  async function renderRanking() {
-    const wrap = document.getElementById('rankingWrap');
-    
-    if (!tournamentGroups || Object.keys(tournamentGroups).length === 0) {
-      wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El torneig encara no ha començat.</div></div>';
-      return;
+      wrap.innerHTML = html;
     }
 
-    try {
-      const allUsers = await DB.getAllUsersBets();
-      const ranking = [];
+    async function renderInbox() {
+      // 1. Get messages
+      const msgs = await DB.getInbox(currentUserUid);
+      const unread = msgs.filter(m => !m.read).length;
+      const btn = document.getElementById('btnInboxTab');
+      btn.textContent = `📬 Bústia (${unread})`;
+      if (unread > 0) {
+        btn.style.color = 'var(--gold)';
+        btn.style.textShadow = '0 0 10px rgba(245,197,24,0.5)';
+      } else {
+        btn.style.color = '';
+        btn.style.textShadow = '';
+      }
 
-      // Mapejar resultats reals per matchId
-      const realResults = {};
-      matchesData.forEach(m => {
-        // En matches els equips poden estar en qualsevol ordre
-        const id1 = `${m.team1.abbr}_VS_${m.team2.abbr}`;
-        const id2 = `${m.team2.abbr}_VS_${m.team1.abbr}`;
-        realResults[id1] = { score1: m.score1, score2: m.score2, winner: m.winner };
-        // Si l'aposta estava invertida:
-        realResults[id2] = { score1: m.score2, score2: m.score1, winner: m.winner === 'team1' ? 'team2' : m.winner === 'team2' ? 'team1' : 'draw' };
-      });
+      const msgList = document.getElementById('inboxMessagesList');
+      if (msgs.length === 0) {
+        msgList.innerHTML = '<div class="empty-state"><div class="empty-icon">📭</div><div class="empty-text">No tens notificacions</div></div>';
+      } else {
+        msgList.innerHTML = msgs.map(m => {
+          const color = m.type === 'win' ? 'var(--green)' : m.type === 'loss' ? 'var(--red)' : 'var(--blue)';
+          const dateStr = new Date(m.timestamp).toLocaleString('ca-ES', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+          return `<div style="background:rgba(255,255,255,0.03); border-left:4px solid ${color}; padding:15px; border-radius:4px; margin-bottom:10px; position:relative;">
+          ${!m.read ? '<span style="position:absolute; top:15px; right:15px; width:8px; height:8px; background:var(--gold); border-radius:50%;"></span>' : ''}
+          <div style="font-weight:800; font-size:1.05rem; margin-bottom:6px; color:${color}">${m.title}</div>
+          <div style="font-size:0.9rem; color:var(--text); line-height:1.4;">${m.text}</div>
+          <div style="font-size:0.75rem; color:var(--muted); margin-top:8px;">${dateStr}</div>
+        </div>`;
+        }).join('');
+      }
 
-      // Calcular punts per cada usuari
-      Object.entries(allUsers).forEach(([uid, userData]) => {
-        let pts = 0;
-        let acertsExacs = 0;
-        let acertsGuanyador = 0;
-        
-        if (userData.role !== 'admin' && userData.bets) { // Podem excloure l'admin si volem
-          Object.entries(userData.bets).forEach(([matchId, bet]) => {
-            const real = realResults[matchId];
-            if (real) {
-              const betWinner = bet.score1 > bet.score2 ? 'team1' : bet.score2 > bet.score1 ? 'team2' : 'draw';
-              const realWinner = real.score1 > real.score2 ? 'team1' : real.score2 > real.score1 ? 'team2' : 'draw'; // Safe check
-              
-              if (bet.score1 === real.score1 && bet.score2 === real.score2) {
-                pts += 3; // Resultat exacte
-                acertsExacs++;
-              } else if (betWinner === realWinner) {
-                pts += 1; // Guanyador/Empat encertat
-                acertsGuanyador++;
-              }
+      // 2. Get pending bets
+      const pendingList = document.getElementById('inboxPendingList');
+      const userBets = await DB.getUserBets(currentUserUid);
+      const liveBets = activeMatch ? await DB.getLiveBets(activeMatch.id) : {};
+      const tourBets = await DB.getTournamentBets();
+      const myTourBets = tourBets[currentUserUid] || {};
+      const bracketBetsData = await DB.getBracketBets();
+      const myBracketBets = bracketBetsData[currentUserUid] || {};
+      const bracket = await DB.getTournamentBracket();
+
+      let pendingHtml = '';
+
+      // Group bets
+      if (tournamentGroups) {
+        Object.entries(tournamentGroups).forEach(([gName, gTeams]) => {
+          const pMatches = getGroupMatches(gTeams);
+          pMatches.forEach(m => {
+            const b = userBets[m.id];
+            if (b && b.paid && !b.resolved) {
+              pendingHtml += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+              <span>📝 <strong>Porra:</strong> ${m.team1.abbr} vs ${m.team2.abbr} (${b.score1}-${b.score2})</span>
+              <span style="color:var(--muted); font-size:0.85rem;">5€ -> <span style="color:var(--green); font-weight:bold;">15€</span></span>
+            </div>`;
             }
           });
-        }
-        
-        ranking.push({
-          uid,
-          email: userData.email || 'Usuari',
-          pts,
-          acertsExacs,
-          acertsGuanyador
         });
-      });
+      }
 
-      // Ordenar per punts descendent
-      ranking.sort((a, b) => b.pts - a.pts);
+      // Live bets
+      if (activeMatch && liveBets[currentUserUid]) {
+        const b = liveBets[currentUserUid];
+        pendingHtml += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>🔴 <strong>En Vivo:</strong> ${activeMatch.team1.abbr} vs ${activeMatch.team2.abbr} (Pred: ${b.prediction})</span>
+        <span style="color:var(--muted); font-size:0.85rem;">${b.amount}€ -> <span style="color:var(--green); font-weight:bold;">${b.amount * 2}€</span></span>
+      </div>`;
+      }
 
-      if (ranking.length === 0) {
-        wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No hi ha usuaris participants encara.</div></div>';
+      // Bracket bets
+      if (bracket) {
+        const checkBracketRound = (matches) => {
+          if (!matches) return;
+          matches.forEach(m => {
+            if (m && !m.winner && myBracketBets[m.id]) {
+              const b = myBracketBets[m.id];
+              pendingHtml += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+               <span>⚔️ <strong>Eliminatòria:</strong> ${m.team1.abbr} vs ${m.team2.abbr} (Pred: ${b.prediction})</span>
+               <span style="color:var(--muted); font-size:0.85rem;">${b.amount}€ -> <span style="color:var(--green); font-weight:bold;">${b.amount * 2}€</span></span>
+             </div>`;
+            }
+          });
+        };
+        checkBracketRound(bracket.roundOf16);
+        checkBracketRound(bracket.quarterFinals);
+        checkBracketRound(bracket.semiFinals);
+        if (bracket.final) checkBracketRound(bracket.final);
+      }
+
+      // Tour bets
+      if (myTourBets.champion && !myTourBets.champion.resolved) {
+        pendingHtml += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>🏆 <strong>Campió:</strong> ${myTourBets.champion.prediction}</span>
+        <span style="color:var(--muted); font-size:0.85rem;">${myTourBets.champion.amount}€ -> <span style="color:var(--green); font-weight:bold;">${myTourBets.champion.amount * 3}€</span></span>
+      </div>`;
+      }
+      if (myTourBets.runnerUp && !myTourBets.runnerUp.resolved) {
+        pendingHtml += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>🥈 <strong>Subcampió:</strong> ${myTourBets.runnerUp.prediction}</span>
+        <span style="color:var(--muted); font-size:0.85rem;">${myTourBets.runnerUp.amount}€ -> <span style="color:var(--green); font-weight:bold;">${myTourBets.runnerUp.amount * 2}€</span></span>
+      </div>`;
+      }
+      if (myTourBets.semifinalists && !myTourBets.semifinalists.resolved) {
+        pendingHtml += `<div style="background:rgba(255,255,255,0.05); padding:12px; border-radius:8px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
+        <span>🎖️ <strong>Semifinalistes:</strong> 4 Equips</span>
+        <span style="color:var(--muted); font-size:0.85rem;">${myTourBets.semifinalists.amount}€ -> <span style="color:var(--green); font-weight:bold;">${myTourBets.semifinalists.amount * 5}€</span></span>
+      </div>`;
+      }
+
+      if (!pendingHtml) {
+        pendingList.innerHTML = '<div style="color:var(--muted); font-size:0.9rem;">No tens apostes pendents en aquest moment.</div>';
+      } else {
+        pendingList.innerHTML = pendingHtml;
+      }
+    }
+
+    window.placeBracketBet = async function (matchId, teamName) {
+      const input = document.getElementById('amt_' + matchId);
+      const amt = parseInt(input.value);
+      if (!amt || amt <= 0) return showToast('Introduce una cantidad válida', 'error');
+
+      const bal = await DB.getUserBalance(currentUserUid);
+      if (bal < amt) return showToast('Saldo insuficiente', 'error');
+
+      await DB.updateUserBalance(currentUserUid, -amt);
+      await DB.placeBracketBet(currentUserUid, matchId, amt, teamName);
+
+      document.getElementById('userBalanceTxt').textContent = `💰 ${bal - amt}€`;
+      showToast('✅ Apuesta confirmada en el torneo', 'success');
+      renderUserBracket();
+    };
+
+    // ── RÀNQUING ──────────────────────────────────────────────────
+    async function renderRanking() {
+      const wrap = document.getElementById('rankingWrap');
+
+      if (!tournamentGroups || Object.keys(tournamentGroups).length === 0) {
+        wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-text">El torneig encara no ha començat.</div></div>';
         return;
       }
 
-      wrap.innerHTML = `<table>
+      try {
+        const allUsers = await DB.getAllUsersBets();
+        const ranking = [];
+
+        // Mapejar resultats reals per matchId
+        const realResults = {};
+        matchesData.forEach(m => {
+          // En matches els equips poden estar en qualsevol ordre
+          const id1 = `${m.team1.abbr}_VS_${m.team2.abbr}`;
+          const id2 = `${m.team2.abbr}_VS_${m.team1.abbr}`;
+          realResults[id1] = { score1: m.score1, score2: m.score2, winner: m.winner };
+          // Si l'aposta estava invertida:
+          realResults[id2] = { score1: m.score2, score2: m.score1, winner: m.winner === 'team1' ? 'team2' : m.winner === 'team2' ? 'team1' : 'draw' };
+        });
+
+        // Calcular punts per cada usuari
+        Object.entries(allUsers).forEach(([uid, userData]) => {
+          let pts = 0;
+          let acertsExacs = 0;
+          let acertsGuanyador = 0;
+
+          if (userData.role !== 'admin' && userData.bets) { // Podem excloure l'admin si volem
+            Object.entries(userData.bets).forEach(([matchId, bet]) => {
+              const real = realResults[matchId];
+              if (real) {
+                const betWinner = bet.score1 > bet.score2 ? 'team1' : bet.score2 > bet.score1 ? 'team2' : 'draw';
+                const realWinner = real.score1 > real.score2 ? 'team1' : real.score2 > real.score1 ? 'team2' : 'draw'; // Safe check
+
+                if (bet.score1 === real.score1 && bet.score2 === real.score2) {
+                  pts += 3; // Resultat exacte
+                  acertsExacs++;
+                } else if (betWinner === realWinner) {
+                  pts += 1; // Guanyador/Empat encertat
+                  acertsGuanyador++;
+                }
+              }
+            });
+          }
+
+          ranking.push({
+            uid,
+            email: userData.email || 'Usuari',
+            pts,
+            acertsExacs,
+            acertsGuanyador
+          });
+        });
+
+        // Ordenar per punts descendent
+        ranking.sort((a, b) => b.pts - a.pts);
+
+        if (ranking.length === 0) {
+          wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">👥</div><div class="empty-text">No hi ha usuaris participants encara.</div></div>';
+          return;
+        }
+
+        wrap.innerHTML = `<table>
         <thead><tr>
           <th>#</th><th>Usuari</th><th>Exactes (3p)</th><th>Tendència (1p)</th><th>PUNTS</th>
         </tr></thead>
@@ -903,22 +1471,23 @@
           </tr>`).join('')}
         </tbody>
       </table>`;
-    } catch (e) {
-      console.warn("Error calc ranking:", e);
-      wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">Error carregant el rànquing.</div></div>';
+      } catch (e) {
+        console.warn("Error calc ranking:", e);
+        wrap.innerHTML = '<div class="empty-state"><div class="empty-icon">❌</div><div class="empty-text">Error carregant el rànquing.</div></div>';
+      }
     }
-  }
 
-  // ── TOAST ─────────────────────────────────────────────────────
-  let toastTimer;
-  function showToast(msg, type = 'success') {
-    const el = document.getElementById('toast');
-    el.textContent = msg;
-    el.className = `toast ${type} show`;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
-  }
-</script>
+    // ── TOAST ─────────────────────────────────────────────────────
+    let toastTimer;
+    function showToast(msg, type = 'success') {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.className = `toast ${type} show`;
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
+    }
+  </script>
 
 </body>
+
 </html>
