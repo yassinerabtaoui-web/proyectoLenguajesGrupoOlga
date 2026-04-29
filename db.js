@@ -20,7 +20,7 @@ const DB = (() => {
   };
 
   const LOCAL_MATCHES = 'porraMatches';
-  const LOCAL_PLAYED = 'porraPlayedTeams';
+  const LOCAL_PLAYED  = 'porraPlayedTeams';
   const LOCAL_TOURNAMENT = 'porraTournamentGroups';
 
   // Sanitize team names for Firebase keys
@@ -33,7 +33,7 @@ const DB = (() => {
     try { return JSON.parse(localStorage.getItem(key)); } catch { return null; }
   }
   function lsSet(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch { }
+    try { localStorage.setItem(key, JSON.stringify(val)); } catch {}
   }
 
   return {
@@ -100,18 +100,18 @@ const DB = (() => {
       }
       const ms = (lsGet(LOCAL_MATCHES) || []).filter(m => m._key !== key && m.id != key);
       lsSet(LOCAL_MATCHES, ms);
-
+      
       // Recalculate played teams from remaining matches
       const names = new Set();
       ms.forEach(m => { names.add(m.team1.name); names.add(m.team2.name); });
       lsSet(LOCAL_PLAYED, Array.from(names));
-
+      
       if (isOnline()) {
         try {
           const obj = {};
           names.forEach(n => { obj[toKey(n)] = n; });
           await firebase.database().ref('playedTeams').set(names.size ? obj : null);
-        } catch (e) { }
+        } catch (e) {}
       }
     },
 
@@ -135,7 +135,7 @@ const DB = (() => {
       const current = lsGet(LOCAL_PLAYED) || [];
       teamNames.forEach(n => { if (!current.includes(n)) current.push(n); });
       lsSet(LOCAL_PLAYED, current);
-
+      
       // Push to Firebase
       if (isOnline()) {
         try {
@@ -154,7 +154,7 @@ const DB = (() => {
       if (isOnline()) {
         try {
           await firebase.database().ref('playedTeams/' + toKey(teamName)).remove();
-        } catch (e) { }
+        } catch (e) {}
       }
     },
 
@@ -163,7 +163,7 @@ const DB = (() => {
       if (isOnline()) {
         try {
           await firebase.database().ref('playedTeams').remove();
-        } catch (e) { }
+        } catch (e) {}
       }
     },
 
@@ -172,7 +172,7 @@ const DB = (() => {
       if (isOnline()) {
         try {
           await firebase.database().ref('matches').remove();
-        } catch (e) { }
+        } catch (e) {}
       }
     },
 
@@ -183,7 +183,7 @@ const DB = (() => {
           await firebase.database().ref('matches').remove();
           await firebase.database().ref('playedTeams').remove();
           await firebase.database().ref('tournamentGroups').remove();
-        } catch (e) { }
+        } catch (e) {}
       }
     },
 
@@ -201,7 +201,7 @@ const DB = (() => {
       lsSet('porraTournamentGroups', groups);
       if (isOnline()) {
         try { await firebase.database().ref('tournamentGroups').set(groups); }
-        catch (e) { }
+        catch (e) {}
       }
     },
     async getTournamentBracket() {
@@ -217,7 +217,7 @@ const DB = (() => {
       lsSet('porraTournamentBracket', bracket);
       if (isOnline()) {
         try { await firebase.database().ref('tournamentBracket').set(bracket); }
-        catch (e) { }
+        catch (e) {}
       }
     },
     async placeTournamentBet(uid, betType, data) {
@@ -229,7 +229,7 @@ const DB = (() => {
         return;
       }
       try { await firebase.database().ref(`tournamentBets/${uid}/${betType}`).set(data); }
-      catch (e) { }
+      catch (e) {}
     },
     async getTournamentBets() {
       if (!isOnline()) return lsGet('porraTournamentBets') || {};
@@ -248,7 +248,7 @@ const DB = (() => {
         return;
       }
       try { await firebase.database().ref(`bracketBets/${uid}/${matchId}`).set({ amount, prediction }); }
-      catch (e) { }
+      catch (e) {}
     },
     async getBracketBets() {
       if (!isOnline()) return lsGet('porraBracketBets') || {};
@@ -292,7 +292,7 @@ const DB = (() => {
           const key = localStorage.key(i);
           if (key.startsWith('porraBets_')) {
             const uid = key.replace('porraBets_', '');
-            result[uid] = { bets: lsGet(key), email: 'Local User ' + uid.substring(0, 4) };
+            result[uid] = { bets: lsGet(key), email: 'Local User ' + uid.substring(0,4) };
           }
         }
         return result;
@@ -303,6 +303,26 @@ const DB = (() => {
       } catch (e) {
         console.warn('Firebase getAllUsersBets error:', e);
         return {};
+      }
+    },
+
+    async deleteUser(uid) {
+      if (!isOnline()) {
+        localStorage.removeItem('porraBets_' + uid);
+        localStorage.removeItem('porraBalance_' + uid);
+        return;
+      }
+      try {
+        // Obtenemos los datos del usuario antes de borrar
+        const userRef = firebase.database().ref(`users/${uid}`);
+        await userRef.remove();
+        
+        // Limpiamos apuestas del bracket y del torneo
+        await firebase.database().ref(`bracketBets/${uid}`).remove();
+        await firebase.database().ref(`tournamentBets/${uid}`).remove();
+      } catch (e) {
+        console.warn('Firebase deleteUser error:', e);
+        throw e;
       }
     },
 
@@ -370,45 +390,29 @@ const DB = (() => {
       catch (e) { console.warn(e); }
     },
 
-    // ── INBOX (NOTIFICATIONS) ────────────────────────────────
-    async addInboxMessage(uid, message) {
-      const msg = { ...message, id: Date.now(), timestamp: new Date().toISOString(), read: false };
-      if (!isOnline()) {
-        const inbox = lsGet('porraInbox_' + uid) || [];
-        inbox.unshift(msg);
-        lsSet('porraInbox_' + uid, inbox);
-        return;
+    // ── TELEGRAM ─────────────────────────────────────────────
+    async getTelegramConfig() {
+      const defaultCfg = { botToken: '8687020028:AAGQF3ytcAozGPU3JamjlqInl3DSNMHvngw', channelId: '@apuestas_lenguajes' };
+      let cfg = null;
+      if (isOnline()) {
+        try {
+          const snapshot = await firebase.database().ref('telegramConfig').once('value');
+          cfg = snapshot.val();
+        } catch (e) {}
+      } else {
+        cfg = lsGet('porraTelegramConfig');
       }
-      try {
-        await firebase.database().ref(`users/${uid}/inbox/${msg.id}`).set(msg);
-      } catch (e) { console.warn(e); }
+      return {
+        botToken: (cfg && cfg.botToken) ? cfg.botToken : defaultCfg.botToken,
+        channelId: (cfg && cfg.channelId) ? cfg.channelId : defaultCfg.channelId
+      };
     },
-    async getInbox(uid) {
-      if (!isOnline()) return lsGet('porraInbox_' + uid) || [];
-      try {
-        const snapshot = await firebase.database().ref(`users/${uid}/inbox`).once('value');
-        const data = snapshot.val();
-        if (!data) return [];
-        return Object.values(data).sort((a, b) => b.timestamp.localeCompare(a.timestamp));
-      } catch (e) { return []; }
-    },
-    async markInboxRead(uid) {
-      if (!isOnline()) {
-        const inbox = lsGet('porraInbox_' + uid) || [];
-        inbox.forEach(m => m.read = true);
-        lsSet('porraInbox_' + uid, inbox);
-        return;
+    async saveTelegramConfig(config) {
+      lsSet('porraTelegramConfig', config);
+      if (isOnline()) {
+        try { await firebase.database().ref('telegramConfig').set(config); }
+        catch (e) { console.warn('Firebase saveTelegramConfig error:', e); }
       }
-      try {
-        const inbox = await this.getInbox(uid);
-        const updates = {};
-        inbox.forEach(m => {
-          if (!m.read) updates[m.id + '/read'] = true;
-        });
-        if (Object.keys(updates).length > 0) {
-          await firebase.database().ref(`users/${uid}/inbox`).update(updates);
-        }
-      } catch (e) { console.warn(e); }
     },
 
     // Sync Firebase → localStorage (called on game load)

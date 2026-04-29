@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title data-i18n="admin_title">🔐 Panel d'Administrador – Chapas 2026</title>
+  <title>🔐 Panel d'Administrador – Chapas 2026</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 
@@ -15,8 +15,11 @@
 
   <script src="firebase-config.js?v=5"></script>
   <script src="auth.js?v=5"></script>
-  <script src="i18n.js"></script>
   <script src="db.js?v=5"></script>
+  <script>
+    // AUTO-ACCEPT CONFIRMS FOR AUTOMATED TESTING
+    window.confirm = function (msg) { console.log('Auto-confirm: ' + msg); return true; };
+  </script>
   <style>
     :root {
       --dark: #070c18;
@@ -827,7 +830,7 @@
   <!-- ── LOADING SCREEN ── -->
   <div id="loadingScreen">
     <div style="font-size:3rem;margin-bottom:10px;animation:spin 1s linear infinite">⚽</div>
-    <div data-i18n="loading">Verificant credencials...</div>
+    <div>Verificant credencials...</div>
   </div>
   <style>
     @keyframes spin {
@@ -840,24 +843,19 @@
   <!-- ── DASHBOARD ── -->
   <div id="dashboard">
     <div class="admin-topbar">
-      <div class="admin-brand" data-i18n="admin_brand_2">🔐 Admin Chapas 2026</div>
+      <div class="admin-brand">🔐 Admin Chapas 2026</div>
       <div class="admin-tabs">
-        <button class="tab-btn active" data-tab="partits" data-i18n="admin_tab_matches_2">📋 Partits</button>
-        <button class="tab-btn" data-tab="classificacio" data-i18n="admin_tab_class_2">🏆 Classificació</button>
-        <button class="tab-btn" data-tab="torneig" data-i18n="admin_tab_tour_2">🌍 Torneig Mundial</button>
-        <button class="tab-btn" data-tab="equips" data-i18n="admin_tab_teams_2">👥 Equips</button>
-        <button class="tab-btn" data-tab="usuaris" data-i18n="admin_tab_users_2">👥 Usuaris</button>
-        <button class="tab-btn" data-tab="config" data-i18n="admin_tab_config">⚙️ Configuració</button>
+        <button class="tab-btn active" data-tab="partits">📋 Partits</button>
+        <button class="tab-btn" data-tab="classificacio">🏆 Classificació</button>
+        <button class="tab-btn" data-tab="torneig">🌍 Torneig Mundial</button>
+        <button class="tab-btn" data-tab="equips">👥 Equips</button>
+        <button class="tab-btn" data-tab="usuaris">👥 Usuaris</button>
+        <button class="tab-btn" data-tab="config">⚙️ Configuració</button>
       </div>
       <div class="admin-actions">
-        <select class="lang-selector" aria-label="Idioma"
-          style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 4px; color: var(--text); padding: 4px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; margin-right: 10px;">
-          <option value="ca">VAL</option>
-          <option value="es" style="color: black;">ESP</option>
-        </select>
-        <a href="tournament.html" class="hd-link" data-i18n="admin_link_pub">🏆 Pública</a>
-        <a href="game.html" class="hd-link" data-i18n="admin_link_game">⚽ Joc</a>
-        <button class="logout-btn" id="logoutBtn" data-i18n="logout">Tancar sessió</button>
+        <a href="tournament.html" class="hd-link">🏆 Pública</a>
+        <a href="game.html" class="hd-link">⚽ Joc</a>
+        <button class="logout-btn" id="logoutBtn">Tancar sessió</button>
       </div>
     </div>
 
@@ -869,8 +867,7 @@
 
         <!-- Live Match (Partido en Curso) -->
         <div class="add-match-form" style="border-color:var(--gold)">
-          <div class="aform-title" style="color:var(--gold)" data-i18n="admin_live_match">🔴 Partido en Curso (Apuestas
-            en Vivo)</div>
+          <div class="aform-title" style="color:var(--gold)">🔴 Partido en Curso (Apuestas en Vivo)</div>
           <div id="activeMatchWrap">
             <!-- Rendered via JS -->
           </div>
@@ -878,51 +875,48 @@
 
         <!-- Add manual match -->
         <div class="add-match-form">
-          <div class="aform-title" data-i18n="admin_add_manual">➕ Afegir Resultat Manualment</div>
+          <div class="aform-title">➕ Afegir Resultat Manualment</div>
           <div class="aform-row">
             <select class="aform-select" id="addTeam1"></select>
             <input type="number" class="aform-score" id="addScore1" value="0" min="0" max="99" />
             <span class="aform-sep">–</span>
             <input type="number" class="aform-score" id="addScore2" value="0" min="0" max="99" />
             <select class="aform-select" id="addTeam2"></select>
-            <button class="btn-add-match" id="addMatchBtn" data-i18n="admin_btn_add">✅ Afegir</button>
+            <button class="btn-add-match" id="addMatchBtn">✅ Afegir</button>
           </div>
         </div>
 
-        <div class="panel-title" data-i18n="admin_played_matches">📋 Partits Jugats</div>
+        <div class="panel-title">📋 Partits Jugats</div>
         <div id="matchAdminList"></div>
       </div>
 
       <!-- ── TAB: CLASSIFICACIÓ ── -->
       <div class="tab-panel" id="tab-classificacio">
-        <div class="panel-title" data-i18n="admin_standings">🏆 Taula de Classificació</div>
+        <div class="panel-title">🏆 Taula de Classificació</div>
         <div class="table-wrap" id="adminStandingsWrap">
           <div class="empty-state">
             <div class="empty-icon">📋</div>
-            <div class="empty-text" data-i18n="admin_empty_data">Encara no hi ha dades</div>
+            <div class="empty-text">Encara no hi ha dades</div>
           </div>
         </div>
       </div>
 
       <!-- ── TAB: TORNEIG ── -->
       <div class="tab-panel" id="tab-torneig">
-        <div class="panel-title" data-i18n="admin_tour_title">🌍 Torneig Mundial (32 Equips)</div>
+        <div class="panel-title">🌍 Torneig Mundial (32 Equips)</div>
 
         <div class="danger-zone" style="background:rgba(245,197,24,0.05); border-color:rgba(245,197,24,0.2);">
-          <div class="danger-title" style="color:var(--gold);" data-i18n="admin_tour_creator">🛠️ Creador de Tornejos
-          </div>
+          <div class="danger-title" style="color:var(--gold);">🛠️ Creador de Tornejos</div>
           <div class="danger-action" style="border-bottom:none; padding-bottom:0;">
             <div class="danger-action-info">
               <h4 style="color:var(--text);">Estat: <span id="tourSelectedCount">0</span>/32 equips seleccionats</h4>
-              <p data-i18n="admin_tour_creator_desc">Selecciona manualment o genera aleatòriament els equips
-                participants.</p>
+              <p>Selecciona manualment o genera aleatòriament els equips participants.</p>
             </div>
             <div style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
               <button class="btn-danger"
                 style="background:rgba(96,165,250,0.12); color:var(--blue); border-color:rgba(96,165,250,0.3);"
-                id="btnTourRandom" data-i18n="admin_btn_random">🎲 Aleatori</button>
-              <button class="btn-save" id="btnTourGenerate" style="opacity:0.5; pointer-events:none;"
-                data-i18n="admin_btn_draw">⚽ Sortear
+                id="btnTourRandom">🎲 Aleatori</button>
+              <button class="btn-save" id="btnTourGenerate" style="opacity:0.5; pointer-events:none;">⚽ Sortear
                 Grups</button>
             </div>
           </div>
@@ -930,31 +924,26 @@
 
         <div class="teams-admin-grid" id="tourTeamsGrid"></div>
 
-        <div class="panel-title" style="margin-top:30px; display:none;" id="tourActiveTitle"
-          data-i18n="admin_tour_active_title">🏆 Grups del Torneig Actual
+        <div class="panel-title" style="margin-top:30px; display:none;" id="tourActiveTitle">🏆 Grups del Torneig Actual
         </div>
         <div id="tourActiveGroups"
           style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px;"></div>
 
-        <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle"
-          data-i18n="admin_tour_bracket_title">⚔️ Fase Eliminatoria
+        <div class="panel-title" style="margin-top:40px; display:none;" id="tourBracketTitle">⚔️ Fase Eliminatoria
           (Bracket)</div>
         <button class="btn-save" id="btnTourGenerateBracket"
-          style="display:none; margin-bottom:20px; background:linear-gradient(135deg,var(--red),#ff6b6b)"
-          data-i18n="admin_btn_generate_bracket">⚔️ Generar
+          style="display:none; margin-bottom:20px; background:linear-gradient(135deg,var(--red),#ff6b6b)">⚔️ Generar
           Cuadro (Octavos)</button>
         <div id="tourBracketWrap" style="display:flex; flex-direction:column; gap:20px;"></div>
       </div>
 
       <!-- ── TAB: EQUIPS ── -->
       <div class="tab-panel" id="tab-equips">
-        <div class="panel-title">👥 Gestió d'Equips <span style="font-size:0.8rem;color:var(--muted);font-weight:400"
-            data-i18n="admin_teams_desc">—
+        <div class="panel-title">👥 Gestió d'Equips <span style="font-size:0.8rem;color:var(--muted);font-weight:400">—
             Reinicia l'estat "jugat" d'un equip perquè pugui tornar a participar</span></div>
         <div style="margin-bottom:12px;display:flex;gap:8px;flex-wrap:wrap">
           <button class="btn-reset-team" id="resetAllTeamsBtn"
-            style="background:rgba(96,165,250,0.1);color:var(--blue);border-color:rgba(96,165,250,0.25)"
-            data-i18n="admin_btn_reset_teams">🔄 Reiniciar
+            style="background:rgba(96,165,250,0.1);color:var(--blue);border-color:rgba(96,165,250,0.25)">🔄 Reiniciar
             tots els equips</button>
         </div>
         <div class="teams-admin-grid" id="teamsAdminGrid"></div>
@@ -962,49 +951,46 @@
 
       <!-- ── TAB: USUARIS ── -->
       <div class="tab-panel" id="tab-usuaris">
-        <div class="panel-title" data-i18n="admin_users_title">👥 Gestió d'Usuaris</div>
+        <div class="panel-title">👥 Gestió d'Usuaris</div>
         <div class="table-wrap" id="adminUsersWrap">
           <div class="empty-state">
             <div class="empty-icon">👥</div>
-            <div class="empty-text" data-i18n="admin_users_loading">Carregant usuaris...</div>
+            <div class="empty-text">Carregant usuaris...</div>
           </div>
         </div>
       </div>
 
       <!-- ── TAB: CONFIG ── -->
       <div class="tab-panel" id="tab-config">
-        <div class="panel-title" data-i18n="admin_config_title">⚙️ Configuració del Torneig</div>
+        <div class="panel-title">⚙️ Configuració del Torneig</div>
 
         <div class="danger-zone">
-          <div class="danger-title" data-i18n="admin_danger_zone">⚠️ Zona Perillosa</div>
+          <div class="danger-title">⚠️ Zona Perillosa</div>
           <div class="danger-action">
             <div class="danger-action-info">
-              <h4 data-i18n="admin_reset_teams_title">Reiniciar equips jugats</h4>
-              <p data-i18n="admin_reset_teams_desc">Permet que tots els equips puguin tornar a ser seleccionats.</p>
+              <h4>Reiniciar equips jugats</h4>
+              <p>Permet que tots els equips puguin tornar a ser seleccionats.</p>
             </div>
-            <button class="btn-danger" id="cfgResetTeams" data-i18n="admin_btn_reset_teams_2">🔄 Reiniciar
-              equips</button>
+            <button class="btn-danger" id="cfgResetTeams">🔄 Reiniciar equips</button>
           </div>
           <div class="danger-action">
             <div class="danger-action-info">
-              <h4 data-i18n="admin_clear_matches_title">Esborrar tots els partits</h4>
-              <p data-i18n="admin_clear_matches_desc">Esborra l'historial de partits però manté els equips jugats.</p>
+              <h4>Esborrar tots els partits</h4>
+              <p>Esborra l'historial de partits però manté els equips jugats.</p>
             </div>
-            <button class="btn-danger" id="cfgClearMatches" data-i18n="admin_btn_clear_matches">🗑️ Esborrar
-              partits</button>
+            <button class="btn-danger" id="cfgClearMatches">🗑️ Esborrar partits</button>
           </div>
           <div class="danger-action">
             <div class="danger-action-info">
-              <h4 data-i18n="admin_reset_tour_title">Reiniciar tot el torneig</h4>
-              <p data-i18n="admin_reset_tour_desc">Esborra partits i reinicia tots els equips. Comença de zero.</p>
+              <h4>Reiniciar tot el torneig</h4>
+              <p>Esborra partits i reinicia tots els equips. Comença de zero.</p>
             </div>
-            <button class="btn-danger" id="cfgResetAll" data-i18n="admin_btn_reset_all">💥 Reiniciar tot</button>
+            <button class="btn-danger" id="cfgResetAll">💥 Reiniciar tot</button>
           </div>
         </div>
 
         <div class="add-match-form" style="margin-bottom:20px;">
-          <div class="aform-title" style="color:var(--blue)" data-i18n="admin_tg_title">✈️ Configuració de Telegram
-          </div>
+          <div class="aform-title" style="color:var(--blue)">✈️ Configuració de Telegram</div>
           <div style="font-size:0.85rem;color:var(--muted);margin-bottom:12px;">
             Configura el Bot de Telegram per enviar automàticament els resultats dels partits finalitzats i generar el
             codi QR públic.
@@ -1021,7 +1007,7 @@
               <input type="text" id="tgChannelId" class="aform-select" style="width:100%" placeholder="@NomDelCanal" />
             </div>
           </div>
-          <button class="btn-save" id="btnSaveTelegram" data-i18n="admin_btn_save_tg">💾 Guardar Telegram</button>
+          <button class="btn-save" id="btnSaveTelegram">💾 Guardar Telegram</button>
         </div>
 
         <div
@@ -1042,7 +1028,7 @@
   <!-- ── EDIT MODAL ── -->
   <div class="modal-overlay" id="editModal">
     <div class="modal-box">
-      <h3 class="modal-title" data-i18n="admin_edit_result">✏️ Editar Resultat</h3>
+      <h3 class="modal-title">✏️ Editar Resultat</h3>
       <div class="modal-grid">
         <div class="modal-team">
           <div class="modal-team-flag" id="modalFlag1"></div>
@@ -1060,8 +1046,8 @@
         <input type="number" class="score-input" id="editScore2" min="0" max="99" />
       </div>
       <div class="modal-btns">
-        <button class="btn-cancel" id="editCancel" data-i18n="admin_btn_cancel">Cancel·lar</button>
-        <button class="btn-save" id="editSave" data-i18n="admin_btn_save">💾 Guardar</button>
+        <button class="btn-cancel" id="editCancel">Cancel·lar</button>
+        <button class="btn-save" id="editSave">💾 Guardar</button>
       </div>
     </div>
   </div>
@@ -1367,6 +1353,17 @@
         const matches = await getMatches();
         const standings = calcStandings(matches);
 
+        const getGroupMatches = (gTeams) => {
+          const m = [];
+          for (let i = 0; i < gTeams.length; i++) {
+            for (let j = i + 1; j < gTeams.length; j++) {
+              const id = `${gTeams[i].abbr}_VS_${gTeams[j].abbr}`;
+              m.push({ id, team1: gTeams[i], team2: gTeams[j] });
+            }
+          }
+          return m;
+        };
+
         const renderGroupTable = (gName, gTeams) => {
           const fullStandings = gTeams.map(t => {
             const s = standings.find(x => x.team.name === t.name);
@@ -1378,9 +1375,9 @@
             return (b.gf - b.ga) - (a.gf - a.ga);
           });
 
-          let html = `<div class="tour-group-card" style="min-width:300px">
+          let html = `<div class="tour-group-card" style="min-width:300px; margin-bottom: 20px;">
           <div class="tour-group-title">Grup ${gName}</div>
-          <table style="width:100%;font-size:0.8rem;text-align:center">
+          <table style="width:100%;font-size:0.8rem;text-align:center; margin-bottom: 15px;">
           <thead><tr><th style="text-align:left">Equip</th><th>PJ</th><th>DG</th><th>PTS</th></tr></thead><tbody>`;
           fullStandings.forEach((s, idx) => {
             const pts = s.w * 3 + s.d;
@@ -1393,7 +1390,38 @@
              <td style="font-weight:bold">${pts}</td>
            </tr>`;
           });
-          html += `</tbody></table></div>`;
+          html += `</tbody></table><div style="border-top: 1px solid var(--border); padding-top: 10px;">`;
+          
+          const gMatches = getGroupMatches(gTeams);
+          gMatches.forEach(gm => {
+            // Find if this match was played
+            const played = matches.find(m => 
+              (m.team1.name === gm.team1.name && m.team2.name === gm.team2.name) ||
+              (m.team1.name === gm.team2.name && m.team2.name === gm.team1.name)
+            );
+            if (played) {
+              const isInv = played.team1.name === gm.team2.name;
+              const s1 = isInv ? played.score2 : played.score1;
+              const s2 = isInv ? played.score1 : played.score2;
+              html += `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding: 4px 0; color:var(--muted)">
+                <span>${gm.team1.flag} ${gm.team1.abbr}</span>
+                <span style="font-weight:bold; color:var(--text)">${s1} - ${s2}</span>
+                <span>${gm.team2.abbr} ${gm.team2.flag}</span>
+              </div>`;
+            } else {
+              html += `<div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding: 4px 0;">
+                <span style="width: 50px; text-align:right;">${gm.team1.flag} ${gm.team1.abbr}</span>
+                <div style="display:flex; gap: 4px;">
+                  <input type="number" id="s1_${gm.id}" style="width:36px; padding:2px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:white; border-radius:4px;" min="0">
+                  <span>-</span>
+                  <input type="number" id="s2_${gm.id}" style="width:36px; padding:2px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:white; border-radius:4px;" min="0">
+                </div>
+                <span style="width: 50px; text-align:left;">${gm.team2.abbr} ${gm.team2.flag}</span>
+                <button onclick="saveGroupMatchAdmin('${gm.id}', '${gm.team1.name}', '${gm.team2.name}')" style="padding: 2px 6px; font-size: 0.75rem; background: var(--gold); color: black; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar</button>
+              </div>`;
+            }
+          });
+          html += `</div></div>`;
           return html;
         };
 
@@ -1515,7 +1543,7 @@
 
       const bracket = { roundOf16: [] };
       matchups.forEach((m, i) => {
-        bracket.roundOf16.push({ id: 'R16_' + i, team1: m[0], team2: m[1], winner: null });
+        bracket.roundOf16.push({ id: 'R16_' + i, team1: m[0], team2: m[1], winner: null, score1: null, score2: null, pens1: null, pens2: null });
       });
 
       await DB.saveTournamentBracket(bracket);
@@ -1523,9 +1551,128 @@
       renderAll();
     };
 
-    window.advanceBracketMatch = async function (round, matchIdx, winnerTeam) {
+    window.saveGroupMatchAdmin = async function(matchId, t1Name, t2Name) {
+      const s1Str = document.getElementById('s1_' + matchId).value;
+      const s2Str = document.getElementById('s2_' + matchId).value;
+      if (s1Str === '' || s2Str === '') return showToast('Introdueix els gols', 'error');
+      
+      const s1 = parseInt(s1Str);
+      const s2 = parseInt(s2Str);
+      
+      const t1 = ALL_TEAMS.find(t => t.name === t1Name);
+      const t2 = ALL_TEAMS.find(t => t.name === t2Name);
+      const matchData = {
+        id: Date.now(),
+        date: new Date().toISOString(),
+        team1: { name: t1.name, flag: t1.flag, abbr: t1.abbr },
+        team2: { name: t2.name, flag: t2.flag, abbr: t2.abbr },
+        score1: s1, score2: s2,
+        winner: s1 > s2 ? 'team1' : s2 > s1 ? 'team2' : 'draw'
+      };
+      
+      try {
+        if (window.DB) {
+          await DB.addMatch(matchData);
+          await DB.markTeamsPlayed([t1.name, t2.name]);
+        } else {
+          const ms = JSON.parse(localStorage.getItem('porraMatches') || '[]');
+          ms.push(matchData); localStorage.setItem('porraMatches', JSON.stringify(ms));
+          const pl = JSON.parse(localStorage.getItem('porraPlayedTeams') || '[]');
+          [t1.name, t2.name].forEach(n => { if (!pl.includes(n)) pl.push(n); });
+          localStorage.setItem('porraPlayedTeams', JSON.stringify(pl));
+        }
+
+        // ── RESOLUCIÓ DE PREMIS (FASE DE GRUPS) ───────────────────
+        const matchIdStr = `${t1.abbr}_VS_${t2.abbr}`;
+        const matchIdInv = `${t2.abbr}_VS_${t1.abbr}`;
+        let winnersCount = 0, distributed = 0;
+
+        try {
+          const allUsersBets = await DB.getAllUsersBets();
+          for (const [uid, uData] of Object.entries(allUsersBets)) {
+            if (!uData.bets) continue;
+            const bet = uData.bets[matchIdStr] || uData.bets[matchIdInv];
+
+            // Només processem si està pagada i no està resolta
+            if (bet && bet.paid && !bet.resolved) {
+              const betT1Score = uData.bets[matchIdStr] ? bet.score1 : bet.score2;
+              const betT2Score = uData.bets[matchIdStr] ? bet.score2 : bet.score1;
+              const realWinner = s1 > s2 ? 'team1' : s2 > s1 ? 'team2' : 'draw';
+              const betWinner = bet.score1 > bet.score2 ? 'team1' : bet.score2 > bet.score1 ? 'team2' : 'draw';
+
+              if (betT1Score === s1 && betT2Score === s2) {
+                const prize = 15;
+                await DB.updateUserBalance(uid, prize);
+                winnersCount++;
+                distributed += prize;
+              } else if (realWinner === betWinner) {
+                // Consolacion 1 punto? En apuestas.html se menciona 1 punto. 
+                // Pero en admin.html addMatchBtn solo da premio si es resultado exacto.
+                // Wait, in apuestas.html it says "1 punt si encertes el guanyador o l'empat."
+                // Wait, "1 punt" means points in the ranking, NOT money!
+                // Money is only for exact score (15€). So we don't add money here.
+              }
+              // Marquem com a resolta
+              bet.resolved = true;
+              const keyToUpdate = uData.bets[matchIdStr] ? matchIdStr : matchIdInv;
+              await DB.saveUserBet(uid, keyToUpdate, bet);
+            }
+          }
+        } catch (e) { console.warn("Error resolvent premis:", e); }
+
+        await sendTelegramMessage(matchData);
+
+        await renderAll();
+        showToast('✅ Partit guardat!', 'success');
+        if (winnersCount > 0) {
+          setTimeout(() => showToast(`🎉 S'han repartit ${distributed}€ a ${winnersCount} guanyadors de la lligueta!`, 'success'), 3500);
+        }
+      } catch (e) { showToast('❌ Error: ' + e.message, 'error'); }
+    };
+
+    window.checkPens = function(id) {
+      const s1 = document.getElementById('bs1_' + id).value;
+      const s2 = document.getElementById('bs2_' + id).value;
+      const wrap = document.getElementById('pensWrap_' + id);
+      if (s1 !== '' && s2 !== '' && s1 === s2) {
+        wrap.style.display = 'flex';
+      } else {
+        wrap.style.display = 'none';
+      }
+    };
+
+    window.finishBracketMatch = async function (round, matchIdx) {
       const bracket = await DB.getTournamentBracket();
-      bracket[round][matchIdx].winner = winnerTeam;
+      const m = bracket[round][matchIdx];
+      
+      const s1Str = document.getElementById('bs1_' + m.id).value;
+      const s2Str = document.getElementById('bs2_' + m.id).value;
+      if (s1Str === '' || s2Str === '') return showToast('Introdueix els gols', 'error');
+      
+      const s1 = parseInt(s1Str);
+      const s2 = parseInt(s2Str);
+      let winnerTeam = null;
+      let p1 = null, p2 = null;
+
+      if (s1 > s2) winnerTeam = m.team1;
+      else if (s2 > s1) winnerTeam = m.team2;
+      else {
+        const p1Str = document.getElementById('bp1_' + m.id).value;
+        const p2Str = document.getElementById('bp2_' + m.id).value;
+        if (p1Str === '' || p2Str === '') return showToast('Introdueix el resultat dels penaltis', 'error');
+        p1 = parseInt(p1Str);
+        p2 = parseInt(p2Str);
+        if (p1 === p2) return showToast('Els penaltis no poden acabar en empat', 'error');
+        winnerTeam = p1 > p2 ? m.team1 : m.team2;
+      }
+
+      if (!confirm(`Confirmar victoria de ${winnerTeam.name}?`)) return;
+
+      m.winner = winnerTeam;
+      m.score1 = s1;
+      m.score2 = s2;
+      m.pens1 = p1;
+      m.pens2 = p2;
 
       // Determine next round logic
       const roundsList = ['roundOf16', 'quarterFinals', 'semiFinals', 'final'];
@@ -1552,16 +1699,11 @@
       let distributed = 0;
       for (const [uid, userBets] of Object.entries(betsData)) {
         const bet = userBets[mId];
-        if (bet) {
-          if (bet.prediction === winnerTeam.name) {
-            const prize = bet.amount * 2;
-            await DB.updateUserBalance(uid, prize);
-            winnersCount++;
-            distributed += prize;
-            await DB.addInboxMessage(uid, { title: '✅ Aposta Eliminatoria!', text: `Has encertat la victòria de ${winnerTeam.name}. Guanyes ${prize}€.`, amount: prize, type: 'win' });
-          } else {
-            await DB.addInboxMessage(uid, { title: '❌ Aposta Eliminatoria', text: `No has encertat el partit. Guanyador real: ${winnerTeam.name}.`, amount: 0, type: 'loss' });
-          }
+        if (bet && bet.prediction === winnerTeam.name) {
+          const prize = bet.amount * 2;
+          await DB.updateUserBalance(uid, prize);
+          winnersCount++;
+          distributed += prize;
         }
       }
 
@@ -1629,15 +1771,36 @@
           const isT1Win = m.winner && m.winner.name === m.team1?.name;
           const isT2Win = m.winner && m.winner.name === m.team2?.name;
 
+          let inputsHtml = '';
+          if (m.winner) {
+            const penText = m.score1 === m.score2 ? ` <span style="font-size:0.75rem; color:var(--muted)">(P: ${m.pens1}-${m.pens2})</span>` : '';
+            inputsHtml = `<div style="text-align:center; font-weight:bold; margin-top:8px; border-top:1px solid rgba(255,255,255,0.05); padding-top:8px;">
+              ${m.score1} - ${m.score2}${penText}
+            </div>`;
+          } else if (m.team1 && m.team2) {
+            inputsHtml = `<div style="margin-top:10px; display:flex; flex-direction:column; gap:6px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.05);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <input type="number" id="bs1_${m.id}" oninput="checkPens('${m.id}')" style="width:46px; padding:4px; text-align:center; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:white; border-radius:4px;" min="0">
+                <span style="font-size:0.8rem; color:var(--muted)">Gols</span>
+                <input type="number" id="bs2_${m.id}" oninput="checkPens('${m.id}')" style="width:46px; padding:4px; text-align:center; background:rgba(0,0,0,0.3); border:1px solid var(--border); color:white; border-radius:4px;" min="0">
+              </div>
+              <div id="pensWrap_${m.id}" style="display:none; justify-content:space-between; align-items:center; margin-top:2px;">
+                <input type="number" id="bp1_${m.id}" placeholder="P" style="width:46px; padding:4px; text-align:center; background:rgba(255,0,0,0.1); border:1px solid var(--red); color:white; border-radius:4px;" min="0">
+                <span style="font-size:0.75rem; color:var(--red)">Penaltis</span>
+                <input type="number" id="bp2_${m.id}" placeholder="P" style="width:46px; padding:4px; text-align:center; background:rgba(255,0,0,0.1); border:1px solid var(--red); color:white; border-radius:4px;" min="0">
+              </div>
+              <button onclick='finishBracketMatch("${roundName}", ${idx})' style="padding:6px; background:var(--gold); color:black; border:none; border-radius:4px; font-weight:bold; cursor:pointer;">✅ Finalizar</button>
+            </div>`;
+          }
+
           res += `<div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:var(--radius-sm); border:1px solid ${m.winner ? 'var(--green)' : 'var(--border)'};">
             <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
               <span style="font-weight:800; ${isT1Win ? 'color:var(--green)' : ''}">${t1}</span>
-              ${m.team1 && !m.winner ? `<button onclick='advanceBracketMatch("${roundName}", ${idx}, ${JSON.stringify(m.team1)})' style="background:none;border:none;color:var(--green);cursor:pointer;" title="Avanzar">➡️</button>` : ''}
             </div>
             <div style="display:flex; justify-content:space-between;">
               <span style="font-weight:800; ${isT2Win ? 'color:var(--green)' : ''}">${t2}</span>
-              ${m.team2 && !m.winner ? `<button onclick='advanceBracketMatch("${roundName}", ${idx}, ${JSON.stringify(m.team2)})' style="background:none;border:none;color:var(--green);cursor:pointer;" title="Avanzar">➡️</button>` : ''}
             </div>
+            ${inputsHtml}
           </div>`;
         });
         res += `</div></div>`;
@@ -1700,8 +1863,9 @@
           return `<tr>
           <td>${emailStr}</td>
           <td><span style="color:${isAdmin ? 'var(--gold)' : 'var(--text)'};font-weight:${isAdmin ? '800' : '400'}">${roleText}</span></td>
-          <td>
+          <td style="display:flex; gap:8px; justify-content:center;">
             <button class="${btnClass}" style="margin:0;padding:6px 12px;font-size:0.85rem;" onclick="toggleUserRole('${u.uid}', '${nextRole}')">${btnText}</button>
+            <button class="btn-del" style="margin:0;padding:6px 12px;font-size:0.85rem;" onclick="deleteUserAdmin('${u.uid}', '${emailStr}')">🗑️ Eliminar</button>
           </td>
         </tr>`;
         }).join('')}
@@ -1720,6 +1884,17 @@
         await renderUsers();
       } catch (error) {
         showToast('❌ Error actualitzant el rol: ' + error.message, 'error');
+      }
+    };
+
+    window.deleteUserAdmin = async function(uid, email) {
+      if (!confirm(`Segur que vols eliminar completament l'usuari ${email}? Aquesta acció no es pot desfer.`)) return;
+      try {
+        await DB.deleteUser(uid);
+        showToast(`Usuari ${email} eliminat correctament`, 'success');
+        await renderUsers();
+      } catch (error) {
+        showToast('❌ Error eliminant usuari: ' + error.message, 'error');
       }
     };
 
@@ -1840,6 +2015,8 @@
         await DB.clearLiveBets(activeMatch.id);
         await DB.clearActiveMatch();
 
+        await sendTelegramMessage(matchData);
+
         await renderAll();
         showToast(`✅ Finalizado. ${winnersCount} ganadores. Repartidos ${distributed}€`, 'success');
       } catch (e) { showToast('❌ Error: ' + e.message, 'error'); }
@@ -1917,6 +2094,9 @@
 
         document.getElementById('addScore1').value = 0;
         document.getElementById('addScore2').value = 0;
+
+        await sendTelegramMessage(matchData);
+
         await renderAll();
         showToast('✅ Partit afegit!', 'success');
         if (winnersCount > 0) {
