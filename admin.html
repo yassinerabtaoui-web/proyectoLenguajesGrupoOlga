@@ -858,6 +858,7 @@
         <select class="lang-selector" aria-label="Idioma" style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 99px; color: var(--text); padding: 4px 12px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 700; margin-right: 8px;">
             <option value="ca">VAL</option>
             <option value="es" style="color: black;">ESP</option>
+            <option value="en" style="color: black;">ENG</option>
         </select>
         <a href="index.html" class="hd-link" data-i18n="admin_link_pub">🏆 Pública</a>
         <a href="game.html" class="hd-link" data-i18n="admin_link_game">⚽ Joc</a>
@@ -1098,56 +1099,57 @@
     }
 
     const ALL_TEAMS = [
-      { name: 'Brasil', abbr: 'BRA', flag: '🇧🇷' },
-      { name: 'Argentina', abbr: 'ARG', flag: '🇦🇷' },
-      { name: 'Espanya', abbr: 'ESP', flag: '🇪🇸' },
-      { name: 'França', abbr: 'FRA', flag: '🇫🇷' },
-      { name: 'Alemanya', abbr: 'GER', flag: '🇩🇪' },
-      { name: 'Anglaterra', abbr: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
-      { name: 'Portugal', abbr: 'POR', flag: '🇵🇹' },
-      { name: 'P. Baixos', abbr: 'NED', flag: '🇳🇱' },
-      { name: 'Itàlia', abbr: 'ITA', flag: '🇮🇹' },
-      { name: 'Japó', abbr: 'JPN', flag: '🇯🇵' },
-      { name: 'USA', abbr: 'USA', flag: '🇺🇸' },
-      { name: 'Mèxic', abbr: 'MEX', flag: '🇲🇽' },
-      { name: 'Marroc', abbr: 'MAR', flag: '🇲🇦' },
-      { name: 'Senegal', abbr: 'SEN', flag: '🇸🇳' },
-      { name: 'Colòmbia', abbr: 'COL', flag: '🇨🇴' },
-      { name: 'Uruguai', abbr: 'URU', flag: '🇺🇾' },
-      { name: 'Croàcia', abbr: 'CRO', flag: '🇭🇷' },
-      { name: 'Bèlgica', abbr: 'BEL', flag: '🇧🇪' },
-      { name: 'Equador', abbr: 'ECU', flag: '🇪🇨' },
-      { name: 'Ghana', abbr: 'GHA', flag: '🇬🇭' },
-      { name: 'Suïssa', abbr: 'SUI', flag: '🇨🇭' },
-      { name: 'Dinamarca', abbr: 'DEN', flag: '🇩🇰' },
-      { name: 'Sèrbia', abbr: 'SRB', flag: '🇷🇸' },
-      { name: 'Polònia', abbr: 'POL', flag: '🇵🇱' },
-      { name: 'Gal·les', abbr: 'WAL', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
-      { name: 'Camerun', abbr: 'CMR', flag: '🇨🇲' },
-      { name: 'Canadà', abbr: 'CAN', flag: '🇨🇦' },
-      { name: 'Corea Sud', abbr: 'KOR', flag: '🇰🇷' },
-      { name: 'Austràlia', abbr: 'AUS', flag: '🇦🇺' },
-      { name: 'Iran', abbr: 'IRN', flag: '🇮🇷' },
-      { name: 'Aràbia S.', abbr: 'KSA', flag: '🇸🇦' },
-      { name: 'Tunísia', abbr: 'TUN', flag: '🇹🇳' },
-      { name: 'Costa Rica', abbr: 'CRC', flag: '🇨🇷' },
-      { name: 'Suècia', abbr: 'SWE', flag: '🇸🇪' },
-      { name: 'Xile', abbr: 'CHI', flag: '🇨🇱' },
-      { name: 'Perú', abbr: 'PER', flag: '🇵🇪' },
-      { name: 'Nigèria', abbr: 'NGA', flag: '🇳🇬' },
-      { name: 'Algèria', abbr: 'ALG', flag: '🇩🇿' },
-      { name: 'Egipte', abbr: 'EGY', flag: '🇪🇬' },
+      { name: 'Alemanya',     abbr: 'GER', flag: '🇩🇪' },
+      { name: 'Algèria',      abbr: 'ALG', flag: '🇩🇿' },
+      { name: 'Anglaterra',   abbr: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+      { name: 'Aràbia S.',    abbr: 'KSA', flag: '🇸🇦' },
+      { name: 'Argentina',    abbr: 'ARG', flag: '🇦🇷' },
+      { name: 'Austràlia',    abbr: 'AUS', flag: '🇦🇺' },
+      { name: 'Àustria',      abbr: 'AUT', flag: '🇦🇹' },
+      { name: 'Bèlgica',      abbr: 'BEL', flag: '🇧🇪' },
+      { name: 'Brasil',       abbr: 'BRA', flag: '🇧🇷' },
+      { name: 'Camerun',      abbr: 'CMR', flag: '🇨🇲' },
+      { name: 'Canadà',       abbr: 'CAN', flag: '🇨🇦' },
+      { name: 'Colòmbia',     abbr: 'COL', flag: '🇨🇴' },
+      { name: 'Corea Nord',   abbr: 'PRK', flag: '🇰🇵' },
+      { name: 'Corea Sud',    abbr: 'KOR', flag: '🇰🇷' },
       { name: "Costa d'Iv.", abbr: 'CIV', flag: '🇨🇮' },
-      { name: 'Ucraïna', abbr: 'UKR', flag: '🇺🇦' },
-      { name: 'Noruega', abbr: 'NOR', flag: '🇳🇴' },
-      { name: 'Turquia', abbr: 'TUR', flag: '🇹🇷' },
-      { name: 'Grècia', abbr: 'GRE', flag: '🇬🇷' },
-      { name: 'Rep. Txeca', abbr: 'CZE', flag: '🇨🇿' },
-      { name: 'Àustria', abbr: 'AUT', flag: '🇦🇹' },
-      { name: 'Paraguai', abbr: 'PAR', flag: '🇵🇾' },
-      { name: 'Veneçuela', abbr: 'VEN', flag: '🇻🇪' },
-      { name: 'Xina', abbr: 'CHN', flag: '🇨🇳' },
-      { name: 'Nova Zelanda', abbr: 'NZL', flag: '🇳🇿' }
+      { name: 'Costa Rica',   abbr: 'CRC', flag: '🇨🇷' },
+      { name: 'Croàcia',      abbr: 'CRO', flag: '🇭🇷' },
+      { name: 'Dinamarca',    abbr: 'DEN', flag: '🇩🇰' },
+      { name: 'Ecuador',      abbr: 'ECU', flag: '🇪🇨' },
+      { name: 'Egipte',       abbr: 'EGY', flag: '🇪🇬' },
+      { name: 'Espanya',      abbr: 'ESP', flag: '🇪🇸' },
+      { name: 'França',       abbr: 'FRA', flag: '🇫🇷' },
+      { name: 'Gal·les',      abbr: 'WAL', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
+      { name: 'Ghana',        abbr: 'GHA', flag: '🇬🇭' },
+      { name: 'Grècia',       abbr: 'GRE', flag: '🇬🇷' },
+      { name: 'Iran',         abbr: 'IRN', flag: '🇮🇷' },
+      { name: 'Itàlia',       abbr: 'ITA', flag: '🇮🇹' },
+      { name: 'Japó',         abbr: 'JPN', flag: '🇯🇵' },
+      { name: 'Marroc',       abbr: 'MAR', flag: '🇲🇦' },
+      { name: 'Mèxic',        abbr: 'MEX', flag: '🇲🇽' },
+      { name: 'Nigèria',      abbr: 'NGA', flag: '🇳🇬' },
+      { name: 'Noruega',      abbr: 'NOR', flag: '🇳🇴' },
+      { name: 'Nova Zelanda', abbr: 'NZL', flag: '🇳🇿' },
+      { name: 'P. Baixos',    abbr: 'NED', flag: '🇳🇱' },
+      { name: 'Paraguai',     abbr: 'PAR', flag: '🇵🇾' },
+      { name: 'Perú',         abbr: 'PER', flag: '🇵🇪' },
+      { name: 'Polònia',      abbr: 'POL', flag: '🇵🇱' },
+      { name: 'Portugal',     abbr: 'POR', flag: '🇵🇹' },
+      { name: 'Rep. Txeca',   abbr: 'CZE', flag: '🇨🇿' },
+      { name: 'Senegal',      abbr: 'SEN', flag: '🇸🇳' },
+      { name: 'Sèrbia',       abbr: 'SRB', flag: '🇷🇸' },
+      { name: 'Suècia',       abbr: 'SWE', flag: '🇸🇪' },
+      { name: 'Suïssa',       abbr: 'SUI', flag: '🇨🇭' },
+      { name: 'Tunísia',      abbr: 'TUN', flag: '🇹🇳' },
+      { name: 'Turquia',      abbr: 'TUR', flag: '🇹🇷' },
+      { name: 'Ucraïna',      abbr: 'UKR', flag: '🇺🇦' },
+      { name: 'Uruguai',      abbr: 'URU', flag: '🇺🇾' },
+      { name: 'USA',          abbr: 'USA', flag: '🇺🇸' },
+      { name: 'Veneçuela',    abbr: 'VEN', flag: '🇻🇪' },
+      { name: 'Xile',         abbr: 'CHI', flag: '🇨🇱' },
+      { name: 'Xina',         abbr: 'CHN', flag: '🇨🇳' },
     ];
 
     // ── RENDER ALL ────────────────────────────────────────────────
@@ -1598,39 +1600,81 @@
       
       const mId1 = `${matchData.team1.abbr}_VS_${matchData.team2.abbr}`;
       const mId2 = `${matchData.team2.abbr}_VS_${matchData.team1.abbr}`;
-      let winnersCount = 0, distributed = 0;
+      let exactCount = 0, winnerCount = 0, distributed = 0;
       
+      // Determine the real winner of the match
+      const realWinner = matchData.score1 > matchData.score2 ? 'team1'
+                        : matchData.score2 > matchData.score1 ? 'team2' : 'draw';
+
       try {
         const allUsers = await DB.getAllUsersBets();
+        console.log('[resolveGroupBets] Looking for bets. mId1:', mId1, '| mId2:', mId2);
+        console.log('[resolveGroupBets] Total users in DB:', Object.keys(allUsers).length);
+        
         for (const [uid, userData] of Object.entries(allUsers)) {
-          if (!userData.bets) continue;
+          if (!userData.bets) {
+            console.log('[resolveGroupBets] User', uid, 'has no bets node.');
+            continue;
+          }
+          
+          console.log('[resolveGroupBets] User', uid, 'bet keys:', Object.keys(userData.bets));
           
           let b = userData.bets[mId1];
           let isInv = false;
           if (!b) { b = userData.bets[mId2]; isInv = true; }
           
+          if (!b) {
+            console.log('[resolveGroupBets] No bet found for this match for user', uid);
+            continue;
+          }
+          
+          console.log('[resolveGroupBets] Found bet for user', uid, ':', JSON.stringify(b), '| isInv:', isInv);
+          
           if (b && b.paid && !b.resolved) {
-            const s1 = isInv ? matchData.score2 : matchData.score1;
-            const s2 = isInv ? matchData.score1 : matchData.score2;
-            
-            if (b.score1 === s1 && b.score2 === s2) {
-              const prize = 25; // PREMI AUGMENTAT A 25€
+            // Normalise scores from user's perspective
+            const rS1 = isInv ? matchData.score2 : matchData.score1;
+            const rS2 = isInv ? matchData.score1 : matchData.score2;
+            const bS1 = Number(b.score1);
+            const bS2 = Number(b.score2);
+
+            // Determine bet winner
+            const betWinner = bS1 > bS2 ? (isInv ? 'team2' : 'team1')
+                            : bS2 > bS1 ? (isInv ? 'team1' : 'team2') : 'draw';
+
+            const isExact = (bS1 === rS1 && bS2 === rS2);
+            const isWinner = !isExact && (betWinner === realWinner);
+
+            if (isExact) {
+              // Exact result: 25€ prize (5€ paid, net +20€)
+              const prize = 25;
               await DB.updateUserBalance(uid, prize);
-              winnersCount++;
+              exactCount++;
               distributed += prize;
-              
               if (DB.addInboxMessage) {
                 await DB.addInboxMessage(uid, {
-                  title: '🎉 Porra Encertada!',
-                  body: `Has guanyat ${prize}€ al partit ${matchData.team1.name} ${matchData.score1}-${matchData.score2} ${matchData.team2.name}!`,
+                  title: '🎉 ' + t('inbox_exact_title'),
+                  body: `${t('inbox_exact_body')} ${prize}€ — ${matchData.team1.name} ${matchData.score1}-${matchData.score2} ${matchData.team2.name}`,
+                  type: 'win'
+                });
+              }
+            } else if (isWinner) {
+              // Correct winner/draw: return entry fee 5€
+              const prize = 5;
+              await DB.updateUserBalance(uid, prize);
+              winnerCount++;
+              distributed += prize;
+              if (DB.addInboxMessage) {
+                await DB.addInboxMessage(uid, {
+                  title: '✅ ' + t('inbox_winner_title'),
+                  body: `${t('inbox_winner_body')} ${prize}€ — ${matchData.team1.name} ${matchData.score1}-${matchData.score2} ${matchData.team2.name}`,
                   type: 'win'
                 });
               }
             } else {
               if (DB.addInboxMessage) {
                 await DB.addInboxMessage(uid, {
-                  title: '❌ Porra Fallada',
-                  body: `El teu pronòstic pel partit ${matchData.team1.name} vs ${matchData.team2.name} no ha estat correcte.`,
+                  title: '❌ ' + t('inbox_loss_title'),
+                  body: `${t('inbox_loss_body')} ${matchData.team1.name} vs ${matchData.team2.name}`,
                   type: 'loss'
                 });
               }
@@ -1641,8 +1685,8 @@
           }
         }
         
-        if (winnersCount > 0) {
-          setTimeout(() => showToast(`🎉 S'han repartit ${distributed}€ a ${winnersCount} guanyadors de la lligueta!`, 'success'), 3500);
+        if (exactCount + winnerCount > 0) {
+          setTimeout(() => showToast(`🎉 ${t('toast_resolved_bets')} ${distributed}€ (${exactCount} ${t('toast_exact')}, ${winnerCount} ${t('toast_winner')})`, 'success'), 3500);
         }
       } catch (e) { console.warn("Error resolvent premis grup:", e); }
     }
@@ -2121,34 +2165,7 @@
         }
 
         // ── RESOLUCIÓ DE PREMIS (FASE DE GRUPS) ───────────────────
-        const matchId = `${t1.abbr}_VS_${t2.abbr}`;
-        const matchIdInv = `${t2.abbr}_VS_${t1.abbr}`;
-        let winnersCount = 0, distributed = 0;
-
-        try {
-          const allUsersBets = await DB.getAllUsersBets();
-          for (const [uid, uData] of Object.entries(allUsersBets)) {
-            if (!uData.bets) continue;
-            const bet = uData.bets[matchId] || uData.bets[matchIdInv];
-
-            // Només processem si està pagada i no està resolta
-            if (bet && bet.paid && !bet.resolved) {
-              const betT1Score = uData.bets[matchId] ? bet.score1 : bet.score2;
-              const betT2Score = uData.bets[matchId] ? bet.score2 : bet.score1;
-
-              if (betT1Score === s1 && betT2Score === s2) {
-                const prize = 15;
-                await DB.updateUserBalance(uid, prize);
-                winnersCount++;
-                distributed += prize;
-              }
-              // Marquem com a resolta
-              bet.resolved = true;
-              const keyToUpdate = uData.bets[matchId] ? matchId : matchIdInv;
-              await DB.saveUserBet(uid, keyToUpdate, bet);
-            }
-          }
-        } catch (e) { console.warn("Error resolvent premis:", e); }
+        await resolveGroupBets(matchData);
 
         document.getElementById('addScore1').value = 0;
         document.getElementById('addScore2').value = 0;
@@ -2157,9 +2174,6 @@
 
         await renderAll();
         showToast('✅ Partit afegit!', 'success');
-        if (winnersCount > 0) {
-          setTimeout(() => showToast(`🎉 S'han repartit ${distributed}€ a ${winnersCount} guanyadors de la lligueta!`, 'success'), 3500);
-        }
       } catch (e) { showToast('❌ Error: ' + e.message, 'error'); }
     };
 
@@ -2268,6 +2282,9 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
     }
+
+    // ── LANGUAGE CHANGE: re-render admin dynamic content ───────────
+    document.addEventListener('langchange', () => renderAll());
   </script>
 </body>
 

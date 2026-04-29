@@ -631,6 +631,7 @@
           style="background: rgba(255,255,255,0.1); border: 1px solid var(--border); border-radius: 99px; color: var(--text); padding: 4px 12px; outline: none; cursor: pointer; font-family: 'Outfit', sans-serif; font-size: 0.78rem; font-weight: 700; margin-right: 8px;">
           <option value="ca">VAL</option>
           <option value="es" style="color: black;">ESP</option>
+          <option value="en" style="color: black;">ENG</option>
         </select>
         <span class="balance-badge" id="userBalanceTxt" data-i18n-title="dash_balance_title"
           title="Haz clic para añadir saldo" style="cursor:pointer; transition: transform 0.2s;">💰 --</span>
@@ -772,6 +773,61 @@
   </div>
 
   <script>
+    // ── EQUIPOS (idénticos al admin, ordenados A-Z) ───────────────
+    const ALL_TEAMS = [
+      { name: 'Alemanya',     abbr: 'GER', flag: '🇩🇪' },
+      { name: 'Algèria',      abbr: 'ALG', flag: '🇩🇿' },
+      { name: 'Anglaterra',   abbr: 'ENG', flag: '🏴󠁧󠁢󠁥󠁮󠁧󠁿' },
+      { name: 'Aràbia S.',    abbr: 'KSA', flag: '🇸🇦' },
+      { name: 'Argentina',    abbr: 'ARG', flag: '🇦🇷' },
+      { name: 'Austràlia',    abbr: 'AUS', flag: '🇦🇺' },
+      { name: 'Àustria',      abbr: 'AUT', flag: '🇦🇹' },
+      { name: 'Bèlgica',      abbr: 'BEL', flag: '🇧🇪' },
+      { name: 'Brasil',       abbr: 'BRA', flag: '🇧🇷' },
+      { name: 'Camerun',      abbr: 'CMR', flag: '🇨🇲' },
+      { name: 'Canadà',       abbr: 'CAN', flag: '🇨🇦' },
+      { name: 'Colòmbia',     abbr: 'COL', flag: '🇨🇴' },
+      { name: 'Corea Sud',    abbr: 'KOR', flag: '🇰🇷' },
+      { name: 'Corea Nord',   abbr: 'PRK', flag: '🇰🇵' },
+      { name: "Costa d'Iv.", abbr: 'CIV', flag: '🇨🇮' },
+      { name: 'Costa Rica',   abbr: 'CRC', flag: '🇨🇷' },
+      { name: 'Croàcia',      abbr: 'CRO', flag: '🇭🇷' },
+      { name: 'Dinamarca',    abbr: 'DEN', flag: '🇩🇰' },
+      { name: 'Ecuador',      abbr: 'ECU', flag: '🇪🇨' },
+      { name: 'Egipte',       abbr: 'EGY', flag: '🇪🇬' },
+      { name: 'Espanya',      abbr: 'ESP', flag: '🇪🇸' },
+      { name: 'França',       abbr: 'FRA', flag: '🇫🇷' },
+      { name: 'Gal·les',      abbr: 'WAL', flag: '🏴󠁧󠁢󠁷󠁬󠁳󠁿' },
+      { name: 'Ghana',        abbr: 'GHA', flag: '🇬🇭' },
+      { name: 'Grècia',       abbr: 'GRE', flag: '🇬🇷' },
+      { name: 'Iran',         abbr: 'IRN', flag: '🇮🇷' },
+      { name: 'Itàlia',       abbr: 'ITA', flag: '🇮🇹' },
+      { name: 'Japó',         abbr: 'JPN', flag: '🇯🇵' },
+      { name: 'Marroc',       abbr: 'MAR', flag: '🇲🇦' },
+      { name: 'Mèxic',        abbr: 'MEX', flag: '🇲🇽' },
+      { name: 'Nigèria',      abbr: 'NGA', flag: '🇳🇬' },
+      { name: 'Noruega',      abbr: 'NOR', flag: '🇳🇴' },
+      { name: 'Nova Zelanda', abbr: 'NZL', flag: '🇳🇿' },
+      { name: 'P. Baixos',    abbr: 'NED', flag: '🇳🇱' },
+      { name: 'Paraguai',     abbr: 'PAR', flag: '🇵🇾' },
+      { name: 'Perú',         abbr: 'PER', flag: '🇵🇪' },
+      { name: 'Polònia',      abbr: 'POL', flag: '🇵🇱' },
+      { name: 'Portugal',     abbr: 'POR', flag: '🇵🇹' },
+      { name: 'Rep. Txeca',   abbr: 'CZE', flag: '🇨🇿' },
+      { name: 'Senegal',      abbr: 'SEN', flag: '🇸🇳' },
+      { name: 'Sèrbia',       abbr: 'SRB', flag: '🇷🇸' },
+      { name: 'Suècia',       abbr: 'SWE', flag: '🇸🇪' },
+      { name: 'Suïssa',       abbr: 'SUI', flag: '🇨🇭' },
+      { name: 'Tunísia',      abbr: 'TUN', flag: '🇹🇳' },
+      { name: 'Turquia',      abbr: 'TUR', flag: '🇹🇷' },
+      { name: 'Ucraïna',      abbr: 'UKR', flag: '🇺🇦' },
+      { name: 'Uruguai',      abbr: 'URU', flag: '🇺🇾' },
+      { name: 'USA',          abbr: 'USA', flag: '🇺🇸' },
+      { name: 'Veneçuela',    abbr: 'VEN', flag: '🇻🇪' },
+      { name: 'Xile',         abbr: 'CHI', flag: '🇨🇱' },
+      { name: 'Xina',         abbr: 'CHN', flag: '🇨🇳' },
+    ];
+
     let currentUserUid = null;
     let currentUserEmail = null;
     let tournamentGroups = null;
@@ -1169,17 +1225,19 @@
           const s2 = inp2.value;
 
           if (s1 !== '' && s2 !== '') {
-            // Si ya está pagado no se vuelve a cobrar, pero mantenemos su estado
             const isPaid = inp1.dataset.paid === 'true';
-            // Si no está pagado, lo marcamos como pagado al guardarlo
-            matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2), paid: true };
+            if (!isPaid) {
+              // Only save NEW unpaid bets
+              matchInputs[matchId] = { score1: parseInt(s1), score2: parseInt(s2), paid: true };
+            }
+            // Already-paid bets are NOT re-saved, preserving their resolved/paid state
           }
         });
 
         // Cobrar
         await DB.updateUserBalance(currentUserUid, -cost);
 
-        // Guardar a DB individualment (o millor seria en batch però db.js té saveUserBet)
+        // Guardar a DB individualment
         for (const [matchId, data] of Object.entries(matchInputs)) {
           await DB.saveUserBet(currentUserUid, matchId, data);
         }
@@ -1470,6 +1528,11 @@
       clearTimeout(toastTimer);
       toastTimer = setTimeout(() => { el.classList.remove('show'); }, 3000);
     }
+
+    // ── LANGUAGE CHANGE: re-render dynamic content ─────────────────
+    document.addEventListener('langchange', () => {
+      if (currentUserUid) renderAll();
+    });
   </script>
 
 </body>
