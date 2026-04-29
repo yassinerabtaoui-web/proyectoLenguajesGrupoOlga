@@ -1378,22 +1378,35 @@
             return (b.gf - b.ga) - (a.gf - a.ga);
           });
 
-          let html = `<div class="tour-group-card" style="min-width:300px; margin-bottom: 20px;">
-          <div class="tour-group-title">Grup ${gName}</div>
-          <table style="width:100%;font-size:0.8rem;text-align:center; margin-bottom: 15px;">
-          <thead><tr><th style="text-align:left">Equip</th><th>PJ</th><th>DG</th><th>PTS</th></tr></thead><tbody>`;
+          let html = `<div class="tour-group-card" style="min-width:320px; margin-bottom: 20px;">
+          <div class="tour-group-title" style="font-size: 1.1rem;">Grup ${gName}</div>
+          <table style="width:100%; font-size:0.85rem; text-align:center; margin-bottom: 15px; border-collapse: collapse;">
+          <thead>
+            <tr style="border-bottom: 1px solid rgba(255,255,255,0.1);">
+              <th style="text-align:left; padding-bottom: 8px; color:var(--muted)">Equip</th>
+              <th style="padding-bottom: 8px; color:var(--muted)">PJ</th>
+              <th style="padding-bottom: 8px; color:var(--muted)">DG</th>
+              <th style="padding-bottom: 8px; color:var(--muted)">PTS</th>
+            </tr>
+          </thead>
+          <tbody>`;
           fullStandings.forEach((s, idx) => {
             const pts = s.w * 3 + s.d;
             const dg = s.gf - s.ga;
             const color = idx < 2 ? 'var(--green)' : 'inherit';
-            html += `<tr style="color:${color}">
-             <td style="text-align:left">${s.team.flag} ${s.team.abbr}</td>
-             <td>${s.p}</td>
-             <td>${dg > 0 ? '+' : ''}${dg}</td>
-             <td style="font-weight:bold">${pts}</td>
+            html += `<tr style="color:${color}; border-bottom: 1px solid rgba(255,255,255,0.03);">
+             <td style="text-align:left; padding: 8px 0;">
+               <div style="display:flex; align-items:center; gap: 6px;">
+                 <span style="font-size: 1.2rem">${s.team.flag}</span>
+                 <span style="font-weight: 700">${s.team.abbr}</span>
+               </div>
+             </td>
+             <td style="padding: 8px 0;">${s.p}</td>
+             <td style="padding: 8px 0;">${dg > 0 ? '+' : ''}${dg}</td>
+             <td style="font-weight:900; padding: 8px 0;">${pts}</td>
            </tr>`;
           });
-          html += `</tbody></table><div style="border-top: 1px solid var(--border); padding-top: 10px;">`;
+          html += `</tbody></table><div style="border-top: 1px solid var(--border); margin-top: 15px; padding-top: 10px;">`;
           
           const gMatches = getGroupMatches(gTeams);
           gMatches.forEach(gm => {
@@ -1406,21 +1419,22 @@
               const isInv = played.team1.name === gm.team2.name;
               const s1 = isInv ? played.score2 : played.score1;
               const s2 = isInv ? played.score1 : played.score2;
-              html += `<div style="display:flex; justify-content:space-between; font-size:0.85rem; padding: 4px 0; color:var(--muted)">
-                <span>${gm.team1.flag} ${gm.team1.abbr}</span>
-                <span style="font-weight:bold; color:var(--text)">${s1} - ${s2}</span>
-                <span>${gm.team2.abbr} ${gm.team2.flag}</span>
+              html += `<div style="display:grid; grid-template-columns: 1fr auto 1fr 60px; align-items:center; gap: 8px; font-size:0.85rem; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03); color:var(--muted);">
+                <div style="text-align:right;">${gm.team1.flag} ${gm.team1.abbr}</div>
+                <div style="font-weight:bold; color:var(--text); text-align:center; min-width:40px;">${s1} - ${s2}</div>
+                <div style="text-align:left;">${gm.team2.abbr} ${gm.team2.flag}</div>
+                <div></div>
               </div>`;
             } else {
-              html += `<div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; padding: 4px 0;">
-                <span style="width: 50px; text-align:right;">${gm.team1.flag} ${gm.team1.abbr}</span>
-                <div style="display:flex; gap: 4px;">
-                  <input type="number" id="s1_${gm.id}" style="width:36px; padding:2px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:white; border-radius:4px;" min="0">
-                  <span>-</span>
-                  <input type="number" id="s2_${gm.id}" style="width:36px; padding:2px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:white; border-radius:4px;" min="0">
+              html += `<div style="display:grid; grid-template-columns: 1fr auto 1fr 60px; align-items:center; gap: 8px; font-size:0.85rem; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                <div style="text-align:right; font-weight:bold;">${gm.team1.flag} ${gm.team1.abbr}</div>
+                <div style="display:flex; gap: 4px; align-items:center; justify-content:center;">
+                  <input type="number" id="s1_${gm.id}" style="width:36px; padding:4px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:white; border-radius:4px; font-weight:bold; outline:none;" min="0">
+                  <span style="color:var(--muted)">-</span>
+                  <input type="number" id="s2_${gm.id}" style="width:36px; padding:4px; text-align:center; background:rgba(255,255,255,0.1); border:1px solid var(--border); color:white; border-radius:4px; font-weight:bold; outline:none;" min="0">
                 </div>
-                <span style="width: 50px; text-align:left;">${gm.team2.abbr} ${gm.team2.flag}</span>
-                <button onclick="saveGroupMatchAdmin('${gm.id}', '${gm.team1.name}', '${gm.team2.name}')" style="padding: 2px 6px; font-size: 0.75rem; background: var(--gold); color: black; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">Guardar</button>
+                <div style="text-align:left; font-weight:bold;">${gm.team2.abbr} ${gm.team2.flag}</div>
+                <button onclick="saveGroupMatchAdmin('${gm.id}', '${gm.team1.name}', '${gm.team2.name}')" style="padding: 6px 8px; font-size: 0.75rem; background: var(--gold); color: black; border: none; border-radius: 4px; cursor: pointer; font-weight: 800; white-space: nowrap;">Guardar</button>
               </div>`;
             }
           });
